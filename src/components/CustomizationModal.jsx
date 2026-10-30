@@ -126,8 +126,8 @@ export default function CustomizationModal({ item, initialEditItem, onClose, onS
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/75 backdrop-blur-sm p-4">
-      <div className="bg-stone-900 border border-stone-700/80 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-stone-100">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-stone-950/75 backdrop-blur-sm p-0 sm:p-4">
+      <div className="bg-stone-900 border-t sm:border border-stone-700/80 rounded-t-2xl sm:rounded-2xl max-w-3xl w-full max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden text-stone-100">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-stone-800/80 border-b border-stone-700">
           <div className="flex items-center gap-3">

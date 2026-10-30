@@ -122,7 +122,8 @@ function BrandLogo({ className = "w-11 h-11" }) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("pos"); // pos | kds | history
+  // activeTab: "pos" | "cart" (mobile ticket view) | "kds" | "history"
+  const [activeTab, setActiveTab] = useState("pos");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [quickFilter, setQuickFilter] = useState("all"); // all | popular | hot | iced
@@ -192,11 +193,11 @@ export default function App() {
         temp: item.defaultTemp || "hot",
         tempLabel: item.defaultTemp === "iced" ? "Iced" : "Hot",
         milk: item.defaultMilk || "whole",
-        milkLabel: milkObj ? milkObj.name : "Whole Milk",
+        milkLabel: milkObj ? milkObj.name : "Full Cream Whole Milk",
         shots: item.defaultShots || "standard",
         shotsLabel: shotObj ? shotObj.name : "Standard Double (2)",
         sweetness: "100",
-        sweetnessLabel: "100% Standard",
+        sweetnessLabel: "100% Regular Sweet",
         ice: item.defaultTemp === "iced" ? "regular" : "none",
         iceLabel: item.defaultTemp === "iced" ? "Regular Ice" : "",
         syrups: item.defaultSyrups || [],
@@ -310,6 +311,7 @@ export default function App() {
   const taxableSubtotal = Math.max(0, Number((subtotal - discountAmount).toFixed(2)));
   const taxAmount = Number((taxableSubtotal * SHOP_CONFIG.taxRate).toFixed(2));
   const baseTotal = Number((taxableSubtotal + taxAmount).toFixed(2));
+  const totalCartItems = useMemo(() => cart.reduce((s, i) => s + i.quantity, 0), [cart]);
 
   // Complete Checkout
   const handleCompleteOrder = (paymentDetails) => {
@@ -394,41 +396,45 @@ export default function App() {
   ).length;
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-stone-950 text-stone-100 select-none">
+    <div className="h-[100dvh] w-screen overflow-hidden flex flex-col bg-stone-950 text-stone-100 select-none">
       {/* Top POS Navigation Header */}
-      <header className="no-print h-16 px-5 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <BrandLogo className="w-11 h-11 shrink-0 drop-shadow-md" />
+      <header className="no-print h-14 sm:h-16 px-3 sm:px-5 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
+        <div
+          onClick={() => setActiveTab("pos")}
+          className="flex items-center gap-2.5 sm:gap-3 cursor-pointer"
+        >
+          <BrandLogo className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 drop-shadow-md" />
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold tracking-wider text-amber-50 text-base">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-extrabold tracking-wider text-amber-50 text-sm sm:text-base">
                 {SHOP_CONFIG.name}
               </span>
-              <span className="text-[11px] px-2 py-0.5 rounded bg-stone-800 text-amber-400 border border-stone-700 font-mono">
+              <span className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-stone-800 text-amber-400 border border-stone-700 font-mono">
                 {SHOP_CONFIG.registerId}
               </span>
             </div>
-            <div className="text-[11px] text-stone-400">
-              {SHOP_CONFIG.tagline} • Barista: <strong className="text-stone-200">{SHOP_CONFIG.cashierName}</strong>
+            <div className="text-[10px] sm:text-[11px] text-stone-400 truncate max-w-[200px] sm:max-w-none">
+              {SHOP_CONFIG.tagline} •{" "}
+              <strong className="text-stone-200">{SHOP_CONFIG.cashierName}</strong>
             </div>
           </div>
         </div>
 
-        {/* Main View Switcher */}
-        <nav className="flex items-center gap-2 bg-stone-950 p-1.5 rounded-2xl border border-stone-800">
+        {/* Desktop Main View Switcher (lg+) */}
+        <nav className="hidden lg:flex items-center gap-2 bg-stone-950 p-1.5 rounded-2xl border border-stone-800">
           <button
             type="button"
             onClick={() => setActiveTab("pos")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-              activeTab === "pos"
+              activeTab === "pos" || activeTab === "cart"
                 ? "bg-amber-500 text-stone-950 shadow"
                 : "text-stone-400 hover:text-white"
             }`}
           >
             <span>🖥️ POS Register</span>
-            {cart.length > 0 && (
+            {totalCartItems > 0 && (
               <span className="px-1.5 py-0.2 rounded-full bg-stone-900 text-amber-400 text-[10px]">
-                {cart.reduce((s, i) => s + i.quantity, 0)}
+                {totalCartItems}
               </span>
             )}
           </button>
@@ -469,56 +475,63 @@ export default function App() {
           </button>
         </nav>
 
-        {/* Held Orders & Status */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Held Orders & Date */}
+        <div className="flex items-center gap-2">
           {heldOrders.length > 0 && (
             <div className="flex items-center gap-1.5">
-              {heldOrders.slice(0, 2).map((h) => (
+              {heldOrders.slice(0, 1).map((h) => (
                 <button
                   key={h.id}
                   type="button"
-                  onClick={() => handleRecallHeldOrder(h)}
-                  className="px-3 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-700/60 text-amber-200 text-xs font-semibold flex items-center gap-1.5 transition"
+                  onClick={() => {
+                    handleRecallHeldOrder(h);
+                    setActiveTab("cart");
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-700/60 text-amber-200 text-[11px] font-semibold flex items-center gap-1 transition"
                 >
-                  <span>⏸ Recall: {h.customerName}</span>
+                  <span>⏸ Recall ({heldOrders.length})</span>
                 </button>
               ))}
             </div>
           )}
-          <div className="text-right text-xs text-stone-400 font-mono">
+          <div className="hidden sm:block text-right text-xs text-stone-400 font-mono">
             {new Date().toLocaleDateString([], { month: "short", day: "numeric" })}
           </div>
         </div>
       </header>
 
       {/* Main Content Area */}
-      {activeTab === "pos" && (
-        <div className="no-print flex-1 flex overflow-hidden">
-          {/* LEFT / CENTER: Categories + Menu Grid */}
-          <div className="flex-1 flex flex-col overflow-hidden border-r border-stone-800">
+      {(activeTab === "pos" || activeTab === "cart") && (
+        <div className="no-print flex-1 flex overflow-hidden relative">
+          {/* LEFT / CENTER: Categories + Menu Grid (Visible on Desktop OR when activeTab === "pos" on Mobile) */}
+          <div
+            className={`${
+              activeTab === "cart" ? "hidden lg:flex" : "flex"
+            } flex-1 flex-col overflow-hidden lg:border-r border-stone-800`}
+          >
             {/* Search & Quick Filter Bar */}
-            <div className="p-4 bg-stone-900/60 border-b border-stone-800 flex flex-wrap items-center justify-between gap-3">
-              <div className="relative flex-1 min-w-[220px]">
+            <div className="p-2.5 sm:p-4 bg-stone-900/60 border-b border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="relative flex-1">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search drinks, pastries, or SKU (e.g. Matcha, Latte, ESP-101)..."
-                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-stone-900 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                  placeholder="Search drinks, pastries, or SKU..."
+                  className="w-full pl-9 pr-8 py-2 rounded-xl bg-stone-900 border border-stone-700 text-xs sm:text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
                 />
-                <span className="absolute left-3 top-2.5 text-stone-500 text-sm">🔍</span>
+                <span className="absolute left-3 top-2 sm:top-2.5 text-stone-500 text-sm">🔍</span>
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-2.5 text-xs text-stone-400 hover:text-white"
+                    className="absolute right-3 top-2 sm:top-2.5 text-xs text-stone-400 hover:text-white"
                   >
                     ✕
                   </button>
                 )}
               </div>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 overflow-x-auto">
                 {[
                   { id: "all", label: "All" },
                   { id: "popular", label: "⭐ Popular" },
@@ -529,7 +542,7 @@ export default function App() {
                     key={qf.id}
                     type="button"
                     onClick={() => setQuickFilter(qf.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition ${
                       quickFilter === qf.id
                         ? "bg-amber-500/20 border-amber-500 text-amber-200"
                         : "bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200"
@@ -542,13 +555,13 @@ export default function App() {
             </div>
 
             {/* Category Pills */}
-            <div className="px-4 py-2.5 bg-stone-900/30 border-b border-stone-800 flex items-center gap-2 overflow-x-auto shrink-0">
+            <div className="px-2.5 sm:px-4 py-2 bg-stone-900/30 border-b border-stone-800 flex items-center gap-1.5 sm:gap-2 overflow-x-auto shrink-0">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+                  className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
                     selectedCategory === cat.id
                       ? "bg-amber-500 text-stone-950 shadow-md shadow-amber-950/50"
                       : "bg-stone-900 text-stone-300 hover:bg-stone-800 border border-stone-800"
@@ -559,8 +572,12 @@ export default function App() {
               ))}
             </div>
 
-            {/* Menu Grid */}
-            <div className="flex-1 overflow-y-auto p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 content-start">
+            {/* Menu Grid (2 columns on mobile phones, 3-4 columns on larger screens) */}
+            <div
+              className={`flex-1 overflow-y-auto p-2.5 sm:p-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3.5 content-start ${
+                totalCartItems > 0 ? "pb-36 lg:pb-4" : "pb-20 lg:pb-4"
+              }`}
+            >
               {filteredMenu.map((item) => (
                 <div
                   key={item.id}
@@ -568,62 +585,99 @@ export default function App() {
                     setEditingCartLine(null);
                     setCustomizingItem(item);
                   }}
-                  className="group relative rounded-2xl bg-stone-900/90 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/60 p-4 flex flex-col justify-between cursor-pointer transition shadow-md"
+                  className="group relative rounded-2xl bg-stone-900/90 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/60 p-3 sm:p-4 flex flex-col justify-between cursor-pointer transition shadow-md"
                 >
                   <div>
-                    <div className="flex items-start justify-between gap-2 mb-2.5">
+                    <div className="flex items-start justify-between gap-1.5 mb-2">
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-extrabold text-white shadow-inner shrink-0"
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-[10px] sm:text-xs font-extrabold text-white shadow-inner shrink-0"
                         style={{ backgroundColor: item.color }}
                       >
                         {item.sku.split("-")[0]}
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="text-base font-extrabold text-amber-400">
+                        <span className="text-sm sm:text-base font-extrabold text-amber-400">
                           ₱{item.price.toFixed(2)}
                         </span>
-                        <span className="text-[10px] text-stone-500 font-mono">
+                        <span className="text-[9px] sm:text-[10px] text-stone-500 font-mono">
                           {item.calories > 0 ? `${item.calories} cal` : item.sku}
                         </span>
                       </div>
                     </div>
 
                     {item.badge && (
-                      <span className="inline-block mb-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                      <span className="inline-block mb-1 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
                         {item.badge}
                       </span>
                     )}
 
-                    <h3 className="font-bold text-sm text-stone-100 group-hover:text-amber-200 leading-snug">
+                    <h3 className="font-bold text-xs sm:text-sm text-stone-100 group-hover:text-amber-200 leading-snug">
                       {item.name}
                     </h3>
-                    <p className="text-xs text-stone-400 line-clamp-2 mt-1 leading-relaxed">
+                    <p className="text-[11px] sm:text-xs text-stone-400 line-clamp-2 mt-1 leading-relaxed">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-stone-800/80 flex items-center justify-between gap-2">
-                    <span className="text-[11px] text-amber-400/90 font-semibold group-hover:underline">
+                  <div className="mt-3 pt-2.5 border-t border-stone-800/80 flex items-center justify-between gap-1.5">
+                    <span className="text-[10px] sm:text-[11px] text-amber-400/90 font-semibold group-hover:underline">
                       ⚙️ Customize
                     </span>
                     <button
                       type="button"
                       onClick={(e) => handleQuickAdd(item, e)}
-                      className="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-amber-500 hover:text-stone-950 text-stone-200 text-xs font-bold border border-stone-700 hover:border-amber-400 transition"
+                      className="px-2.5 py-1.5 rounded-xl bg-stone-800 active:bg-amber-500 hover:bg-amber-500 hover:text-stone-950 text-stone-200 text-[11px] sm:text-xs font-bold border border-stone-700 hover:border-amber-400 transition"
                     >
-                      + Quick Add
+                      + Add
                     </button>
                   </div>
                 </div>
               ))}
             </div>
+
+            {/* Mobile Floating "View Order Ticket" Bar when cart has items (< lg) */}
+            {totalCartItems > 0 && activeTab === "pos" && (
+              <div className="lg:hidden fixed bottom-16 left-3 right-3 z-30">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("cart")}
+                  className="w-full px-4 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold text-sm shadow-2xl shadow-stone-950 flex items-center justify-between border border-amber-300"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-lg bg-stone-950 text-amber-400 text-xs font-extrabold">
+                      {totalCartItems} {totalCartItems === 1 ? "item" : "items"}
+                    </span>
+                    <span>View Order Ticket</span>
+                  </div>
+                  <span className="text-base font-black">₱{baseTotal.toFixed(2)} →</span>
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* RIGHT: Current Order Cart & Checkout Ticket */}
-          <div className="w-full max-w-md bg-stone-900 flex flex-col h-full shrink-0">
+          {/* RIGHT: Current Order Cart & Checkout Ticket (Visible on Desktop OR when activeTab === "cart" on Mobile) */}
+          <div
+            className={`${
+              activeTab === "cart" ? "flex w-full" : "hidden lg:flex lg:w-full lg:max-w-md"
+            } bg-stone-900 flex-col h-full shrink-0 pb-16 lg:pb-0`}
+          >
+            {/* Mobile Cart Back Header (< lg) */}
+            <div className="lg:hidden px-4 py-3 bg-stone-800/80 border-b border-stone-700 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setActiveTab("pos")}
+                className="text-xs font-bold text-amber-300 flex items-center gap-1"
+              >
+                ← Back to Menu
+              </button>
+              <span className="text-xs font-bold text-stone-200">
+                Current Order Ticket ({totalCartItems})
+              </span>
+            </div>
+
             {/* Customer & Order Type Header */}
-            <div className="p-4 bg-stone-900 border-b border-stone-800 space-y-3">
-              <div className="grid grid-cols-4 gap-1.5 bg-stone-950 p-1 rounded-xl border border-stone-800">
+            <div className="p-3.5 sm:p-4 bg-stone-900 border-b border-stone-800 space-y-2.5">
+              <div className="grid grid-cols-4 gap-1 bg-stone-950 p-1 rounded-xl border border-stone-800">
                 {["Dine-In", "Takeout", "Pickup", "Drive-Thru"].map((type) => (
                   <button
                     key={type}
@@ -659,7 +713,7 @@ export default function App() {
             </div>
 
             {/* Cart Items List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+            <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-2.5">
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center text-stone-500 p-6">
                   <div className="mb-3 opacity-85">
@@ -667,8 +721,15 @@ export default function App() {
                   </div>
                   <p className="text-sm font-semibold text-stone-300">Current Ticket is Empty</p>
                   <p className="text-xs text-stone-500 mt-1 max-w-xs">
-                    Tap any drink or pastry on the left to customize size, milk, espresso shots, and syrups.
+                    Tap any drink or pastry on the menu to customize size, milk, espresso shots, and syrups.
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("pos")}
+                    className="lg:hidden mt-4 px-4 py-2 rounded-xl bg-amber-500 text-stone-950 font-bold text-xs"
+                  >
+                    Browse Coffee Menu
+                  </button>
                 </div>
               ) : (
                 cart.map((line) => {
@@ -739,7 +800,7 @@ export default function App() {
                             <button
                               type="button"
                               onClick={() => handleUpdateQty(line.lineId, -1)}
-                              className="px-2 py-0.5 text-xs font-bold text-stone-400 hover:text-white"
+                              className="px-2.5 py-1 text-xs font-bold text-stone-400 hover:text-white"
                             >
                               −
                             </button>
@@ -749,7 +810,7 @@ export default function App() {
                             <button
                               type="button"
                               onClick={() => handleUpdateQty(line.lineId, 1)}
-                              className="px-2 py-0.5 text-xs font-bold text-stone-400 hover:text-white"
+                              className="px-2.5 py-1 text-xs font-bold text-stone-400 hover:text-white"
                             >
                               +
                             </button>
@@ -763,7 +824,7 @@ export default function App() {
             </div>
 
             {/* Discount, Totals & Checkout Button */}
-            <div className="p-4 bg-stone-950 border-t border-stone-800 space-y-3">
+            <div className="p-3.5 sm:p-4 bg-stone-950 border-t border-stone-800 space-y-2.5">
               {/* Discount Selector */}
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs text-stone-400 font-medium">Promo / Discount:</span>
@@ -781,9 +842,9 @@ export default function App() {
               </div>
 
               {/* Price Breakdown */}
-              <div className="space-y-1 text-xs border-t border-stone-800 pt-2.5">
+              <div className="space-y-1 text-xs border-t border-stone-800 pt-2">
                 <div className="flex justify-between text-stone-400">
-                  <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                  <span>Subtotal ({totalCartItems} items)</span>
                   <span>₱{subtotal.toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
@@ -851,6 +912,63 @@ export default function App() {
           onRefundOrder={handleRefundOrder}
         />
       )}
+
+      {/* Mobile Bottom Navigation Bar (< lg) */}
+      <nav className="no-print lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 grid grid-cols-4 z-40 px-2">
+        <button
+          type="button"
+          onClick={() => setActiveTab("pos")}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition ${
+            activeTab === "pos" ? "text-amber-400" : "text-stone-400"
+          }`}
+        >
+          <span className="text-base">☕</span>
+          <span>Menu</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("cart")}
+          className={`relative flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition ${
+            activeTab === "cart" ? "text-amber-400" : "text-stone-400"
+          }`}
+        >
+          <span className="text-base">🛒</span>
+          <span>Ticket</span>
+          {totalCartItems > 0 && (
+            <span className="absolute top-1.5 right-5 px-1.5 py-0.2 rounded-full bg-amber-500 text-stone-950 text-[10px] font-extrabold">
+              {totalCartItems}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("kds")}
+          className={`relative flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition ${
+            activeTab === "kds" ? "text-amber-400" : "text-stone-400"
+          }`}
+        >
+          <span className="text-base">🔥</span>
+          <span>Barista KDS</span>
+          {activeKdsCount > 0 && (
+            <span className="absolute top-1.5 right-4 px-1.5 py-0.2 rounded-full bg-emerald-500 text-stone-950 text-[10px] font-extrabold">
+              {activeKdsCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("history")}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition ${
+            activeTab === "history" ? "text-amber-400" : "text-stone-400"
+          }`}
+        >
+          <span className="text-base">🧾</span>
+          <span>Sales</span>
+        </button>
+      </nav>
 
       {/* Modals */}
       {customizingItem && (

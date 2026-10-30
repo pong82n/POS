@@ -8,7 +8,7 @@ export default function BaristaKDS({
   onViewReceipt
 }) {
   const [now, setNow] = useState(Date.now());
-  const [filterMode, setFilterMode] = useState("active"); // active | all
+  const [mobileLaneFilter, setMobileLaneFilter] = useState("all"); // all | queued | brewing | ready
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 5000);
@@ -33,9 +33,7 @@ export default function BaristaKDS({
     return "bg-stone-800 text-stone-300 border-stone-700";
   };
 
-  const activeOrders = orders.filter((o) =>
-    filterMode === "active" ? o.status !== "completed" : true
-  );
+  const activeOrders = orders.filter((o) => o.status !== "completed" && o.status !== "refunded");
 
   // Sort priority first, then oldest first
   const sortTickets = (list) =>
@@ -48,40 +46,84 @@ export default function BaristaKDS({
     {
       id: "queued",
       title: "New / Queued",
+      shortTitle: "Queued",
+      dotColor: "bg-sky-400",
       badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/40",
       items: sortTickets(activeOrders.filter((o) => o.status === "queued"))
     },
     {
       id: "brewing",
       title: "On Bar / Brewing",
+      shortTitle: "Brewing",
+      dotColor: "bg-amber-400",
       badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
       items: sortTickets(activeOrders.filter((o) => o.status === "brewing"))
     },
     {
       id: "ready",
       title: "Handoff Counter (Ready)",
+      shortTitle: "Ready",
+      dotColor: "bg-emerald-400",
       badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
       items: sortTickets(activeOrders.filter((o) => o.status === "ready"))
     }
   ];
 
+  const visibleLanes =
+    mobileLaneFilter === "all"
+      ? lanes
+      : lanes.filter((l) => l.id === mobileLaneFilter);
+
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-stone-950 p-4 md:p-6">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-stone-950 p-3 sm:p-5 pb-20 lg:pb-5">
       {/* KDS Top Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-stone-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-stone-800 shrink-0">
         <div>
-          <h1 className="text-xl font-bold text-amber-50 flex items-center gap-2.5">
-            <span>☕ Barista Kitchen Display System (KDS)</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-medium">
-              Live Sync
+          <h1 className="text-base sm:text-xl font-bold text-amber-50 flex items-center gap-2">
+            <span>☕ Barista Kitchen Display (KDS)</span>
+            <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-medium">
+              Live
             </span>
           </h1>
           <p className="text-xs text-stone-400 mt-0.5">
-            Click individual items to cross them off as you steam/pull shots, or bump tickets across stages.
+            Tap items to cross off as you steam/pull shots, or bump tickets across stages.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Mobile Stage Filter Pills (< lg) */}
+        <div className="flex lg:hidden items-center gap-1.5 overflow-x-auto pb-1">
+          <button
+            type="button"
+            onClick={() => setMobileLaneFilter("all")}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition ${
+              mobileLaneFilter === "all"
+                ? "bg-amber-500 text-stone-950 border-amber-400"
+                : "bg-stone-900 text-stone-300 border-stone-800"
+            }`}
+          >
+            All ({activeOrders.length})
+          </button>
+          {lanes.map((l) => (
+            <button
+              key={l.id}
+              type="button"
+              onClick={() => setMobileLaneFilter(l.id)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border flex items-center gap-1.5 transition ${
+                mobileLaneFilter === l.id
+                  ? "bg-amber-500 text-stone-950 border-amber-400"
+                  : "bg-stone-900 text-stone-300 border-stone-800"
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${l.dotColor}`}></span>
+              <span>
+                {l.shortTitle} ({l.items.length})
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Desktop Summary Counter (lg+) */}
+        <div className="hidden lg:flex items-center gap-3">
           <div className="flex items-center gap-4 px-4 py-2 rounded-xl bg-stone-900 border border-stone-800 text-xs">
             <span className="flex items-center gap-1.5 text-stone-300">
               <span className="w-2 h-2 rounded-full bg-sky-400"></span>
@@ -99,15 +141,15 @@ export default function BaristaKDS({
         </div>
       </div>
 
-      {/* 3-Column KDS Board */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-5 overflow-hidden">
-        {lanes.map((lane) => (
+      {/* 3-Column KDS Board (Scrollable vertically on mobile, 3 independent columns on desktop) */}
+      <div className="flex-1 overflow-y-auto lg:overflow-hidden grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {visibleLanes.map((lane) => (
           <div
             key={lane.id}
-            className="flex flex-col rounded-2xl bg-stone-900/70 border border-stone-800/90 overflow-hidden"
+            className="flex flex-col rounded-2xl bg-stone-900/70 border border-stone-800/90 lg:overflow-hidden"
           >
             {/* Lane Header */}
-            <div className="px-4 py-3 bg-stone-900 border-b border-stone-800 flex items-center justify-between">
+            <div className="px-4 py-3 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
               <span className="font-bold text-sm text-stone-100">{lane.title}</span>
               <span
                 className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${lane.badgeColor}`}
@@ -117,9 +159,9 @@ export default function BaristaKDS({
             </div>
 
             {/* Tickets List */}
-            <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5">
+            <div className="flex-1 lg:overflow-y-auto p-3 space-y-3">
               {lane.items.length === 0 ? (
-                <div className="h-48 flex flex-col items-center justify-center text-stone-500 text-xs border border-dashed border-stone-800 rounded-xl">
+                <div className="h-32 lg:h-48 flex flex-col items-center justify-center text-stone-500 text-xs border border-dashed border-stone-800 rounded-xl">
                   <span className="text-2xl mb-1">✨</span>
                   <span>No tickets in {lane.title}</span>
                 </div>
@@ -137,22 +179,22 @@ export default function BaristaKDS({
                     >
                       {/* Ticket Top Header */}
                       <div
-                        className={`px-4 py-2.5 flex items-center justify-between border-b ${
+                        className={`px-3.5 py-2.5 flex items-center justify-between gap-2 border-b ${
                           order.priority
                             ? "bg-rose-950/50 border-rose-800/60"
                             : "bg-stone-800/80 border-stone-700/70"
                         }`}
                       >
-                        <div>
-                          <div className="flex items-center gap-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5">
                             <span className="font-extrabold text-base text-amber-300">
                               #{order.orderNumber}
                             </span>
-                            <span className="font-bold text-sm text-white truncate max-w-[130px]">
+                            <span className="font-bold text-sm text-white truncate">
                               {order.customerName || "Walk-In"}
                             </span>
                             {order.priority && (
-                              <span className="px-1.5 py-0.5 text-[10px] font-extrabold uppercase bg-rose-600 text-white rounded">
+                              <span className="px-1.5 py-0.5 text-[10px] font-extrabold uppercase bg-rose-600 text-white rounded shrink-0">
                                 RUSH
                               </span>
                             )}
@@ -163,7 +205,7 @@ export default function BaristaKDS({
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1 shrink-0">
                           <button
                             type="button"
                             title="Toggle Rush Priority"
@@ -212,7 +254,7 @@ export default function BaristaKDS({
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex items-start gap-2">
                                   <span
-                                    className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center text-[10px] font-bold border ${
+                                    className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center text-[10px] font-bold border shrink-0 ${
                                       item.completed
                                         ? "bg-emerald-500 border-emerald-500 text-stone-950"
                                         : "border-stone-500 text-transparent"
@@ -312,7 +354,7 @@ export default function BaristaKDS({
                           <button
                             type="button"
                             onClick={() => onUpdateOrderStatus(order.id, "brewing")}
-                            className="w-full py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs shadow transition"
+                            className="w-full py-2.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs shadow transition"
                           >
                             Start Brewing →
                           </button>
@@ -322,14 +364,14 @@ export default function BaristaKDS({
                             <button
                               type="button"
                               onClick={() => onUpdateOrderStatus(order.id, "queued")}
-                              className="px-3 py-2 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
+                              className="px-3 py-2.5 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
                             >
                               ←
                             </button>
                             <button
                               type="button"
                               onClick={() => onUpdateOrderStatus(order.id, "ready")}
-                              className={`flex-1 py-2 rounded-lg font-bold text-xs transition ${
+                              className={`flex-1 py-2.5 rounded-lg font-bold text-xs transition ${
                                 allItemsChecked
                                   ? "bg-emerald-500 hover:bg-emerald-400 text-stone-950 shadow-lg"
                                   : "bg-emerald-700/80 hover:bg-emerald-600 text-white"
@@ -344,16 +386,16 @@ export default function BaristaKDS({
                             <button
                               type="button"
                               onClick={() => onUpdateOrderStatus(order.id, "brewing")}
-                              className="px-3 py-2 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
+                              className="px-3 py-2.5 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
                             >
                               ← Recall
                             </button>
                             <button
                               type="button"
                               onClick={() => onUpdateOrderStatus(order.id, "completed")}
-                              className="flex-1 py-2 rounded-lg bg-stone-700 hover:bg-stone-600 text-amber-200 font-bold text-xs transition"
+                              className="flex-1 py-2.5 rounded-lg bg-stone-700 hover:bg-stone-600 text-amber-200 font-bold text-xs transition"
                             >
-                              Picked Up / Complete Archive ✓
+                              Picked Up / Complete ✓
                             </button>
                           </>
                         )}

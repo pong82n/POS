@@ -2,18 +2,26 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1c1917" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Roast & Ritual" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <title>ROAST & RITUAL - Coffee Shop POS & Barista KDS (PHP)</title>
   <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="apple-touch-icon" href="logo.svg" />
+  <link rel="manifest" href="manifest.json" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: #1c1917; }
     ::-webkit-scrollbar-thumb { background: #44403c; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #78716c; }
+    * { -webkit-tap-highlight-color: transparent; }
     @media print {
       body * { visibility: hidden; }
       #printable-area, #printable-area * { visibility: visible; }
@@ -863,8 +871,8 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/75 backdrop-blur-sm p-4">
-      <div className="bg-stone-900 border border-stone-700/80 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-stone-100">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-stone-950/75 backdrop-blur-sm p-0 sm:p-4">
+      <div className="bg-stone-900 border-t sm:border border-stone-700/80 rounded-t-2xl sm:rounded-2xl max-w-3xl w-full max-h-[92dvh] flex flex-col shadow-2xl overflow-hidden text-stone-100">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-stone-800/80 border-b border-stone-700">
           <div className="flex items-center gap-3">
@@ -1348,12 +1356,14 @@ function CheckoutModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/80 backdrop-blur-sm p-4">
-      <div className="bg-stone-900 border border-stone-700 rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl text-stone-100">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-stone-950/80 backdrop-blur-sm p-0 sm:p-4">
+      <div className="bg-stone-900 border-t sm:border border-stone-700 rounded-t-2xl sm:rounded-2xl max-w-3xl w-full max-h-[92dvh] flex flex-col overflow-hidden shadow-2xl text-stone-100">
         {/* Header */}
-        <div className="px-6 py-4 bg-stone-800 border-b border-stone-700 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 bg-stone-800 border-b border-stone-700 flex items-center justify-between shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-amber-50">Complete Payment & Send to Barista</h2>
+            <h2 className="text-base sm:text-lg font-bold text-amber-50">
+              Complete Payment & Send to Barista
+            </h2>
             <p className="text-xs text-stone-400">
               {orderType} {tableNumber ? `• ${tableNumber}` : ""} • Customer:{" "}
               <span className="text-amber-300 font-medium">{customerName || "Walk-In Guest"}</span>
@@ -1367,7 +1377,7 @@ function CheckoutModal({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 overflow-y-auto flex-1">
           {/* Left Column: Summary & Tip */}
           <div className="md:col-span-5 p-6 bg-stone-900/60 border-b md:border-b-0 md:border-r border-stone-800 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
@@ -1935,7 +1945,7 @@ function BaristaKDS({
   onViewReceipt
 }) {
   const [now, setNow] = useState(Date.now());
-  const [filterMode, setFilterMode] = useState("active"); // active | all
+  const [mobileLaneFilter, setMobileLaneFilter] = useState("all"); // all | queued | brewing | ready
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 5000);
@@ -1960,9 +1970,7 @@ function BaristaKDS({
     return "bg-stone-800 text-stone-300 border-stone-700";
   };
 
-  const activeOrders = orders.filter((o) =>
-    filterMode === "active" ? o.status !== "completed" : true
-  );
+  const activeOrders = orders.filter((o) => o.status !== "completed" && o.status !== "refunded");
 
   // Sort priority first, then oldest first
   const sortTickets = (list) =>
@@ -1975,40 +1983,84 @@ function BaristaKDS({
     {
       id: "queued",
       title: "New / Queued",
+      shortTitle: "Queued",
+      dotColor: "bg-sky-400",
       badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/40",
       items: sortTickets(activeOrders.filter((o) => o.status === "queued"))
     },
     {
       id: "brewing",
       title: "On Bar / Brewing",
+      shortTitle: "Brewing",
+      dotColor: "bg-amber-400",
       badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
       items: sortTickets(activeOrders.filter((o) => o.status === "brewing"))
     },
     {
       id: "ready",
       title: "Handoff Counter (Ready)",
+      shortTitle: "Ready",
+      dotColor: "bg-emerald-400",
       badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
       items: sortTickets(activeOrders.filter((o) => o.status === "ready"))
     }
   ];
 
+  const visibleLanes =
+    mobileLaneFilter === "all"
+      ? lanes
+      : lanes.filter((l) => l.id === mobileLaneFilter);
+
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-stone-950 p-4 md:p-6">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-stone-950 p-3 sm:p-5 pb-20 lg:pb-5">
       {/* KDS Top Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-stone-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-stone-800 shrink-0">
         <div>
-          <h1 className="text-xl font-bold text-amber-50 flex items-center gap-2.5">
-            <span>☕ Barista Kitchen Display System (KDS)</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-medium">
-              Live Sync
+          <h1 className="text-base sm:text-xl font-bold text-amber-50 flex items-center gap-2">
+            <span>☕ Barista Kitchen Display (KDS)</span>
+            <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-medium">
+              Live
             </span>
           </h1>
           <p className="text-xs text-stone-400 mt-0.5">
-            Click individual items to cross them off as you steam/pull shots, or bump tickets across stages.
+            Tap items to cross off as you steam/pull shots, or bump tickets across stages.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Mobile Stage Filter Pills (< lg) */}
+        <div className="flex lg:hidden items-center gap-1.5 overflow-x-auto pb-1">
+          <button
+            type="button"
+            onClick={() => setMobileLaneFilter("all")}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition ${
+              mobileLaneFilter === "all"
+                ? "bg-amber-500 text-stone-950 border-amber-400"
+                : "bg-stone-900 text-stone-300 border-stone-800"
+            }`}
+          >
+            All ({activeOrders.length})
+          </button>
+          {lanes.map((l) => (
+            <button
+              key={l.id}
+              type="button"
+              onClick={() => setMobileLaneFilter(l.id)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border flex items-center gap-1.5 transition ${
+                mobileLaneFilter === l.id
+                  ? "bg-amber-500 text-stone-950 border-amber-400"
+                  : "bg-stone-900 text-stone-300 border-stone-800"
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${l.dotColor}`}></span>
+              <span>
+                {l.shortTitle} ({l.items.length})
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Desktop Summary Counter (lg+) */}
+        <div className="hidden lg:flex items-center gap-3">
           <div className="flex items-center gap-4 px-4 py-2 rounded-xl bg-stone-900 border border-stone-800 text-xs">
             <span className="flex items-center gap-1.5 text-stone-300">
               <span className="w-2 h-2 rounded-full bg-sky-400"></span>
@@ -2026,15 +2078,15 @@ function BaristaKDS({
         </div>
       </div>
 
-      {/* 3-Column KDS Board */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-5 overflow-hidden">
-        {lanes.map((lane) => (
+      {/* 3-Column KDS Board (Scrollable vertically on mobile, 3 independent columns on desktop) */}
+      <div className="flex-1 overflow-y-auto lg:overflow-hidden grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {visibleLanes.map((lane) => (
           <div
             key={lane.id}
-            className="flex flex-col rounded-2xl bg-stone-900/70 border border-stone-800/90 overflow-hidden"
+            className="flex flex-col rounded-2xl bg-stone-900/70 border border-stone-800/90 lg:overflow-hidden"
           >
             {/* Lane Header */}
-            <div className="px-4 py-3 bg-stone-900 border-b border-stone-800 flex items-center justify-between">
+            <div className="px-4 py-3 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
               <span className="font-bold text-sm text-stone-100">{lane.title}</span>
               <span
                 className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${lane.badgeColor}`}
@@ -2044,9 +2096,9 @@ function BaristaKDS({
             </div>
 
             {/* Tickets List */}
-            <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5">
+            <div className="flex-1 lg:overflow-y-auto p-3 space-y-3">
               {lane.items.length === 0 ? (
-                <div className="h-48 flex flex-col items-center justify-center text-stone-500 text-xs border border-dashed border-stone-800 rounded-xl">
+                <div className="h-32 lg:h-48 flex flex-col items-center justify-center text-stone-500 text-xs border border-dashed border-stone-800 rounded-xl">
                   <span className="text-2xl mb-1">✨</span>
                   <span>No tickets in {lane.title}</span>
                 </div>
@@ -2064,22 +2116,22 @@ function BaristaKDS({
                     >
                       {/* Ticket Top Header */}
                       <div
-                        className={`px-4 py-2.5 flex items-center justify-between border-b ${
+                        className={`px-3.5 py-2.5 flex items-center justify-between gap-2 border-b ${
                           order.priority
                             ? "bg-rose-950/50 border-rose-800/60"
                             : "bg-stone-800/80 border-stone-700/70"
                         }`}
                       >
-                        <div>
-                          <div className="flex items-center gap-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5">
                             <span className="font-extrabold text-base text-amber-300">
                               #{order.orderNumber}
                             </span>
-                            <span className="font-bold text-sm text-white truncate max-w-[130px]">
+                            <span className="font-bold text-sm text-white truncate">
                               {order.customerName || "Walk-In"}
                             </span>
                             {order.priority && (
-                              <span className="px-1.5 py-0.5 text-[10px] font-extrabold uppercase bg-rose-600 text-white rounded">
+                              <span className="px-1.5 py-0.5 text-[10px] font-extrabold uppercase bg-rose-600 text-white rounded shrink-0">
                                 RUSH
                               </span>
                             )}
@@ -2090,7 +2142,7 @@ function BaristaKDS({
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1 shrink-0">
                           <button
                             type="button"
                             title="Toggle Rush Priority"
@@ -2139,7 +2191,7 @@ function BaristaKDS({
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex items-start gap-2">
                                   <span
-                                    className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center text-[10px] font-bold border ${
+                                    className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center text-[10px] font-bold border shrink-0 ${
                                       item.completed
                                         ? "bg-emerald-500 border-emerald-500 text-stone-950"
                                         : "border-stone-500 text-transparent"
@@ -2239,7 +2291,7 @@ function BaristaKDS({
                           <button
                             type="button"
                             onClick={() => onUpdateOrderStatus(order.id, "brewing")}
-                            className="w-full py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs shadow transition"
+                            className="w-full py-2.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs shadow transition"
                           >
                             Start Brewing →
                           </button>
@@ -2249,14 +2301,14 @@ function BaristaKDS({
                             <button
                               type="button"
                               onClick={() => onUpdateOrderStatus(order.id, "queued")}
-                              className="px-3 py-2 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
+                              className="px-3 py-2.5 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
                             >
                               ←
                             </button>
                             <button
                               type="button"
                               onClick={() => onUpdateOrderStatus(order.id, "ready")}
-                              className={`flex-1 py-2 rounded-lg font-bold text-xs transition ${
+                              className={`flex-1 py-2.5 rounded-lg font-bold text-xs transition ${
                                 allItemsChecked
                                   ? "bg-emerald-500 hover:bg-emerald-400 text-stone-950 shadow-lg"
                                   : "bg-emerald-700/80 hover:bg-emerald-600 text-white"
@@ -2271,16 +2323,16 @@ function BaristaKDS({
                             <button
                               type="button"
                               onClick={() => onUpdateOrderStatus(order.id, "brewing")}
-                              className="px-3 py-2 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
+                              className="px-3 py-2.5 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
                             >
                               ← Recall
                             </button>
                             <button
                               type="button"
                               onClick={() => onUpdateOrderStatus(order.id, "completed")}
-                              className="flex-1 py-2 rounded-lg bg-stone-700 hover:bg-stone-600 text-amber-200 font-bold text-xs transition"
+                              className="flex-1 py-2.5 rounded-lg bg-stone-700 hover:bg-stone-600 text-amber-200 font-bold text-xs transition"
                             >
-                              Picked Up / Complete Archive ✓
+                              Picked Up / Complete ✓
                             </button>
                           </>
                         )}
@@ -2337,44 +2389,54 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
   }, [orders]);
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-y-auto bg-stone-950 p-4 md:p-6 space-y-6">
+    <div className="flex-1 flex flex-col h-full overflow-y-auto bg-stone-950 p-3 sm:p-6 pb-24 lg:pb-6 space-y-4 sm:space-y-6">
       {/* Shift KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Gross Shift Sales</div>
-          <div className="text-2xl font-extrabold text-amber-400 mt-1">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+        <div className="col-span-2 md:col-span-1 p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Gross Shift Sales
+          </div>
+          <div className="text-xl sm:text-2xl font-extrabold text-amber-400 mt-1">
             ₱{stats.revenue.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">{stats.count} Paid Orders</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Average Ticket</div>
-          <div className="text-2xl font-extrabold text-stone-100 mt-1">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Average Ticket
+          </div>
+          <div className="text-lg sm:text-2xl font-extrabold text-stone-100 mt-1">
             ₱{stats.avgTicket.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">Per transaction</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Barista Tips</div>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Barista Tips
+          </div>
+          <div className="text-lg sm:text-2xl font-extrabold text-emerald-400 mt-1">
             ₱{stats.tips.toFixed(2)}
           </div>
-          <div className="text-[11px] text-stone-500 mt-0.5">100% distributed to crew</div>
+          <div className="text-[11px] text-stone-500 mt-0.5">100% crew share</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Cash Drawer Sales</div>
-          <div className="text-2xl font-extrabold text-stone-200 mt-1">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Cash Drawer
+          </div>
+          <div className="text-lg sm:text-2xl font-extrabold text-stone-200 mt-1">
             ₱{stats.cashTotal.toFixed(2)}
           </div>
-          <div className="text-[11px] text-stone-500 mt-0.5">Physical PHP tender</div>
+          <div className="text-[11px] text-stone-500 mt-0.5">Physical PHP</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Card & E-Wallet Sales</div>
-          <div className="text-2xl font-extrabold text-sky-400 mt-1">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Card & E-Wallet
+          </div>
+          <div className="text-lg sm:text-2xl font-extrabold text-sky-400 mt-1">
             ₱{stats.cardTotal.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">Card / GCash / Maya</div>
@@ -2382,24 +2444,24 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-stone-900 p-4 rounded-2xl border border-stone-800">
-        <div className="flex items-center gap-2 flex-1 min-w-[240px]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-stone-900 p-3.5 sm:p-4 rounded-2xl border border-stone-800">
+        <div className="flex items-center gap-2 flex-1">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by Order #, Customer Name, or Drink..."
-            className="w-full px-4 py-2 rounded-xl bg-stone-950 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+            className="w-full px-3.5 py-2 rounded-xl bg-stone-950 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {["all", "queued", "brewing", "ready", "completed", "refunded"].map((st) => (
             <button
               key={st}
               type="button"
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize whitespace-nowrap transition ${
                 statusFilter === st
                   ? "bg-amber-600 text-stone-950"
                   : "bg-stone-800 text-stone-400 hover:text-white"
@@ -2411,8 +2473,83 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-stone-900 rounded-2xl border border-stone-800 overflow-hidden">
+      {/* Mobile Cards View (< md) */}
+      <div className="md:hidden space-y-3">
+        {filteredOrders.map((order) => (
+          <div
+            key={order.id}
+            className="p-4 rounded-2xl bg-stone-900 border border-stone-800 space-y-2.5"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-extrabold text-amber-300 text-sm">
+                  #{order.orderNumber}
+                </span>
+                <span className="font-bold text-sm text-stone-100">
+                  {order.customerName || "Walk-In Guest"}
+                </span>
+              </div>
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold capitalize ${
+                  order.status === "completed"
+                    ? "bg-stone-800 text-stone-300"
+                    : order.status === "ready"
+                    ? "bg-emerald-950 text-emerald-300 border border-emerald-700"
+                    : order.status === "refunded"
+                    ? "bg-rose-950 text-rose-300 border border-rose-800"
+                    : "bg-amber-950 text-amber-300 border border-amber-700"
+                }`}
+              >
+                {order.status}
+              </span>
+            </div>
+
+            <div className="text-xs text-stone-400 flex items-center justify-between">
+              <span>
+                {order.orderType} {order.tableNumber ? `(${order.tableNumber})` : ""} •{" "}
+                {order.paymentMethod}
+              </span>
+              <span>
+                {new Date(order.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                })}
+              </span>
+            </div>
+
+            <div className="text-xs text-stone-300 bg-stone-950/60 p-2.5 rounded-xl border border-stone-800">
+              {order.items.map((i) => `${i.quantity}x ${i.name}`).join(", ")}
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-base font-extrabold text-amber-400">
+                ₱{order.total.toFixed(2)}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onViewReceipt(order)}
+                  className="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-amber-200 text-xs font-semibold border border-stone-700"
+                >
+                  🧾 Receipt / Labels
+                </button>
+                {order.status !== "refunded" && (
+                  <button
+                    type="button"
+                    onClick={() => onRefundOrder(order.id)}
+                    className="px-2.5 py-1.5 rounded-xl bg-rose-950/50 text-rose-300 text-xs border border-rose-800/50"
+                  >
+                    Void
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Orders Table (md+) */}
+      <div className="hidden md:block bg-stone-900 rounded-2xl border border-stone-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
@@ -2610,7 +2747,8 @@ function BrandLogo({ className = "w-11 h-11" }) {
 }
 
 function App() {
-  const [activeTab, setActiveTab] = useState("pos"); // pos | kds | history
+  // activeTab: "pos" | "cart" (mobile ticket view) | "kds" | "history"
+  const [activeTab, setActiveTab] = useState("pos");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [quickFilter, setQuickFilter] = useState("all"); // all | popular | hot | iced
@@ -2680,11 +2818,11 @@ function App() {
         temp: item.defaultTemp || "hot",
         tempLabel: item.defaultTemp === "iced" ? "Iced" : "Hot",
         milk: item.defaultMilk || "whole",
-        milkLabel: milkObj ? milkObj.name : "Whole Milk",
+        milkLabel: milkObj ? milkObj.name : "Full Cream Whole Milk",
         shots: item.defaultShots || "standard",
         shotsLabel: shotObj ? shotObj.name : "Standard Double (2)",
         sweetness: "100",
-        sweetnessLabel: "100% Standard",
+        sweetnessLabel: "100% Regular Sweet",
         ice: item.defaultTemp === "iced" ? "regular" : "none",
         iceLabel: item.defaultTemp === "iced" ? "Regular Ice" : "",
         syrups: item.defaultSyrups || [],
@@ -2798,6 +2936,7 @@ function App() {
   const taxableSubtotal = Math.max(0, Number((subtotal - discountAmount).toFixed(2)));
   const taxAmount = Number((taxableSubtotal * SHOP_CONFIG.taxRate).toFixed(2));
   const baseTotal = Number((taxableSubtotal + taxAmount).toFixed(2));
+  const totalCartItems = useMemo(() => cart.reduce((s, i) => s + i.quantity, 0), [cart]);
 
   // Complete Checkout
   const handleCompleteOrder = (paymentDetails) => {
@@ -2882,41 +3021,45 @@ function App() {
   ).length;
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-stone-950 text-stone-100 select-none">
+    <div className="h-[100dvh] w-screen overflow-hidden flex flex-col bg-stone-950 text-stone-100 select-none">
       {/* Top POS Navigation Header */}
-      <header className="no-print h-16 px-5 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <BrandLogo className="w-11 h-11 shrink-0 drop-shadow-md" />
+      <header className="no-print h-14 sm:h-16 px-3 sm:px-5 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
+        <div
+          onClick={() => setActiveTab("pos")}
+          className="flex items-center gap-2.5 sm:gap-3 cursor-pointer"
+        >
+          <BrandLogo className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 drop-shadow-md" />
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold tracking-wider text-amber-50 text-base">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-extrabold tracking-wider text-amber-50 text-sm sm:text-base">
                 {SHOP_CONFIG.name}
               </span>
-              <span className="text-[11px] px-2 py-0.5 rounded bg-stone-800 text-amber-400 border border-stone-700 font-mono">
+              <span className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-stone-800 text-amber-400 border border-stone-700 font-mono">
                 {SHOP_CONFIG.registerId}
               </span>
             </div>
-            <div className="text-[11px] text-stone-400">
-              {SHOP_CONFIG.tagline} • Barista: <strong className="text-stone-200">{SHOP_CONFIG.cashierName}</strong>
+            <div className="text-[10px] sm:text-[11px] text-stone-400 truncate max-w-[200px] sm:max-w-none">
+              {SHOP_CONFIG.tagline} •{" "}
+              <strong className="text-stone-200">{SHOP_CONFIG.cashierName}</strong>
             </div>
           </div>
         </div>
 
-        {/* Main View Switcher */}
-        <nav className="flex items-center gap-2 bg-stone-950 p-1.5 rounded-2xl border border-stone-800">
+        {/* Desktop Main View Switcher (lg+) */}
+        <nav className="hidden lg:flex items-center gap-2 bg-stone-950 p-1.5 rounded-2xl border border-stone-800">
           <button
             type="button"
             onClick={() => setActiveTab("pos")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-              activeTab === "pos"
+              activeTab === "pos" || activeTab === "cart"
                 ? "bg-amber-500 text-stone-950 shadow"
                 : "text-stone-400 hover:text-white"
             }`}
           >
             <span>🖥️ POS Register</span>
-            {cart.length > 0 && (
+            {totalCartItems > 0 && (
               <span className="px-1.5 py-0.2 rounded-full bg-stone-900 text-amber-400 text-[10px]">
-                {cart.reduce((s, i) => s + i.quantity, 0)}
+                {totalCartItems}
               </span>
             )}
           </button>
@@ -2957,56 +3100,63 @@ function App() {
           </button>
         </nav>
 
-        {/* Held Orders & Status */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Held Orders & Date */}
+        <div className="flex items-center gap-2">
           {heldOrders.length > 0 && (
             <div className="flex items-center gap-1.5">
-              {heldOrders.slice(0, 2).map((h) => (
+              {heldOrders.slice(0, 1).map((h) => (
                 <button
                   key={h.id}
                   type="button"
-                  onClick={() => handleRecallHeldOrder(h)}
-                  className="px-3 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-700/60 text-amber-200 text-xs font-semibold flex items-center gap-1.5 transition"
+                  onClick={() => {
+                    handleRecallHeldOrder(h);
+                    setActiveTab("cart");
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-700/60 text-amber-200 text-[11px] font-semibold flex items-center gap-1 transition"
                 >
-                  <span>⏸ Recall: {h.customerName}</span>
+                  <span>⏸ Recall ({heldOrders.length})</span>
                 </button>
               ))}
             </div>
           )}
-          <div className="text-right text-xs text-stone-400 font-mono">
+          <div className="hidden sm:block text-right text-xs text-stone-400 font-mono">
             {new Date().toLocaleDateString([], { month: "short", day: "numeric" })}
           </div>
         </div>
       </header>
 
       {/* Main Content Area */}
-      {activeTab === "pos" && (
-        <div className="no-print flex-1 flex overflow-hidden">
-          {/* LEFT / CENTER: Categories + Menu Grid */}
-          <div className="flex-1 flex flex-col overflow-hidden border-r border-stone-800">
+      {(activeTab === "pos" || activeTab === "cart") && (
+        <div className="no-print flex-1 flex overflow-hidden relative">
+          {/* LEFT / CENTER: Categories + Menu Grid (Visible on Desktop OR when activeTab === "pos" on Mobile) */}
+          <div
+            className={`${
+              activeTab === "cart" ? "hidden lg:flex" : "flex"
+            } flex-1 flex-col overflow-hidden lg:border-r border-stone-800`}
+          >
             {/* Search & Quick Filter Bar */}
-            <div className="p-4 bg-stone-900/60 border-b border-stone-800 flex flex-wrap items-center justify-between gap-3">
-              <div className="relative flex-1 min-w-[220px]">
+            <div className="p-2.5 sm:p-4 bg-stone-900/60 border-b border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="relative flex-1">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search drinks, pastries, or SKU (e.g. Matcha, Latte, ESP-101)..."
-                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-stone-900 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                  placeholder="Search drinks, pastries, or SKU..."
+                  className="w-full pl-9 pr-8 py-2 rounded-xl bg-stone-900 border border-stone-700 text-xs sm:text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
                 />
-                <span className="absolute left-3 top-2.5 text-stone-500 text-sm">🔍</span>
+                <span className="absolute left-3 top-2 sm:top-2.5 text-stone-500 text-sm">🔍</span>
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-2.5 text-xs text-stone-400 hover:text-white"
+                    className="absolute right-3 top-2 sm:top-2.5 text-xs text-stone-400 hover:text-white"
                   >
                     ✕
                   </button>
                 )}
               </div>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 overflow-x-auto">
                 {[
                   { id: "all", label: "All" },
                   { id: "popular", label: "⭐ Popular" },
@@ -3017,7 +3167,7 @@ function App() {
                     key={qf.id}
                     type="button"
                     onClick={() => setQuickFilter(qf.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition ${
                       quickFilter === qf.id
                         ? "bg-amber-500/20 border-amber-500 text-amber-200"
                         : "bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200"
@@ -3030,13 +3180,13 @@ function App() {
             </div>
 
             {/* Category Pills */}
-            <div className="px-4 py-2.5 bg-stone-900/30 border-b border-stone-800 flex items-center gap-2 overflow-x-auto shrink-0">
+            <div className="px-2.5 sm:px-4 py-2 bg-stone-900/30 border-b border-stone-800 flex items-center gap-1.5 sm:gap-2 overflow-x-auto shrink-0">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+                  className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
                     selectedCategory === cat.id
                       ? "bg-amber-500 text-stone-950 shadow-md shadow-amber-950/50"
                       : "bg-stone-900 text-stone-300 hover:bg-stone-800 border border-stone-800"
@@ -3047,8 +3197,12 @@ function App() {
               ))}
             </div>
 
-            {/* Menu Grid */}
-            <div className="flex-1 overflow-y-auto p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 content-start">
+            {/* Menu Grid (2 columns on mobile phones, 3-4 columns on larger screens) */}
+            <div
+              className={`flex-1 overflow-y-auto p-2.5 sm:p-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3.5 content-start ${
+                totalCartItems > 0 ? "pb-36 lg:pb-4" : "pb-20 lg:pb-4"
+              }`}
+            >
               {filteredMenu.map((item) => (
                 <div
                   key={item.id}
@@ -3056,62 +3210,99 @@ function App() {
                     setEditingCartLine(null);
                     setCustomizingItem(item);
                   }}
-                  className="group relative rounded-2xl bg-stone-900/90 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/60 p-4 flex flex-col justify-between cursor-pointer transition shadow-md"
+                  className="group relative rounded-2xl bg-stone-900/90 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/60 p-3 sm:p-4 flex flex-col justify-between cursor-pointer transition shadow-md"
                 >
                   <div>
-                    <div className="flex items-start justify-between gap-2 mb-2.5">
+                    <div className="flex items-start justify-between gap-1.5 mb-2">
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-extrabold text-white shadow-inner shrink-0"
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-[10px] sm:text-xs font-extrabold text-white shadow-inner shrink-0"
                         style={{ backgroundColor: item.color }}
                       >
                         {item.sku.split("-")[0]}
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="text-base font-extrabold text-amber-400">
+                        <span className="text-sm sm:text-base font-extrabold text-amber-400">
                           ₱{item.price.toFixed(2)}
                         </span>
-                        <span className="text-[10px] text-stone-500 font-mono">
+                        <span className="text-[9px] sm:text-[10px] text-stone-500 font-mono">
                           {item.calories > 0 ? `${item.calories} cal` : item.sku}
                         </span>
                       </div>
                     </div>
 
                     {item.badge && (
-                      <span className="inline-block mb-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                      <span className="inline-block mb-1 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
                         {item.badge}
                       </span>
                     )}
 
-                    <h3 className="font-bold text-sm text-stone-100 group-hover:text-amber-200 leading-snug">
+                    <h3 className="font-bold text-xs sm:text-sm text-stone-100 group-hover:text-amber-200 leading-snug">
                       {item.name}
                     </h3>
-                    <p className="text-xs text-stone-400 line-clamp-2 mt-1 leading-relaxed">
+                    <p className="text-[11px] sm:text-xs text-stone-400 line-clamp-2 mt-1 leading-relaxed">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-stone-800/80 flex items-center justify-between gap-2">
-                    <span className="text-[11px] text-amber-400/90 font-semibold group-hover:underline">
+                  <div className="mt-3 pt-2.5 border-t border-stone-800/80 flex items-center justify-between gap-1.5">
+                    <span className="text-[10px] sm:text-[11px] text-amber-400/90 font-semibold group-hover:underline">
                       ⚙️ Customize
                     </span>
                     <button
                       type="button"
                       onClick={(e) => handleQuickAdd(item, e)}
-                      className="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-amber-500 hover:text-stone-950 text-stone-200 text-xs font-bold border border-stone-700 hover:border-amber-400 transition"
+                      className="px-2.5 py-1.5 rounded-xl bg-stone-800 active:bg-amber-500 hover:bg-amber-500 hover:text-stone-950 text-stone-200 text-[11px] sm:text-xs font-bold border border-stone-700 hover:border-amber-400 transition"
                     >
-                      + Quick Add
+                      + Add
                     </button>
                   </div>
                 </div>
               ))}
             </div>
+
+            {/* Mobile Floating "View Order Ticket" Bar when cart has items (< lg) */}
+            {totalCartItems > 0 && activeTab === "pos" && (
+              <div className="lg:hidden fixed bottom-16 left-3 right-3 z-30">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("cart")}
+                  className="w-full px-4 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold text-sm shadow-2xl shadow-stone-950 flex items-center justify-between border border-amber-300"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-lg bg-stone-950 text-amber-400 text-xs font-extrabold">
+                      {totalCartItems} {totalCartItems === 1 ? "item" : "items"}
+                    </span>
+                    <span>View Order Ticket</span>
+                  </div>
+                  <span className="text-base font-black">₱{baseTotal.toFixed(2)} →</span>
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* RIGHT: Current Order Cart & Checkout Ticket */}
-          <div className="w-full max-w-md bg-stone-900 flex flex-col h-full shrink-0">
+          {/* RIGHT: Current Order Cart & Checkout Ticket (Visible on Desktop OR when activeTab === "cart" on Mobile) */}
+          <div
+            className={`${
+              activeTab === "cart" ? "flex w-full" : "hidden lg:flex lg:w-full lg:max-w-md"
+            } bg-stone-900 flex-col h-full shrink-0 pb-16 lg:pb-0`}
+          >
+            {/* Mobile Cart Back Header (< lg) */}
+            <div className="lg:hidden px-4 py-3 bg-stone-800/80 border-b border-stone-700 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setActiveTab("pos")}
+                className="text-xs font-bold text-amber-300 flex items-center gap-1"
+              >
+                ← Back to Menu
+              </button>
+              <span className="text-xs font-bold text-stone-200">
+                Current Order Ticket ({totalCartItems})
+              </span>
+            </div>
+
             {/* Customer & Order Type Header */}
-            <div className="p-4 bg-stone-900 border-b border-stone-800 space-y-3">
-              <div className="grid grid-cols-4 gap-1.5 bg-stone-950 p-1 rounded-xl border border-stone-800">
+            <div className="p-3.5 sm:p-4 bg-stone-900 border-b border-stone-800 space-y-2.5">
+              <div className="grid grid-cols-4 gap-1 bg-stone-950 p-1 rounded-xl border border-stone-800">
                 {["Dine-In", "Takeout", "Pickup", "Drive-Thru"].map((type) => (
                   <button
                     key={type}
@@ -3147,7 +3338,7 @@ function App() {
             </div>
 
             {/* Cart Items List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+            <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-2.5">
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center text-stone-500 p-6">
                   <div className="mb-3 opacity-85">
@@ -3155,8 +3346,15 @@ function App() {
                   </div>
                   <p className="text-sm font-semibold text-stone-300">Current Ticket is Empty</p>
                   <p className="text-xs text-stone-500 mt-1 max-w-xs">
-                    Tap any drink or pastry on the left to customize size, milk, espresso shots, and syrups.
+                    Tap any drink or pastry on the menu to customize size, milk, espresso shots, and syrups.
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("pos")}
+                    className="lg:hidden mt-4 px-4 py-2 rounded-xl bg-amber-500 text-stone-950 font-bold text-xs"
+                  >
+                    Browse Coffee Menu
+                  </button>
                 </div>
               ) : (
                 cart.map((line) => {
@@ -3227,7 +3425,7 @@ function App() {
                             <button
                               type="button"
                               onClick={() => handleUpdateQty(line.lineId, -1)}
-                              className="px-2 py-0.5 text-xs font-bold text-stone-400 hover:text-white"
+                              className="px-2.5 py-1 text-xs font-bold text-stone-400 hover:text-white"
                             >
                               −
                             </button>
@@ -3237,7 +3435,7 @@ function App() {
                             <button
                               type="button"
                               onClick={() => handleUpdateQty(line.lineId, 1)}
-                              className="px-2 py-0.5 text-xs font-bold text-stone-400 hover:text-white"
+                              className="px-2.5 py-1 text-xs font-bold text-stone-400 hover:text-white"
                             >
                               +
                             </button>
@@ -3251,7 +3449,7 @@ function App() {
             </div>
 
             {/* Discount, Totals & Checkout Button */}
-            <div className="p-4 bg-stone-950 border-t border-stone-800 space-y-3">
+            <div className="p-3.5 sm:p-4 bg-stone-950 border-t border-stone-800 space-y-2.5">
               {/* Discount Selector */}
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs text-stone-400 font-medium">Promo / Discount:</span>
@@ -3269,9 +3467,9 @@ function App() {
               </div>
 
               {/* Price Breakdown */}
-              <div className="space-y-1 text-xs border-t border-stone-800 pt-2.5">
+              <div className="space-y-1 text-xs border-t border-stone-800 pt-2">
                 <div className="flex justify-between text-stone-400">
-                  <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                  <span>Subtotal ({totalCartItems} items)</span>
                   <span>₱{subtotal.toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
@@ -3339,6 +3537,63 @@ function App() {
           onRefundOrder={handleRefundOrder}
         />
       )}
+
+      {/* Mobile Bottom Navigation Bar (< lg) */}
+      <nav className="no-print lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 grid grid-cols-4 z-40 px-2">
+        <button
+          type="button"
+          onClick={() => setActiveTab("pos")}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition ${
+            activeTab === "pos" ? "text-amber-400" : "text-stone-400"
+          }`}
+        >
+          <span className="text-base">☕</span>
+          <span>Menu</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("cart")}
+          className={`relative flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition ${
+            activeTab === "cart" ? "text-amber-400" : "text-stone-400"
+          }`}
+        >
+          <span className="text-base">🛒</span>
+          <span>Ticket</span>
+          {totalCartItems > 0 && (
+            <span className="absolute top-1.5 right-5 px-1.5 py-0.2 rounded-full bg-amber-500 text-stone-950 text-[10px] font-extrabold">
+              {totalCartItems}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("kds")}
+          className={`relative flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition ${
+            activeTab === "kds" ? "text-amber-400" : "text-stone-400"
+          }`}
+        >
+          <span className="text-base">🔥</span>
+          <span>Barista KDS</span>
+          {activeKdsCount > 0 && (
+            <span className="absolute top-1.5 right-4 px-1.5 py-0.2 rounded-full bg-emerald-500 text-stone-950 text-[10px] font-extrabold">
+              {activeKdsCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("history")}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition ${
+            activeTab === "history" ? "text-amber-400" : "text-stone-400"
+          }`}
+        >
+          <span className="text-base">🧾</span>
+          <span>Sales</span>
+        </button>
+      </nav>
 
       {/* Modals */}
       {customizingItem && (

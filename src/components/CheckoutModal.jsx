@@ -99,12 +99,14 @@ export default function CheckoutModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/80 backdrop-blur-sm p-4">
-      <div className="bg-stone-900 border border-stone-700 rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl text-stone-100">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-stone-950/80 backdrop-blur-sm p-0 sm:p-4">
+      <div className="bg-stone-900 border-t sm:border border-stone-700 rounded-t-2xl sm:rounded-2xl max-w-3xl w-full max-h-[92dvh] flex flex-col overflow-hidden shadow-2xl text-stone-100">
         {/* Header */}
-        <div className="px-6 py-4 bg-stone-800 border-b border-stone-700 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 bg-stone-800 border-b border-stone-700 flex items-center justify-between shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-amber-50">Complete Payment & Send to Barista</h2>
+            <h2 className="text-base sm:text-lg font-bold text-amber-50">
+              Complete Payment & Send to Barista
+            </h2>
             <p className="text-xs text-stone-400">
               {orderType} {tableNumber ? `• ${tableNumber}` : ""} • Customer:{" "}
               <span className="text-amber-300 font-medium">{customerName || "Walk-In Guest"}</span>
@@ -118,7 +120,7 @@ export default function CheckoutModal({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 overflow-y-auto flex-1">
           {/* Left Column: Summary & Tip */}
           <div className="md:col-span-5 p-6 bg-stone-900/60 border-b md:border-b-0 md:border-r border-stone-800 flex flex-col justify-between space-y-6">
             <div className="space-y-4">

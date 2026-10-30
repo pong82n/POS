@@ -38,44 +38,54 @@ export default function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
   }, [orders]);
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-y-auto bg-stone-950 p-4 md:p-6 space-y-6">
+    <div className="flex-1 flex flex-col h-full overflow-y-auto bg-stone-950 p-3 sm:p-6 pb-24 lg:pb-6 space-y-4 sm:space-y-6">
       {/* Shift KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Gross Shift Sales</div>
-          <div className="text-2xl font-extrabold text-amber-400 mt-1">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+        <div className="col-span-2 md:col-span-1 p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Gross Shift Sales
+          </div>
+          <div className="text-xl sm:text-2xl font-extrabold text-amber-400 mt-1">
             ₱{stats.revenue.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">{stats.count} Paid Orders</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Average Ticket</div>
-          <div className="text-2xl font-extrabold text-stone-100 mt-1">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Average Ticket
+          </div>
+          <div className="text-lg sm:text-2xl font-extrabold text-stone-100 mt-1">
             ₱{stats.avgTicket.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">Per transaction</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Barista Tips</div>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Barista Tips
+          </div>
+          <div className="text-lg sm:text-2xl font-extrabold text-emerald-400 mt-1">
             ₱{stats.tips.toFixed(2)}
           </div>
-          <div className="text-[11px] text-stone-500 mt-0.5">100% distributed to crew</div>
+          <div className="text-[11px] text-stone-500 mt-0.5">100% crew share</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Cash Drawer Sales</div>
-          <div className="text-2xl font-extrabold text-stone-200 mt-1">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Cash Drawer
+          </div>
+          <div className="text-lg sm:text-2xl font-extrabold text-stone-200 mt-1">
             ₱{stats.cashTotal.toFixed(2)}
           </div>
-          <div className="text-[11px] text-stone-500 mt-0.5">Physical PHP tender</div>
+          <div className="text-[11px] text-stone-500 mt-0.5">Physical PHP</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Card & E-Wallet Sales</div>
-          <div className="text-2xl font-extrabold text-sky-400 mt-1">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-[11px] sm:text-xs text-stone-400 uppercase font-semibold">
+            Card & E-Wallet
+          </div>
+          <div className="text-lg sm:text-2xl font-extrabold text-sky-400 mt-1">
             ₱{stats.cardTotal.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">Card / GCash / Maya</div>
@@ -83,24 +93,24 @@ export default function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-stone-900 p-4 rounded-2xl border border-stone-800">
-        <div className="flex items-center gap-2 flex-1 min-w-[240px]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-stone-900 p-3.5 sm:p-4 rounded-2xl border border-stone-800">
+        <div className="flex items-center gap-2 flex-1">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by Order #, Customer Name, or Drink..."
-            className="w-full px-4 py-2 rounded-xl bg-stone-950 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+            className="w-full px-3.5 py-2 rounded-xl bg-stone-950 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {["all", "queued", "brewing", "ready", "completed", "refunded"].map((st) => (
             <button
               key={st}
               type="button"
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize whitespace-nowrap transition ${
                 statusFilter === st
                   ? "bg-amber-600 text-stone-950"
                   : "bg-stone-800 text-stone-400 hover:text-white"
@@ -112,8 +122,83 @@ export default function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-stone-900 rounded-2xl border border-stone-800 overflow-hidden">
+      {/* Mobile Cards View (< md) */}
+      <div className="md:hidden space-y-3">
+        {filteredOrders.map((order) => (
+          <div
+            key={order.id}
+            className="p-4 rounded-2xl bg-stone-900 border border-stone-800 space-y-2.5"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-extrabold text-amber-300 text-sm">
+                  #{order.orderNumber}
+                </span>
+                <span className="font-bold text-sm text-stone-100">
+                  {order.customerName || "Walk-In Guest"}
+                </span>
+              </div>
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold capitalize ${
+                  order.status === "completed"
+                    ? "bg-stone-800 text-stone-300"
+                    : order.status === "ready"
+                    ? "bg-emerald-950 text-emerald-300 border border-emerald-700"
+                    : order.status === "refunded"
+                    ? "bg-rose-950 text-rose-300 border border-rose-800"
+                    : "bg-amber-950 text-amber-300 border border-amber-700"
+                }`}
+              >
+                {order.status}
+              </span>
+            </div>
+
+            <div className="text-xs text-stone-400 flex items-center justify-between">
+              <span>
+                {order.orderType} {order.tableNumber ? `(${order.tableNumber})` : ""} •{" "}
+                {order.paymentMethod}
+              </span>
+              <span>
+                {new Date(order.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                })}
+              </span>
+            </div>
+
+            <div className="text-xs text-stone-300 bg-stone-950/60 p-2.5 rounded-xl border border-stone-800">
+              {order.items.map((i) => `${i.quantity}x ${i.name}`).join(", ")}
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-base font-extrabold text-amber-400">
+                ₱{order.total.toFixed(2)}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onViewReceipt(order)}
+                  className="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-amber-200 text-xs font-semibold border border-stone-700"
+                >
+                  🧾 Receipt / Labels
+                </button>
+                {order.status !== "refunded" && (
+                  <button
+                    type="button"
+                    onClick={() => onRefundOrder(order.id)}
+                    className="px-2.5 py-1.5 rounded-xl bg-rose-950/50 text-rose-300 text-xs border border-rose-800/50"
+                  >
+                    Void
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Orders Table (md+) */}
+      <div className="hidden md:block bg-stone-900 rounded-2xl border border-stone-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
