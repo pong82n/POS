@@ -1,0 +1,3262 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ROAST & RITUAL — Coffee Shop POS & Barista KDS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #1c1917; }
+    ::-webkit-scrollbar-thumb { background: #44403c; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #78716c; }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-area, #printable-area * { visibility: visible; }
+      #printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-stone-950 text-stone-100 antialiased">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+const SHOP_CONFIG = {
+  name: "ROAST & RITUAL",
+  tagline: "Specialty Coffee & Artisan Bakery",
+  address: "742 Evergreen Terrace, Suite 101, Seattle, WA 98101",
+  phone: "(206) 555-0194",
+  taxRate: 0.085, // 8.5%
+  cashierName: "Alex Rivera",
+  registerId: "REG-01"
+};
+
+const CATEGORIES = [
+  { id: "all", name: "All Items", icon: "LayoutGrid" },
+  { id: "espresso", name: "Espresso & Coffee", icon: "Coffee" },
+  { id: "iced", name: "Cold Brew & Iced", icon: "CupSoda" },
+  { id: "tea", name: "Tea & Matcha", icon: "Leaf" },
+  { id: "blended", name: "Frappes & Blended", icon: "Sparkles" },
+  { id: "bakery", name: "Bakery & Pastries", icon: "Croissant" },
+  { id: "beans", name: "Whole Bean & Merch", icon: "Package" }
+];
+
+const MODIFIERS = {
+  sizes: [
+    { id: "sm", name: "Small", oz: "12 oz", price: -0.50 },
+    { id: "md", name: "Medium", oz: "16 oz", price: 0.00 },
+    { id: "lg", name: "Large", oz: "20 oz", price: 0.75 }
+  ],
+  temperatures: [
+    { id: "hot", name: "Hot", price: 0 },
+    { id: "iced", name: "Iced", price: 0 },
+    { id: "extra-hot", name: "Extra Hot (165Â°F)", price: 0 }
+  ],
+  milks: [
+    { id: "whole", name: "Whole Milk", price: 0.00 },
+    { id: "oat", name: "Barista Oat Milk", price: 0.80 },
+    { id: "almond", name: "Almond Milk", price: 0.75 },
+    { id: "2percent", name: "2% Reduced Fat", price: 0.00 },
+    { id: "skim", name: "Nonfat Skim Milk", price: 0.00 },
+    { id: "soy", name: "Organic Soy Milk", price: 0.70 },
+    { id: "coconut", name: "Coconut Milk", price: 0.75 },
+    { id: "breve", name: "Breve (Half & Half)", price: 0.90 },
+    { id: "none", name: "No Milk / Black", price: 0.00 }
+  ],
+  shots: [
+    { id: "single", name: "Single Shot (1)", price: -0.50 },
+    { id: "standard", name: "Standard Double (2)", price: 0.00 },
+    { id: "triple", name: "Triple Shot (+1)", price: 1.25 },
+    { id: "quad", name: "Quad Shot (+2)", price: 2.50 },
+    { id: "decaf", name: "Decaf Espresso (2)", price: 0.00 },
+    { id: "halfcaf", name: "Half-Caf (1 Reg / 1 Decaf)", price: 0.00 }
+  ],
+  sweetness: [
+    { id: "100", name: "100% Standard" },
+    { id: "75", name: "75% Less Sweet" },
+    { id: "50", name: "50% Half Sweet" },
+    { id: "25", name: "25% Light Sweet" },
+    { id: "0", name: "0% Unsweetened" },
+    { id: "125", name: "Extra Sweet" }
+  ],
+  iceLevels: [
+    { id: "regular", name: "Regular Ice" },
+    { id: "light", name: "Light Ice" },
+    { id: "extra", name: "Extra Ice" },
+    { id: "no-ice", name: "No Ice" }
+  ],
+  syrups: [
+    { id: "vanilla", name: "Madagascar Vanilla", price: 0.60 },
+    { id: "caramel", name: "Salted Caramel", price: 0.60 },
+    { id: "brownsugar", name: "Brown Sugar Cinnamon", price: 0.65 },
+    { id: "hazelnut", name: "Roasted Hazelnut", price: 0.60 },
+    { id: "mocha", name: "Dark Chocolate Mocha", price: 0.75 },
+    { id: "whitemocha", name: "White Chocolate Sauce", price: 0.75 },
+    { id: "lavender", name: "Honey Lavender", price: 0.75 },
+    { id: "sf-vanilla", name: "Sugar-Free Vanilla", price: 0.60 }
+  ],
+  toppings: [
+    { id: "cold-foam", name: "Vanilla Sweet Cream Cold Foam", price: 1.25 },
+    { id: "whip", name: "House Whipped Cream", price: 0.50 },
+    { id: "caramel-drizzle", name: "Caramel Crosshatch Drizzle", price: 0.50 },
+    { id: "mocha-drizzle", name: "Mocha Drizzle", price: 0.50 },
+    { id: "cinnamon", name: "Ceylon Cinnamon Dust", price: 0.00 },
+    { id: "cocoa", name: "Dutch Cocoa Powder", price: 0.00 }
+  ],
+  bakeryOptions: [
+    { id: "warmed", name: "Warmed in Oven", price: 0.00 },
+    { id: "room-temp", name: "Room Temperature", price: 0.00 },
+    { id: "toasted-dark", name: "Extra Toasted", price: 0.00 }
+  ],
+  bakerySpreads: [
+    { id: "butter", name: "Grass-Fed Butter", price: 0.50 },
+    { id: "cream-cheese", name: "Whipped Cream Cheese", price: 0.85 },
+    { id: "jam", name: "Strawberry Fig Preserve", price: 0.75 },
+    { id: "honey", name: "Wildflower Honey Packet", price: 0.50 }
+  ]
+};
+
+const MENU_ITEMS = [
+  {
+    id: "esp-latte",
+    name: "Signature CaffÃ¨ Latte",
+    category: "espresso",
+    price: 4.95,
+    calories: 190,
+    sku: "ESP-101",
+    popular: true,
+    type: "drink",
+    defaultTemp: "hot",
+    allowTempChange: true,
+    defaultMilk: "whole",
+    defaultShots: "standard",
+    color: "#8C583A",
+    badge: "Best Seller",
+    description: "Velvety steamed milk poured over our double-shot house espresso blend."
+  },
+  {
+    id: "esp-cappuccino",
+    name: "Classic Cappuccino",
+    category: "espresso",
+    price: 4.75,
+    calories: 140,
+    sku: "ESP-102",
+    popular: true,
+    type: "drink",
+    defaultTemp: "hot",
+    allowTempChange: false,
+    defaultMilk: "whole",
+    defaultShots: "standard",
+    color: "#6E4228",
+    badge: null,
+    description: "Equal parts rich espresso, steamed milk, and airy micro-foam."
+  },
+  {
+    id: "esp-caramel-macchiato",
+    name: "Salted Caramel Macchiato",
+    category: "espresso",
+    price: 5.65,
+    calories: 250,
+    sku: "ESP-103",
+    popular: true,
+    type: "drink",
+    defaultTemp: "hot",
+    allowTempChange: true,
+    defaultMilk: "whole",
+    defaultShots: "standard",
+    defaultSyrups: ["vanilla"],
+    defaultToppings: ["caramel-drizzle"],
+    color: "#B46E35",
+    badge: "Popular",
+    description: "Vanilla-steamed milk marked with espresso and finished with salted caramel crosshatch."
+  },
+  {
+    id: "esp-flat-white",
+    name: "Velvet Flat White",
+    category: "espresso",
+    price: 5.15,
+    calories: 170,
+    sku: "ESP-104",
+    popular: false,
+    type: "drink",
+    defaultTemp: "hot",
+    allowTempChange: true,
+    defaultMilk: "whole",
+    defaultShots: "triple",
+    color: "#7D4E32",
+    badge: "Ristretto",
+    description: "Ristretto shots with glossy, thin-layered whole milk microfoam."
+  },
+  {
+    id: "esp-mocha",
+    name: "Belgian Dark CaffÃ¨ Mocha",
+    category: "espresso",
+    price: 5.50,
+    calories: 340,
+    sku: "ESP-105",
+    popular: false,
+    type: "drink",
+    defaultTemp: "hot",
+    allowTempChange: true,
+    defaultMilk: "whole",
+    defaultShots: "standard",
+    defaultSyrups: ["mocha"],
+    defaultToppings: ["whip", "cocoa"],
+    color: "#4A2C1D",
+    badge: null,
+    description: "58% dark Belgian chocolate melted into double espresso, steamed milk, and whipped cream."
+  },
+  {
+    id: "esp-americano",
+    name: "CaffÃ¨ Americano",
+    category: "espresso",
+    price: 3.85,
+    calories: 15,
+    sku: "ESP-106",
+    popular: false,
+    type: "drink",
+    defaultTemp: "hot",
+    allowTempChange: true,
+    defaultMilk: "none",
+    defaultShots: "standard",
+    color: "#3A2218",
+    badge: null,
+    description: "Double espresso pulled directly over filtered hot water for a rich crema."
+  },
+  {
+    id: "esp-cortado",
+    name: "Gibraltar Cortado",
+    category: "espresso",
+    price: 4.35,
+    calories: 90,
+    sku: "ESP-107",
+    popular: false,
+    type: "drink",
+    defaultTemp: "hot",
+    allowTempChange: false,
+    defaultMilk: "whole",
+    defaultShots: "standard",
+    color: "#7A482E",
+    badge: "Barista Pick",
+    description: "1:1 ratio of double espresso and lightly textured warm milk."
+  },
+  {
+    id: "iced-brownsugar-shaken",
+    name: "Brown Sugar Oat Shaken Espresso",
+    category: "iced",
+    price: 5.95,
+    calories: 160,
+    sku: "ICD-201",
+    popular: true,
+    type: "drink",
+    defaultTemp: "iced",
+    allowTempChange: false,
+    defaultMilk: "oat",
+    defaultShots: "triple",
+    defaultSyrups: ["brownsugar"],
+    defaultToppings: ["cinnamon"],
+    color: "#9A6238",
+    badge: "Trending",
+    description: "Blonde espresso hand-shaken with brown sugar, Ceylon cinnamon, and topped with creamy oat milk."
+  },
+  {
+    id: "iced-cold-brew",
+    name: "18-Hour Steeped Cold Brew",
+    category: "iced",
+    price: 4.65,
+    calories: 5,
+    sku: "ICD-202",
+    popular: true,
+    type: "drink",
+    defaultTemp: "iced",
+    allowTempChange: false,
+    defaultMilk: "none",
+    defaultShots: "standard",
+    color: "#2F1B12",
+    badge: null,
+    description: "Small-batch single-origin Colombian beans steeped cold for 18 hours for ultra-smooth cocoa notes."
+  },
+  {
+    id: "iced-vanilla-cream-cb",
+    name: "Vanilla Sweet Cream Cold Brew",
+    category: "iced",
+    price: 5.45,
+    calories: 190,
+    sku: "ICD-203",
+    popular: true,
+    type: "drink",
+    defaultTemp: "iced",
+    allowTempChange: false,
+    defaultMilk: "breve",
+    defaultShots: "standard",
+    defaultSyrups: ["vanilla"],
+    defaultToppings: ["cold-foam"],
+    color: "#7E5134",
+    badge: "Best Seller",
+    description: "Slow-steeped cold brew cascaded with house-made Madagascar vanilla sweet cream cold foam."
+  },
+  {
+    id: "iced-honey-lavender",
+    name: "Iced Honey Lavender Oat Latte",
+    category: "iced",
+    price: 5.85,
+    calories: 210,
+    sku: "ICD-204",
+    popular: false,
+    type: "drink",
+    defaultTemp: "iced",
+    allowTempChange: true,
+    defaultMilk: "oat",
+    defaultShots: "standard",
+    defaultSyrups: ["lavender"],
+    color: "#83658C",
+    badge: "Seasonal",
+    description: "Botanical culinary lavender and wildflower honey paired with espresso and oat milk over ice."
+  },
+  {
+    id: "tea-matcha-latte",
+    name: "Ceremonial Uji Matcha Latte",
+    category: "tea",
+    price: 5.75,
+    calories: 180,
+    sku: "TEA-301",
+    popular: true,
+    type: "drink",
+    defaultTemp: "iced",
+    allowTempChange: true,
+    defaultMilk: "oat",
+    defaultShots: "standard",
+    color: "#4B7A47",
+    badge: "First Harvest",
+    description: "Stone-ground first-harvest Uji green tea whisked to order with silky oat milk."
+  },
+  {
+    id: "tea-chai-latte",
+    name: "Masala Spiced Chai Latte",
+    category: "tea",
+    price: 5.25,
+    calories: 240,
+    sku: "TEA-302",
+    popular: false,
+    type: "drink",
+    defaultTemp: "hot",
+    allowTempChange: true,
+    defaultMilk: "whole",
+    defaultShots: "standard",
+    defaultToppings: ["cinnamon"],
+    color: "#A36336",
+    badge: null,
+    description: "Black Assam tea infused with crushed cardamom, fresh ginger, star anise, clove, and steamed milk."
+  },
+  {
+    id: "tea-london-fog",
+    name: "Earl Grey London Fog",
+    category: "tea",
+    price: 4.95,
+    calories: 160,
+    sku: "TEA-303",
+    popular: false,
+    type: "drink",
+    defaultTemp: "hot",
+    allowTempChange: true,
+    defaultMilk: "whole",
+    defaultShots: "standard",
+    defaultSyrups: ["vanilla", "lavender"],
+    color: "#73695E",
+    badge: "Caffeine Light",
+    description: "Bergamot-rich Earl Grey steeped with lavender blossoms, vanilla bean syrup, and steamed microfoam."
+  },
+  {
+    id: "blended-mocha-frappe",
+    name: "Java Chip Espresso Frappe",
+    category: "blended",
+    price: 6.25,
+    calories: 420,
+    sku: "BLD-401",
+    popular: true,
+    type: "drink",
+    defaultTemp: "iced",
+    allowTempChange: false,
+    defaultMilk: "whole",
+    defaultShots: "standard",
+    defaultSyrups: ["mocha"],
+    defaultToppings: ["whip", "mocha-drizzle"],
+    color: "#523426",
+    badge: null,
+    description: "Ice-blended roast coffee, dark chocolate chips, milk, whipped cream, and chocolate drizzle."
+  },
+  {
+    id: "blended-caramel-frappe",
+    name: "Salted Caramel Crunch Frappe",
+    category: "blended",
+    price: 6.25,
+    calories: 410,
+    sku: "BLD-402",
+    popular: false,
+    type: "drink",
+    defaultTemp: "iced",
+    allowTempChange: false,
+    defaultMilk: "whole",
+    defaultShots: "standard",
+    defaultSyrups: ["caramel"],
+    defaultToppings: ["whip", "caramel-drizzle"],
+    color: "#C27D3B",
+    badge: null,
+    description: "Blended coffee with buttery caramel sauce, topped with whipped cream and salted toffee crunch."
+  },
+  {
+    id: "bak-croissant",
+    name: "French Butter Croissant",
+    category: "bakery",
+    price: 4.25,
+    calories: 310,
+    sku: "BAK-501",
+    popular: true,
+    type: "bakery",
+    color: "#D18E3E",
+    badge: "Fresh Baked",
+    description: "Flaky 27-layer laminated pastry made with cultured Normandy butter, baked golden every morning."
+  },
+  {
+    id: "bak-almond-croissant",
+    name: "Twice-Baked Almond Croissant",
+    category: "bakery",
+    price: 4.95,
+    calories: 430,
+    sku: "BAK-502",
+    popular: true,
+    type: "bakery",
+    color: "#B87532",
+    badge: "Best Seller",
+    description: "Filled with rum-kissed almond frangipane and crowned with toasted sliced almonds and powdered sugar."
+  },
+  {
+    id: "bak-pain-chocolat",
+    name: "Pain au Chocolat",
+    category: "bakery",
+    price: 4.65,
+    calories: 360,
+    sku: "BAK-503",
+    popular: false,
+    type: "bakery",
+    color: "#8E5128",
+    badge: null,
+    description: "Crisp laminated pastry wrapped around two batons of Valrhona dark chocolate."
+  },
+  {
+    id: "bak-avocado-toast",
+    name: "Sourdough Avocado & Everything Toast",
+    category: "bakery",
+    price: 7.50,
+    calories: 380,
+    sku: "BAK-504",
+    popular: true,
+    type: "bakery",
+    color: "#5E7B42",
+    badge: "Savory",
+    description: "Thick-cut artisan country sourdough, smashed Hass avocado, pickled shallots, chili flakes & everything spice."
+  },
+  {
+    id: "bak-blueberry-muffin",
+    name: "Lemon Wild Blueberry Streusel Muffin",
+    category: "bakery",
+    price: 3.95,
+    calories: 390,
+    sku: "BAK-505",
+    popular: false,
+    type: "bakery",
+    color: "#574B78",
+    badge: null,
+    description: "Moist lemon-zest crumb bursting with Maine blueberries and cinnamon oat streusel."
+  },
+  {
+    id: "bean-espresso-blend",
+    name: "Ritual House Espresso (12oz Bag)",
+    category: "beans",
+    price: 17.50,
+    calories: 0,
+    sku: "MER-601",
+    popular: false,
+    type: "merch",
+    color: "#3B2820",
+    badge: "Whole Bean",
+    description: "Medium-dark roast blend from Brazil & Ethiopia. Tasting notes of dark chocolate, toasted hazelnut, and dried cherry."
+  },
+  {
+    id: "bean-ethiopia",
+    name: "Ethiopia Yirgacheffe Single Origin (12oz)",
+    category: "beans",
+    price: 19.50,
+    calories: 0,
+    sku: "MER-602",
+    popular: false,
+    type: "merch",
+    color: "#94523A",
+    badge: "Light Roast",
+    description: "Washed process heirloom varietals. Floral jasmine aroma with bright bergamot and peach finish."
+  }
+];
+
+const DISCOUNT_PRESETS = [
+  { id: "none", label: "No Discount", type: "percent", value: 0 },
+  { id: "cup", label: "Own Tumbler (-$0.50)", type: "fixed", value: 0.50 },
+  { id: "student", label: "Student / Senior (10%)", type: "percent", value: 10 },
+  { id: "happyhour", label: "Afternoon Happy Hour (15%)", type: "percent", value: 15 },
+  { id: "staff", label: "Partner / Staff (25%)", type: "percent", value: 25 },
+  { id: "comp", label: "Recovery / $2 Off", type: "fixed", value: 2.00 }
+];
+
+const INITIAL_ORDERS = [
+  {
+    id: "ORD-1042",
+    orderNumber: "1042",
+    customerName: "Maya Lin",
+    orderType: "Dine-In",
+    tableNumber: "T-04",
+    status: "brewing", // queued | brewing | ready | completed
+    priority: true,
+    createdAt: Date.now() - 4 * 60 * 1000, // 4 mins ago
+    cashier: "Alex Rivera",
+    paymentMethod: "Card (â€¢â€¢â€¢â€¢ 4821)",
+    subtotal: 15.65,
+    discount: 0,
+    tax: 1.33,
+    tip: 2.50,
+    total: 19.48,
+    amountTendered: 19.48,
+    changeDue: 0,
+    items: [
+      {
+        lineId: "L-1",
+        itemId: "iced-brownsugar-shaken",
+        name: "Brown Sugar Oat Shaken Espresso",
+        sku: "ICD-201",
+        type: "drink",
+        quantity: 1,
+        unitPrice: 6.70,
+        completed: true,
+        customization: {
+          size: "lg",
+          sizeLabel: "Large (20 oz)",
+          temp: "iced",
+          tempLabel: "Iced",
+          milk: "oat",
+          milkLabel: "Barista Oat Milk",
+          shots: "triple",
+          shotsLabel: "Triple Shot (+1)",
+          sweetness: "75",
+          sweetnessLabel: "75% Less Sweet",
+          ice: "light",
+          iceLabel: "Light Ice",
+          syrups: ["brownsugar"],
+          syrupLabels: ["Brown Sugar Cinnamon"],
+          toppings: ["cinnamon"],
+          toppingLabels: ["Ceylon Cinnamon Dust"],
+          notes: "Extra shake please!"
+        }
+      },
+      {
+        lineId: "L-2",
+        itemId: "esp-latte",
+        name: "Signature CaffÃ¨ Latte",
+        sku: "ESP-101",
+        type: "drink",
+        quantity: 1,
+        unitPrice: 4.95,
+        completed: false,
+        customization: {
+          size: "md",
+          sizeLabel: "Medium (16 oz)",
+          temp: "hot",
+          tempLabel: "Hot",
+          milk: "whole",
+          milkLabel: "Whole Milk",
+          shots: "standard",
+          shotsLabel: "Standard Double (2)",
+          sweetness: "100",
+          sweetnessLabel: "100% Standard",
+          ice: "regular",
+          iceLabel: "Regular Ice",
+          syrups: [],
+          syrupLabels: [],
+          toppings: [],
+          toppingLabels: [],
+          notes: "Latte art heart"
+        }
+      },
+      {
+        lineId: "L-3",
+        itemId: "bak-croissant",
+        name: "French Butter Croissant",
+        sku: "BAK-501",
+        type: "bakery",
+        quantity: 1,
+        unitPrice: 4.00,
+        completed: true,
+        customization: {
+          warming: "warmed",
+          warmingLabel: "Warmed in Oven",
+          spreads: [],
+          spreadLabels: [],
+          notes: ""
+        }
+      }
+    ]
+  },
+  {
+    id: "ORD-1043",
+    orderNumber: "1043",
+    customerName: "Marcus Vance",
+    orderType: "Takeout",
+    tableNumber: "",
+    status: "queued",
+    priority: false,
+    createdAt: Date.now() - 95 * 1000, // 1.5 mins ago
+    cashier: "Alex Rivera",
+    paymentMethod: "Cash",
+    subtotal: 11.20,
+    discount: 0,
+    tax: 0.95,
+    tip: 0,
+    total: 12.15,
+    amountTendered: 20.00,
+    changeDue: 7.85,
+    items: [
+      {
+        lineId: "L-4",
+        itemId: "tea-matcha-latte",
+        name: "Ceremonial Uji Matcha Latte",
+        sku: "TEA-301",
+        type: "drink",
+        quantity: 1,
+        unitPrice: 6.35,
+        completed: false,
+        customization: {
+          size: "md",
+          sizeLabel: "Medium (16 oz)",
+          temp: "iced",
+          tempLabel: "Iced",
+          milk: "oat",
+          milkLabel: "Barista Oat Milk",
+          shots: "standard",
+          shotsLabel: "Standard Double (2)",
+          sweetness: "50",
+          sweetnessLabel: "50% Half Sweet",
+          ice: "regular",
+          iceLabel: "Regular Ice",
+          syrups: ["vanilla"],
+          syrupLabels: ["Madagascar Vanilla"],
+          toppings: [],
+          toppingLabels: [],
+          notes: ""
+        }
+      },
+      {
+        lineId: "L-5",
+        itemId: "bak-almond-croissant",
+        name: "Twice-Baked Almond Croissant",
+        sku: "BAK-502",
+        type: "bakery",
+        quantity: 1,
+        unitPrice: 4.85,
+        completed: false,
+        customization: {
+          warming: "warmed",
+          warmingLabel: "Warmed in Oven",
+          spreads: [],
+          spreadLabels: [],
+          notes: ""
+        }
+      }
+    ]
+  },
+  {
+    id: "ORD-1041",
+    orderNumber: "1041",
+    customerName: "Elena Rostova",
+    orderType: "Pickup",
+    tableNumber: "Mobile",
+    status: "ready",
+    priority: false,
+    createdAt: Date.now() - 8 * 60 * 1000, // 8 mins ago
+    cashier: "Alex Rivera",
+    paymentMethod: "Apple Pay",
+    subtotal: 5.45,
+    discount: 0,
+    tax: 0.46,
+    tip: 1.00,
+    total: 6.91,
+    amountTendered: 6.91,
+    changeDue: 0,
+    items: [
+      {
+        lineId: "L-6",
+        itemId: "iced-vanilla-cream-cb",
+        name: "Vanilla Sweet Cream Cold Brew",
+        sku: "ICD-203",
+        type: "drink",
+        quantity: 1,
+        unitPrice: 5.45,
+        completed: true,
+        customization: {
+          size: "md",
+          sizeLabel: "Medium (16 oz)",
+          temp: "iced",
+          tempLabel: "Iced",
+          milk: "breve",
+          milkLabel: "Breve (Half & Half)",
+          shots: "standard",
+          shotsLabel: "Standard Double (2)",
+          sweetness: "100",
+          sweetnessLabel: "100% Standard",
+          ice: "regular",
+          iceLabel: "Regular Ice",
+          syrups: ["vanilla"],
+          syrupLabels: ["Madagascar Vanilla"],
+          toppings: ["cold-foam"],
+          toppingLabels: ["Vanilla Sweet Cream Cold Foam"],
+          notes: ""
+        }
+      }
+    ]
+  }
+];
+
+
+
+function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
+  const isDrink = item.type === "drink";
+  const isBakery = item.type === "bakery";
+
+  const existing = initialEditItem?.customization || {};
+
+  const [size, setSize] = useState(existing.size || "md");
+  const [temp, setTemp] = useState(existing.temp || item.defaultTemp || "hot");
+  const [milk, setMilk] = useState(existing.milk || item.defaultMilk || "whole");
+  const [shots, setShots] = useState(existing.shots || item.defaultShots || "standard");
+  const [sweetness, setSweetness] = useState(existing.sweetness || "100");
+  const [ice, setIce] = useState(existing.ice || "regular");
+  const [syrups, setSyrups] = useState(existing.syrups || item.defaultSyrups || []);
+  const [toppings, setToppings] = useState(existing.toppings || item.defaultToppings || []);
+  const [warming, setWarming] = useState(existing.warming || "warmed");
+  const [spreads, setSpreads] = useState(existing.spreads || []);
+  const [notes, setNotes] = useState(existing.notes || "");
+  const [quantity, setQuantity] = useState(initialEditItem?.quantity || 1);
+
+  const toggleArrayItem = (list, setList, id) => {
+    if (list.includes(id)) {
+      setList(list.filter((x) => x !== id));
+    } else {
+      setList([...list, id]);
+    }
+  };
+
+  const unitPrice = useMemo(() => {
+    let total = item.price;
+    if (isDrink) {
+      const sizeObj = MODIFIERS.sizes.find((s) => s.id === size);
+      if (sizeObj) total += sizeObj.price;
+
+      const milkObj = MODIFIERS.milks.find((m) => m.id === milk);
+      if (milkObj && milk !== item.defaultMilk) {
+        total += milkObj.price;
+      } else if (milkObj && milk === item.defaultMilk && milkObj.price > 0 && !item.defaultMilk) {
+        total += milkObj.price;
+      }
+
+      const shotObj = MODIFIERS.shots.find((sh) => sh.id === shots);
+      if (shotObj && shots !== (item.defaultShots || "standard")) {
+        total += shotObj.price;
+      }
+
+      syrups.forEach((sId) => {
+        if (!(item.defaultSyrups || []).includes(sId)) {
+          const sObj = MODIFIERS.syrups.find((s) => s.id === sId);
+          if (sObj) total += sObj.price;
+        }
+      });
+
+      toppings.forEach((tId) => {
+        if (!(item.defaultToppings || []).includes(tId)) {
+          const tObj = MODIFIERS.toppings.find((t) => t.id === tId);
+          if (tObj) total += tObj.price;
+        }
+      });
+    } else if (isBakery) {
+      spreads.forEach((spId) => {
+        const spObj = MODIFIERS.bakerySpreads.find((s) => s.id === spId);
+        if (spObj) total += spObj.price;
+      });
+    }
+    return Math.max(0.5, Number(total.toFixed(2)));
+  }, [item, isDrink, isBakery, size, milk, shots, syrups, toppings, spreads]);
+
+  const handleConfirm = () => {
+    let customization = {};
+    if (isDrink) {
+      const sizeObj = MODIFIERS.sizes.find((s) => s.id === size);
+      const tempObj = MODIFIERS.temperatures.find((t) => t.id === temp);
+      const milkObj = MODIFIERS.milks.find((m) => m.id === milk);
+      const shotObj = MODIFIERS.shots.find((s) => s.id === shots);
+      const sweetObj = MODIFIERS.sweetness.find((s) => s.id === sweetness);
+      const iceObj = MODIFIERS.iceLevels.find((i) => i.id === ice);
+
+      customization = {
+        size,
+        sizeLabel: sizeObj ? `${sizeObj.name} (${sizeObj.oz})` : "Medium",
+        temp,
+        tempLabel: tempObj ? tempObj.name : "Hot",
+        milk,
+        milkLabel: milkObj ? milkObj.name : "Whole Milk",
+        shots,
+        shotsLabel: shotObj ? shotObj.name : "Standard Double (2)",
+        sweetness,
+        sweetnessLabel: sweetObj ? sweetObj.name : "100% Standard",
+        ice: temp === "iced" ? ice : "none",
+        iceLabel: temp === "iced" && iceObj ? iceObj.name : "",
+        syrups,
+        syrupLabels: syrups.map((id) => MODIFIERS.syrups.find((s) => s.id === id)?.name).filter(Boolean),
+        toppings,
+        toppingLabels: toppings.map((id) => MODIFIERS.toppings.find((t) => t.id === id)?.name).filter(Boolean),
+        notes: notes.trim()
+      };
+    } else if (isBakery) {
+      const warmObj = MODIFIERS.bakeryOptions.find((w) => w.id === warming);
+      customization = {
+        warming,
+        warmingLabel: warmObj ? warmObj.name : "Warmed in Oven",
+        spreads,
+        spreadLabels: spreads.map((id) => MODIFIERS.bakerySpreads.find((s) => s.id === id)?.name).filter(Boolean),
+        notes: notes.trim()
+      };
+    } else {
+      customization = {
+        notes: notes.trim()
+      };
+    }
+
+    onSave({
+      lineId: initialEditItem?.lineId || `L-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      itemId: item.id,
+      name: item.name,
+      sku: item.sku,
+      type: item.type,
+      quantity,
+      unitPrice,
+      completed: false,
+      customization
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/75 backdrop-blur-sm p-4">
+      <div className="bg-stone-900 border border-stone-700/80 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-stone-100">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 bg-stone-800/80 border-b border-stone-700">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white shadow-inner"
+              style={{ backgroundColor: item.color || "#7c4a2d" }}
+            >
+              {item.sku.split("-")[0]}
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-amber-50 flex items-center gap-2">
+                {item.name}
+                <span className="text-xs font-normal px-2 py-0.5 rounded bg-stone-700 text-stone-300">
+                  Base ${item.price.toFixed(2)}
+                </span>
+              </h2>
+              <p className="text-xs text-stone-400">{item.description}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg text-stone-400 hover:text-white hover:bg-stone-700 transition"
+          >
+            âœ•
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 overflow-y-auto space-y-6 flex-1">
+          {isDrink && (
+            <>
+              {/* Size & Temperature Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                    1. Cup Size
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {MODIFIERS.sizes.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setSize(s.id)}
+                        className={`p-3 rounded-xl border text-left transition ${
+                          size === s.id
+                            ? "bg-amber-600/20 border-amber-500 text-amber-200 ring-1 ring-amber-500"
+                            : "bg-stone-800/70 border-stone-700 text-stone-300 hover:border-stone-500"
+                        }`}
+                      >
+                        <div className="font-semibold text-sm">{s.name}</div>
+                        <div className="text-xs text-stone-400">{s.oz}</div>
+                        <div className="text-xs font-medium text-amber-400 mt-1">
+                          {s.price === 0
+                            ? "Base"
+                            : s.price > 0
+                            ? `+$${s.price.toFixed(2)}`
+                            : `-$${Math.abs(s.price).toFixed(2)}`}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                    2. Temperature
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {MODIFIERS.temperatures.map((t) => {
+                      const disabled = !item.allowTempChange && t.id !== item.defaultTemp && !(item.defaultTemp === "hot" && t.id === "extra-hot");
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          disabled={disabled}
+                          onClick={() => setTemp(t.id)}
+                          className={`p-3 rounded-xl border text-left transition ${
+                            disabled
+                              ? "opacity-40 cursor-not-allowed bg-stone-900 border-stone-800"
+                              : temp === t.id
+                              ? "bg-amber-600/20 border-amber-500 text-amber-200 ring-1 ring-amber-500"
+                              : "bg-stone-800/70 border-stone-700 text-stone-300 hover:border-stone-500"
+                          }`}
+                        >
+                          <div className="font-semibold text-sm">{t.name}</div>
+                          <div className="text-xs text-stone-400">
+                            {t.id === "iced" ? "Over Ice" : "Steamed"}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Milk Selection */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                  3. Milk & Dairy Option
+                </label>
+                <div className="grid grid-cols-3 sm:grid-cols-3 gap-2">
+                  {MODIFIERS.milks.map((m) => {
+                    const isDefault = m.id === item.defaultMilk;
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => setMilk(m.id)}
+                        className={`px-3 py-2.5 rounded-xl border text-left flex items-center justify-between transition ${
+                          milk === m.id
+                            ? "bg-amber-600/20 border-amber-500 text-amber-200 ring-1 ring-amber-500"
+                            : "bg-stone-800/70 border-stone-700 text-stone-300 hover:border-stone-500"
+                        }`}
+                      >
+                        <span className="text-xs font-medium truncate">{m.name}</span>
+                        <span className="text-[11px] text-amber-400 ml-1 shrink-0">
+                          {isDefault ? "Incl" : m.price > 0 ? `+$${m.price.toFixed(2)}` : ""}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Espresso Shots */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                  4. Espresso Shots & Roast
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {MODIFIERS.shots.map((sh) => {
+                    const isDefault = sh.id === (item.defaultShots || "standard");
+                    return (
+                      <button
+                        key={sh.id}
+                        type="button"
+                        onClick={() => setShots(sh.id)}
+                        className={`px-3 py-2.5 rounded-xl border text-left flex items-center justify-between transition ${
+                          shots === sh.id
+                            ? "bg-amber-600/20 border-amber-500 text-amber-200 ring-1 ring-amber-500"
+                            : "bg-stone-800/70 border-stone-700 text-stone-300 hover:border-stone-500"
+                        }`}
+                      >
+                        <span className="text-xs font-medium">{sh.name}</span>
+                        <span className="text-[11px] text-amber-400 ml-1">
+                          {isDefault
+                            ? "Incl"
+                            : sh.price > 0
+                            ? `+$${sh.price.toFixed(2)}`
+                            : sh.price < 0
+                            ? `-$${Math.abs(sh.price).toFixed(2)}`
+                            : ""}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Syrups & Flavors */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                  5. Syrups & Flavorings (Multi-Select)
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {MODIFIERS.syrups.map((s) => {
+                    const selected = syrups.includes(s.id);
+                    const isDefault = (item.defaultSyrups || []).includes(s.id);
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => toggleArrayItem(syrups, setSyrups, s.id)}
+                        className={`px-3 py-2.5 rounded-xl border text-left transition ${
+                          selected
+                            ? "bg-amber-600/25 border-amber-500 text-amber-200 ring-1 ring-amber-500"
+                            : "bg-stone-800/70 border-stone-700 text-stone-300 hover:border-stone-500"
+                        }`}
+                      >
+                        <div className="text-xs font-medium truncate">{s.name}</div>
+                        <div className="text-[11px] text-amber-400">
+                          {isDefault ? "Included" : `+$${s.price.toFixed(2)}`}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Sweetness & Ice Level */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                    6. Sweetness Level
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {MODIFIERS.sweetness.map((sw) => (
+                      <button
+                        key={sw.id}
+                        type="button"
+                        onClick={() => setSweetness(sw.id)}
+                        className={`px-2.5 py-2 rounded-xl border text-xs font-medium transition ${
+                          sweetness === sw.id
+                            ? "bg-amber-600/20 border-amber-500 text-amber-200"
+                            : "bg-stone-800/70 border-stone-700 text-stone-300"
+                        }`}
+                      >
+                        {sw.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {temp === "iced" && (
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                      7. Ice Level
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {MODIFIERS.iceLevels.map((ic) => (
+                        <button
+                          key={ic.id}
+                          type="button"
+                          onClick={() => setIce(ic.id)}
+                          className={`px-3 py-2 rounded-xl border text-xs font-medium transition ${
+                            ice === ic.id
+                              ? "bg-amber-600/20 border-amber-500 text-amber-200"
+                              : "bg-stone-800/70 border-stone-700 text-stone-300"
+                          }`}
+                        >
+                          {ic.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Toppings */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                  8. Toppings & Finishing (Multi-Select)
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {MODIFIERS.toppings.map((t) => {
+                    const selected = toppings.includes(t.id);
+                    const isDefault = (item.defaultToppings || []).includes(t.id);
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => toggleArrayItem(toppings, setToppings, t.id)}
+                        className={`px-3 py-2.5 rounded-xl border text-left transition ${
+                          selected
+                            ? "bg-amber-600/25 border-amber-500 text-amber-200 ring-1 ring-amber-500"
+                            : "bg-stone-800/70 border-stone-700 text-stone-300 hover:border-stone-500"
+                        }`}
+                      >
+                        <div className="text-xs font-medium">{t.name}</div>
+                        <div className="text-[11px] text-amber-400">
+                          {isDefault ? "Included" : t.price === 0 ? "Free" : `+$${t.price.toFixed(2)}`}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {isBakery && (
+            <>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                  1. Preparation / Warming
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {MODIFIERS.bakeryOptions.map((w) => (
+                    <button
+                      key={w.id}
+                      type="button"
+                      onClick={() => setWarming(w.id)}
+                      className={`p-3 rounded-xl border text-sm font-medium transition ${
+                        warming === w.id
+                          ? "bg-amber-600/20 border-amber-500 text-amber-200"
+                          : "bg-stone-800/70 border-stone-700 text-stone-300"
+                      }`}
+                    >
+                      {w.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+                  2. Spreads & Accompaniments
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {MODIFIERS.bakerySpreads.map((sp) => {
+                    const selected = spreads.includes(sp.id);
+                    return (
+                      <button
+                        key={sp.id}
+                        type="button"
+                        onClick={() => toggleArrayItem(spreads, setSpreads, sp.id)}
+                        className={`p-3 rounded-xl border text-left transition ${
+                          selected
+                            ? "bg-amber-600/20 border-amber-500 text-amber-200"
+                            : "bg-stone-800/70 border-stone-700 text-stone-300"
+                        }`}
+                      >
+                        <div className="text-xs font-medium">{sp.name}</div>
+                        <div className="text-xs text-amber-400">+${sp.price.toFixed(2)}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Special Notes */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-2">
+              Barista / Kitchen Prep Note
+            </label>
+            <input
+              type="text"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="e.g., Double cup, kids temp (130Â°F), allergy alert, extra napkins..."
+              className="w-full px-4 py-2.5 rounded-xl bg-stone-800 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+            />
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 bg-stone-800/90 border-t border-stone-700 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Qty</span>
+            <div className="flex items-center bg-stone-900 border border-stone-700 rounded-xl">
+              <button
+                type="button"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="px-3.5 py-2 text-lg font-bold text-stone-300 hover:text-white"
+              >
+                âˆ’
+              </button>
+              <span className="px-4 py-2 font-bold text-amber-400">{quantity}</span>
+              <button
+                type="button"
+                onClick={() => setQuantity(quantity + 1)}
+                className="px-3.5 py-2 text-lg font-bold text-stone-300 hover:text-white"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2.5 rounded-xl border border-stone-600 text-stone-300 hover:bg-stone-700 text-sm font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirm}
+              className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-lg shadow-amber-900/30 transition"
+            >
+              {initialEditItem ? "Update Item" : "Add to Order"} â€¢ ${(unitPrice * quantity).toFixed(2)}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+function CheckoutModal({
+  subtotal,
+  discountAmount,
+  taxAmount,
+  baseTotal,
+  customerName,
+  orderType,
+  tableNumber,
+  onClose,
+  onCompleteOrder
+}) {
+  const [paymentMethod, setPaymentMethod] = useState("cash"); // cash | card | mobile
+  const [tipMode, setTipMode] = useState("15"); // 0 | 10 | 15 | 18 | 20 | custom
+  const [customTip, setCustomTip] = useState("");
+  const [cashTenderedStr, setCashTenderedStr] = useState("");
+  const [isProcessingCard, setIsProcessingCard] = useState(false);
+
+  const tipAmount = useMemo(() => {
+    if (tipMode === "0") return 0;
+    if (tipMode === "custom") {
+      const val = parseFloat(customTip);
+      return isNaN(val) || val < 0 ? 0 : Number(val.toFixed(2));
+    }
+    const pct = parseFloat(tipMode) / 100;
+    return Number((subtotal * pct).toFixed(2));
+  }, [tipMode, customTip, subtotal]);
+
+  const finalTotal = useMemo(() => {
+    return Number((baseTotal + tipAmount).toFixed(2));
+  }, [baseTotal, tipAmount]);
+
+  const cashTendered = useMemo(() => {
+    if (!cashTenderedStr) return finalTotal;
+    const val = parseFloat(cashTenderedStr);
+    return isNaN(val) ? 0 : val;
+  }, [cashTenderedStr, finalTotal]);
+
+  const changeDue = useMemo(() => {
+    if (paymentMethod !== "cash") return 0;
+    return Math.max(0, Number((cashTendered - finalTotal).toFixed(2)));
+  }, [paymentMethod, cashTendered, finalTotal]);
+
+  const canCompleteCash = paymentMethod !== "cash" || cashTendered >= finalTotal - 0.001;
+
+  const quickCashAmounts = useMemo(() => {
+    const exact = finalTotal;
+    const nextDollar = Math.ceil(finalTotal);
+    const bills = [5, 10, 20, 50, 100];
+    const validBills = bills.filter((b) => b >= finalTotal);
+    const set = new Set([exact, nextDollar, ...validBills]);
+    return Array.from(set).slice(0, 5);
+  }, [finalTotal]);
+
+  const handleKeypad = (key) => {
+    if (key === "C") {
+      setCashTenderedStr("");
+      return;
+    }
+    if (key === "âŒ«") {
+      setCashTenderedStr((prev) => prev.slice(0, -1));
+      return;
+    }
+    if (key === "." && cashTenderedStr.includes(".")) return;
+    setCashTenderedStr((prev) => `${prev}${key}`);
+  };
+
+  const handleSubmit = () => {
+    if (!canCompleteCash) return;
+
+    const methodLabels = {
+      cash: "Cash",
+      card: "Card (â€¢â€¢â€¢â€¢ 4829)",
+      mobile: "Apple Pay / NFC"
+    };
+
+    if (paymentMethod !== "cash") {
+      setIsProcessingCard(true);
+      setTimeout(() => {
+        setIsProcessingCard(false);
+        onCompleteOrder({
+          paymentMethod: methodLabels[paymentMethod],
+          tip: tipAmount,
+          total: finalTotal,
+          amountTendered: finalTotal,
+          changeDue: 0
+        });
+      }, 650);
+    } else {
+      onCompleteOrder({
+        paymentMethod: "Cash",
+        tip: tipAmount,
+        total: finalTotal,
+        amountTendered: Number(cashTendered.toFixed(2)),
+        changeDue
+      });
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/80 backdrop-blur-sm p-4">
+      <div className="bg-stone-900 border border-stone-700 rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl text-stone-100">
+        {/* Header */}
+        <div className="px-6 py-4 bg-stone-800 border-b border-stone-700 flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-amber-50">Complete Payment & Send to Barista</h2>
+            <p className="text-xs text-stone-400">
+              {orderType} {tableNumber ? `â€¢ ${tableNumber}` : ""} â€¢ Customer:{" "}
+              <span className="text-amber-300 font-medium">{customerName || "Walk-In Guest"}</span>
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg text-stone-400 hover:text-white hover:bg-stone-700"
+          >
+            âœ•
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12">
+          {/* Left Column: Summary & Tip */}
+          <div className="md:col-span-5 p-6 bg-stone-900/60 border-b md:border-b-0 md:border-r border-stone-800 flex flex-col justify-between space-y-6">
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-stone-800/80 border border-stone-700/80 space-y-2 text-sm">
+                <div className="flex justify-between text-stone-300">
+                  <span>Subtotal</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-emerald-400">
+                    <span>Discount</span>
+                    <span>âˆ’${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-stone-300">
+                  <span>Estimated Tax (8.5%)</span>
+                  <span>${taxAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-amber-300">
+                  <span>Barista Tip</span>
+                  <span>+${tipAmount.toFixed(2)}</span>
+                </div>
+                <div className="pt-2 border-t border-stone-700 flex justify-between items-baseline">
+                  <span className="font-bold text-base text-white">Total Due</span>
+                  <span className="text-2xl font-extrabold text-amber-400">
+                    ${finalTotal.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Tip Selector */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">
+                  Add Barista Gratuity
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "0", label: "No Tip" },
+                    { id: "10", label: "10%" },
+                    { id: "15", label: "15%" },
+                    { id: "18", label: "18%" },
+                    { id: "20", label: "20%" },
+                    { id: "custom", label: "Custom" }
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setTipMode(t.id)}
+                      className={`py-2 px-2 rounded-xl border text-xs font-semibold transition ${
+                        tipMode === t.id
+                          ? "bg-amber-600/25 border-amber-500 text-amber-200 ring-1 ring-amber-500"
+                          : "bg-stone-800 border-stone-700 text-stone-300 hover:border-stone-500"
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                {tipMode === "custom" && (
+                  <div className="mt-2">
+                    <input
+                      type="number"
+                      step="0.25"
+                      min="0"
+                      value={customTip}
+                      onChange={(e) => setCustomTip(e.target.value)}
+                      placeholder="Enter custom tip ($)"
+                      className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-sm text-white focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {paymentMethod === "cash" && (
+              <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-700/50">
+                <div className="flex justify-between items-center text-xs text-emerald-300 uppercase tracking-wider font-semibold">
+                  <span>Cash Tendered</span>
+                  <span>${cashTendered.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-baseline mt-1">
+                  <span className="text-sm font-bold text-emerald-200">Change Due</span>
+                  <span className="text-2xl font-extrabold text-emerald-400">
+                    ${changeDue.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Payment Method & Tender */}
+          <div className="md:col-span-7 p-6 flex flex-col justify-between space-y-5">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">
+                Select Tender Type
+              </label>
+              <div className="grid grid-cols-3 gap-2.5">
+                {[
+                  { id: "cash", label: "ðŸ’µ Cash Drawer", sub: "Bills & Coin" },
+                  { id: "card", label: "ðŸ’³ Credit / Debit", sub: "Chip / Swipe" },
+                  { id: "mobile", label: "ðŸ“± Tap / Wallet", sub: "Apple / Google Pay" }
+                ].map((pm) => (
+                  <button
+                    key={pm.id}
+                    type="button"
+                    onClick={() => setPaymentMethod(pm.id)}
+                    className={`p-3 rounded-xl border text-left transition ${
+                      paymentMethod === pm.id
+                        ? "bg-amber-600/20 border-amber-500 text-amber-200 ring-1 ring-amber-500"
+                        : "bg-stone-800 border-stone-700 text-stone-300 hover:border-stone-500"
+                    }`}
+                  >
+                    <div className="text-sm font-bold">{pm.label}</div>
+                    <div className="text-[11px] text-stone-400">{pm.sub}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {paymentMethod === "cash" ? (
+              <div className="space-y-4">
+                {/* Quick Bills */}
+                <div>
+                  <span className="block text-xs text-stone-400 mb-1.5">Quick Cash Tender</span>
+                  <div className="flex flex-wrap gap-2">
+                    {quickCashAmounts.map((amt, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setCashTenderedStr(amt.toFixed(2))}
+                        className="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-600 text-xs font-bold text-amber-300 transition"
+                      >
+                        {idx === 0 ? `Exact ($${amt.toFixed(2)})` : `$${amt.toFixed(2)}`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Keypad */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-700">
+                    <span className="text-xs text-stone-400 uppercase">Tendered Input</span>
+                    <span className="text-xl font-mono font-bold text-amber-400">
+                      ${cashTenderedStr || finalTotal.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {["7", "8", "9", "C", "4", "5", "6", "âŒ«", "1", "2", "3", "00", "0", "."].map(
+                      (key) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => handleKeypad(key)}
+                          className={`py-2.5 rounded-xl font-bold text-sm border transition ${
+                            key === "C" || key === "âŒ«"
+                              ? "bg-rose-950/50 border-rose-800/60 text-rose-300 hover:bg-rose-900/50"
+                              : "bg-stone-800 border-stone-700 text-stone-100 hover:bg-stone-700"
+                          } ${key === "0" ? "col-span-2" : ""}`}
+                        >
+                          {key}
+                        </button>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center p-6 rounded-2xl bg-stone-950/70 border border-stone-800 text-center space-y-3">
+                <div className="w-16 h-16 rounded-full bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-3xl">
+                  {isProcessingCard ? "â³" : paymentMethod === "card" ? "ðŸ’³" : "ðŸ“²"}
+                </div>
+                <h3 className="text-base font-bold text-amber-100">
+                  {isProcessingCard
+                    ? "Authorizing Terminal..."
+                    : "Terminal Ready â€” Tap, Insert, or Swipe"}
+                </h3>
+                <p className="text-xs text-stone-400 max-w-xs">
+                  Charging <span className="text-amber-300 font-bold">${finalTotal.toFixed(2)}</span>{" "}
+                  to customer reader #01. Click below to simulate instant approval.
+                </p>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-stone-800">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-5 py-3 rounded-xl border border-stone-700 text-stone-300 hover:bg-stone-800 text-sm font-semibold"
+              >
+                Back to Cart
+              </button>
+              <button
+                type="button"
+                disabled={!canCompleteCash || isProcessingCard}
+                onClick={handleSubmit}
+                className={`px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition ${
+                  !canCompleteCash || isProcessingCard
+                    ? "bg-stone-700 text-stone-500 cursor-not-allowed"
+                    : "bg-emerald-500 hover:bg-emerald-400 text-stone-950 shadow-emerald-950/50"
+                }`}
+              >
+                {isProcessingCard
+                  ? "Processing..."
+                  : `Charge $${finalTotal.toFixed(2)} & Print Ticket`}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+function ReceiptModal({ order, onClose, onNewOrder }) {
+  const [printMode, setPrintMode] = useState("receipt"); // receipt | stickers
+
+  if (!order) return null;
+
+  const formattedDate = new Date(order.createdAt).toLocaleString([], {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  // Expand items by quantity for individual cup stickers
+  const expandedStickers = [];
+  order.items.forEach((item) => {
+    for (let i = 0; i < item.quantity; i++) {
+      expandedStickers.push({
+        ...item,
+        stickerIndex: expandedStickers.length + 1
+      });
+    }
+  });
+  const totalStickers = expandedStickers.length;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/80 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="bg-stone-900 border border-stone-700 rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl text-stone-100 my-auto">
+        {/* Top Bar (Hidden when printing) */}
+        <div className="no-print px-6 py-4 bg-stone-800 border-b border-stone-700 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <h2 className="font-bold text-amber-50">
+              Order #{order.orderNumber} Confirmed
+            </h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex rounded-xl bg-stone-900 p-1 border border-stone-700">
+              <button
+                type="button"
+                onClick={() => setPrintMode("receipt")}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  printMode === "receipt"
+                    ? "bg-amber-600 text-stone-950"
+                    : "text-stone-400 hover:text-white"
+                }`}
+              >
+                ðŸ§¾ Receipt (80mm)
+              </button>
+              <button
+                type="button"
+                onClick={() => setPrintMode("stickers")}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  printMode === "stickers"
+                    ? "bg-amber-600 text-stone-950"
+                    : "text-stone-400 hover:text-white"
+                }`}
+              >
+                ðŸ·ï¸ Cup Labels ({totalStickers})
+              </button>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-700"
+            >
+              âœ•
+            </button>
+          </div>
+        </div>
+
+        {/* Printable Content Container */}
+        <div className="p-6 max-h-[72vh] overflow-y-auto flex justify-center bg-stone-950/50">
+          {printMode === "receipt" ? (
+            <div
+              id="printable-area"
+              className="bg-stone-50 text-stone-900 w-full max-w-sm rounded-xl p-6 shadow-xl font-mono text-xs leading-relaxed border border-stone-300"
+            >
+              {/* Shop Header */}
+              <div className="text-center border-b border-dashed border-stone-400 pb-3 mb-3">
+                <div className="text-base font-extrabold tracking-widest uppercase">
+                  {SHOP_CONFIG.name}
+                </div>
+                <div className="text-[11px] text-stone-600">{SHOP_CONFIG.tagline}</div>
+                <div className="text-[10px] text-stone-500 mt-0.5">{SHOP_CONFIG.address}</div>
+                <div className="text-[10px] text-stone-500">Tel: {SHOP_CONFIG.phone}</div>
+              </div>
+
+              {/* Order Meta */}
+              <div className="border-b border-dashed border-stone-400 pb-3 mb-3 space-y-1">
+                <div className="flex justify-between font-bold text-sm">
+                  <span>ORDER #{order.orderNumber}</span>
+                  <span>{order.orderType.toUpperCase()}</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                  <span>Guest: {order.customerName || "Walk-In"}</span>
+                  {order.tableNumber && <span>Pager/Tbl: {order.tableNumber}</span>}
+                </div>
+                <div className="flex justify-between text-[10px] text-stone-500">
+                  <span>Date: {formattedDate}</span>
+                  <span>Barista: {order.cashier}</span>
+                </div>
+              </div>
+
+              {/* Line Items */}
+              <div className="border-b border-dashed border-stone-400 pb-3 mb-3 space-y-2.5">
+                {order.items.map((item) => {
+                  const c = item.customization || {};
+                  return (
+                    <div key={item.lineId} className="space-y-0.5">
+                      <div className="flex justify-between font-bold">
+                        <span>
+                          {item.quantity}x {item.name}
+                        </span>
+                        <span>${(item.unitPrice * item.quantity).toFixed(2)}</span>
+                      </div>
+                      {item.type === "drink" && (
+                        <div className="pl-3 text-[11px] text-stone-600 space-y-0.5">
+                          <div>
+                            â€¢ {c.sizeLabel} | {c.tempLabel}
+                          </div>
+                          <div>
+                            â€¢ {c.milkLabel} | {c.shotsLabel}
+                          </div>
+                          {(c.sweetness !== "100" || (c.temp === "iced" && c.ice !== "regular")) && (
+                            <div>
+                              â€¢ Sweet: {c.sweetnessLabel}
+                              {c.temp === "iced" ? ` | ${c.iceLabel}` : ""}
+                            </div>
+                          )}
+                          {c.syrupLabels?.length > 0 && (
+                            <div>â€¢ +Syrup: {c.syrupLabels.join(", ")}</div>
+                          )}
+                          {c.toppingLabels?.length > 0 && (
+                            <div>â€¢ +Top: {c.toppingLabels.join(", ")}</div>
+                          )}
+                          {c.notes && <div className="italic font-semibold">â€¢ Note: "{c.notes}"</div>}
+                        </div>
+                      )}
+                      {item.type === "bakery" && (
+                        <div className="pl-3 text-[11px] text-stone-600 space-y-0.5">
+                          {c.warmingLabel && <div>â€¢ {c.warmingLabel}</div>}
+                          {c.spreadLabels?.length > 0 && (
+                            <div>â€¢ +Spread: {c.spreadLabels.join(", ")}</div>
+                          )}
+                          {c.notes && <div className="italic font-semibold">â€¢ Note: "{c.notes}"</div>}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Totals */}
+              <div className="border-b border-dashed border-stone-400 pb-3 mb-3 space-y-1">
+                <div className="flex justify-between">
+                  <span>SUBTOTAL</span>
+                  <span>${order.subtotal.toFixed(2)}</span>
+                </div>
+                {order.discount > 0 && (
+                  <div className="flex justify-between text-emerald-700 font-semibold">
+                    <span>DISCOUNT</span>
+                    <span>-${order.discount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span>SALES TAX (8.5%)</span>
+                  <span>${order.tax.toFixed(2)}</span>
+                </div>
+                {order.tip > 0 && (
+                  <div className="flex justify-between">
+                    <span>BARISTA TIP</span>
+                    <span>${order.tip.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm font-extrabold pt-1 border-t border-stone-300">
+                  <span>TOTAL</span>
+                  <span>${order.total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* Tender Details */}
+              <div className="border-b border-dashed border-stone-400 pb-3 mb-3 space-y-1 text-[11px]">
+                <div className="flex justify-between">
+                  <span>PAYMENT METHOD</span>
+                  <span className="font-bold">{order.paymentMethod}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>AMOUNT TENDERED</span>
+                  <span>${(order.amountTendered || order.total).toFixed(2)}</span>
+                </div>
+                {order.changeDue > 0 && (
+                  <div className="flex justify-between font-bold">
+                    <span>CHANGE DUE</span>
+                    <span>${order.changeDue.toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="text-center space-y-1 text-[10px] text-stone-600">
+                <div className="font-bold">WIFI: RoastAndRitual_Guest / PASS: espresso2026</div>
+                <div>Thank you for supporting local craft coffee!</div>
+                <div className="pt-2 tracking-[0.25em] font-bold text-stone-800">
+                  ||| |||| || ||||| ||| ||||
+                </div>
+                <div className="text-[9px]">{order.id}</div>
+              </div>
+            </div>
+          ) : (
+            <div id="printable-area" className="w-full max-w-sm space-y-3">
+              {expandedStickers.map((st, idx) => {
+                const c = st.customization || {};
+                return (
+                  <div
+                    key={idx}
+                    className="bg-amber-50 text-stone-900 rounded-xl p-4 border-2 border-stone-800 shadow-md font-mono text-xs"
+                  >
+                    <div className="flex justify-between items-center border-b border-stone-400 pb-1.5 mb-2">
+                      <div>
+                        <span className="font-extrabold text-sm">#{order.orderNumber}</span>{" "}
+                        <span className="font-bold uppercase">
+                          {order.customerName || "Walk-In"}
+                        </span>
+                      </div>
+                      <span className="px-2 py-0.5 bg-stone-900 text-amber-300 font-bold rounded text-[10px]">
+                        {st.stickerIndex} of {totalStickers} â€¢ {order.orderType}
+                      </span>
+                    </div>
+
+                    <div className="font-extrabold text-sm text-stone-950 mb-1">
+                      {st.type === "drink"
+                        ? `[${(c.size || "MD").toUpperCase()} / ${(c.temp || "HOT").toUpperCase()}] `
+                        : ""}
+                      {st.name}
+                    </div>
+
+                    {st.type === "drink" ? (
+                      <div className="grid grid-cols-2 gap-1 text-[11px] bg-white/80 p-2 rounded border border-stone-300">
+                        <div>
+                          <span className="text-stone-500">MILK:</span>{" "}
+                          <strong>{c.milkLabel}</strong>
+                        </div>
+                        <div>
+                          <span className="text-stone-500">SHOTS:</span>{" "}
+                          <strong>{c.shotsLabel}</strong>
+                        </div>
+                        <div>
+                          <span className="text-stone-500">SWEET:</span>{" "}
+                          <strong>{c.sweetness}%</strong>
+                        </div>
+                        {c.temp === "iced" && (
+                          <div>
+                            <span className="text-stone-500">ICE:</span>{" "}
+                            <strong>{c.iceLabel}</strong>
+                          </div>
+                        )}
+                        {c.syrupLabels?.length > 0 && (
+                          <div className="col-span-2">
+                            <span className="text-stone-500">SYRUP:</span>{" "}
+                            <strong>{c.syrupLabels.join(", ")}</strong>
+                          </div>
+                        )}
+                        {c.toppingLabels?.length > 0 && (
+                          <div className="col-span-2">
+                            <span className="text-stone-500">TOP:</span>{" "}
+                            <strong>{c.toppingLabels.join(", ")}</strong>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-[11px] bg-white/80 p-2 rounded border border-stone-300">
+                        <div>
+                          <span className="text-stone-500">PREP:</span>{" "}
+                          <strong>{c.warmingLabel || "Standard"}</strong>
+                        </div>
+                        {c.spreadLabels?.length > 0 && (
+                          <div>
+                            <span className="text-stone-500">ADD:</span>{" "}
+                            <strong>{c.spreadLabels.join(", ")}</strong>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {c.notes && (
+                      <div className="mt-1.5 text-[11px] font-bold text-rose-800 bg-rose-100 px-2 py-1 rounded">
+                        NOTE: {c.notes}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Footer Buttons */}
+        <div className="no-print px-6 py-4 bg-stone-800 border-t border-stone-700 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="px-5 py-2.5 rounded-xl bg-stone-700 hover:bg-stone-600 text-amber-200 font-bold text-sm flex items-center gap-2 transition"
+          >
+            ðŸ–¨ï¸ Print {printMode === "receipt" ? "Receipt" : "Cup Labels"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              if (onNewOrder) onNewOrder();
+            }}
+            className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm shadow-lg transition"
+          >
+            Start Next Customer Order â†’
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+function BaristaKDS({
+  orders,
+  onUpdateOrderStatus,
+  onToggleItemCompleted,
+  onToggleOrderPriority,
+  onViewReceipt
+}) {
+  const [now, setNow] = useState(Date.now());
+  const [filterMode, setFilterMode] = useState("active"); // active | all
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getElapsedText = (createdAt) => {
+    const diffSec = Math.max(0, Math.floor((now - createdAt) / 1000));
+    const mins = Math.floor(diffSec / 60);
+    const secs = diffSec % 60;
+    if (mins === 0) return `${secs}s`;
+    return `${mins}m ${secs < 10 ? "0" : ""}${secs}s`;
+  };
+
+  const getUrgencyBadge = (createdAt, status) => {
+    if (status === "ready" || status === "completed") {
+      return "bg-emerald-950/80 text-emerald-300 border-emerald-700/60";
+    }
+    const mins = (now - createdAt) / 60000;
+    if (mins >= 6) return "bg-rose-950/90 text-rose-300 border-rose-600 animate-pulse";
+    if (mins >= 3) return "bg-amber-950/90 text-amber-300 border-amber-600";
+    return "bg-stone-800 text-stone-300 border-stone-700";
+  };
+
+  const activeOrders = orders.filter((o) =>
+    filterMode === "active" ? o.status !== "completed" : true
+  );
+
+  // Sort priority first, then oldest first
+  const sortTickets = (list) =>
+    [...list].sort((a, b) => {
+      if (a.priority !== b.priority) return a.priority ? -1 : 1;
+      return a.createdAt - b.createdAt;
+    });
+
+  const lanes = [
+    {
+      id: "queued",
+      title: "New / Queued",
+      badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+      items: sortTickets(activeOrders.filter((o) => o.status === "queued"))
+    },
+    {
+      id: "brewing",
+      title: "On Bar / Brewing",
+      badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+      items: sortTickets(activeOrders.filter((o) => o.status === "brewing"))
+    },
+    {
+      id: "ready",
+      title: "Handoff Counter (Ready)",
+      badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+      items: sortTickets(activeOrders.filter((o) => o.status === "ready"))
+    }
+  ];
+
+  return (
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-stone-950 p-4 md:p-6">
+      {/* KDS Top Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-stone-800">
+        <div>
+          <h1 className="text-xl font-bold text-amber-50 flex items-center gap-2.5">
+            <span>â˜• Barista Kitchen Display System (KDS)</span>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-medium">
+              Live Sync
+            </span>
+          </h1>
+          <p className="text-xs text-stone-400 mt-0.5">
+            Click individual items to cross them off as you steam/pull shots, or bump tickets across stages.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4 px-4 py-2 rounded-xl bg-stone-900 border border-stone-800 text-xs">
+            <span className="flex items-center gap-1.5 text-stone-300">
+              <span className="w-2 h-2 rounded-full bg-sky-400"></span>
+              Queued: <strong>{lanes[0].items.length}</strong>
+            </span>
+            <span className="flex items-center gap-1.5 text-stone-300">
+              <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+              Brewing: <strong>{lanes[1].items.length}</strong>
+            </span>
+            <span className="flex items-center gap-1.5 text-stone-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Ready: <strong>{lanes[2].items.length}</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3-Column KDS Board */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-5 overflow-hidden">
+        {lanes.map((lane) => (
+          <div
+            key={lane.id}
+            className="flex flex-col rounded-2xl bg-stone-900/70 border border-stone-800/90 overflow-hidden"
+          >
+            {/* Lane Header */}
+            <div className="px-4 py-3 bg-stone-900 border-b border-stone-800 flex items-center justify-between">
+              <span className="font-bold text-sm text-stone-100">{lane.title}</span>
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${lane.badgeColor}`}
+              >
+                {lane.items.length}
+              </span>
+            </div>
+
+            {/* Tickets List */}
+            <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5">
+              {lane.items.length === 0 ? (
+                <div className="h-48 flex flex-col items-center justify-center text-stone-500 text-xs border border-dashed border-stone-800 rounded-xl">
+                  <span className="text-2xl mb-1">âœ¨</span>
+                  <span>No tickets in {lane.title}</span>
+                </div>
+              ) : (
+                lane.items.map((order) => {
+                  const allItemsChecked = order.items.every((i) => i.completed);
+                  return (
+                    <div
+                      key={order.id}
+                      className={`rounded-xl border transition shadow-lg overflow-hidden ${
+                        order.priority
+                          ? "bg-stone-900 border-rose-500/80 ring-1 ring-rose-500/40"
+                          : "bg-stone-900 border-stone-700/80"
+                      }`}
+                    >
+                      {/* Ticket Top Header */}
+                      <div
+                        className={`px-4 py-2.5 flex items-center justify-between border-b ${
+                          order.priority
+                            ? "bg-rose-950/50 border-rose-800/60"
+                            : "bg-stone-800/80 border-stone-700/70"
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-extrabold text-base text-amber-300">
+                              #{order.orderNumber}
+                            </span>
+                            <span className="font-bold text-sm text-white truncate max-w-[130px]">
+                              {order.customerName || "Walk-In"}
+                            </span>
+                            {order.priority && (
+                              <span className="px-1.5 py-0.5 text-[10px] font-extrabold uppercase bg-rose-600 text-white rounded">
+                                RUSH
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-stone-400">
+                            {order.orderType}
+                            {order.tableNumber ? ` â€¢ ${order.tableNumber}` : ""}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            title="Toggle Rush Priority"
+                            onClick={() => onToggleOrderPriority(order.id)}
+                            className={`px-2 py-1 rounded text-xs border transition ${
+                              order.priority
+                                ? "bg-rose-600 text-white border-rose-500"
+                                : "bg-stone-800 text-stone-400 border-stone-700 hover:text-white"
+                            }`}
+                          >
+                            ðŸ”¥
+                          </button>
+                          <button
+                            type="button"
+                            title="Print Cup Labels / Receipt"
+                            onClick={() => onViewReceipt(order)}
+                            className="px-2 py-1 rounded text-xs bg-stone-800 hover:bg-stone-700 text-stone-300 border border-stone-700"
+                          >
+                            ðŸ·ï¸
+                          </button>
+                          <span
+                            className={`px-2 py-1 rounded text-xs font-mono font-bold border ${getUrgencyBadge(
+                              order.createdAt,
+                              order.status
+                            )}`}
+                          >
+                            â± {getElapsedText(order.createdAt)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Ticket Items */}
+                      <div className="p-3 space-y-2">
+                        {order.items.map((item) => {
+                          const c = item.customization || {};
+                          return (
+                            <div
+                              key={item.lineId}
+                              onClick={() => onToggleItemCompleted(order.id, item.lineId)}
+                              className={`p-2.5 rounded-lg border cursor-pointer transition select-none ${
+                                item.completed
+                                  ? "bg-stone-950/60 border-stone-800 opacity-55"
+                                  : "bg-stone-800/50 border-stone-700 hover:border-amber-500/60"
+                              }`}
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-start gap-2">
+                                  <span
+                                    className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center text-[10px] font-bold border ${
+                                      item.completed
+                                        ? "bg-emerald-500 border-emerald-500 text-stone-950"
+                                        : "border-stone-500 text-transparent"
+                                    }`}
+                                  >
+                                    âœ“
+                                  </span>
+                                  <div>
+                                    <div
+                                      className={`font-bold text-sm ${
+                                        item.completed
+                                          ? "line-through text-stone-400"
+                                          : "text-amber-100"
+                                      }`}
+                                    >
+                                      {item.quantity}x {item.name}
+                                    </div>
+
+                                    {item.type === "drink" && (
+                                      <div className="mt-1 flex flex-wrap gap-1">
+                                        <span
+                                          className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                            c.temp === "iced"
+                                              ? "bg-sky-950 text-sky-300 border border-sky-700/60"
+                                              : "bg-orange-950 text-orange-300 border border-orange-700/60"
+                                          }`}
+                                        >
+                                          {c.size?.toUpperCase()} â€¢ {c.tempLabel}
+                                        </span>
+                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-stone-700 text-stone-200">
+                                          {c.milkLabel}
+                                        </span>
+                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-stone-700 text-amber-300">
+                                          {c.shotsLabel}
+                                        </span>
+                                        {c.sweetness !== "100" && (
+                                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-stone-700 text-stone-300">
+                                            Sweet: {c.sweetness}%
+                                          </span>
+                                        )}
+                                        {c.temp === "iced" && c.ice !== "regular" && (
+                                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-sky-900/50 text-sky-200">
+                                            {c.iceLabel}
+                                          </span>
+                                        )}
+                                        {c.syrupLabels?.map((s, idx) => (
+                                          <span
+                                            key={idx}
+                                            className="px-1.5 py-0.5 rounded text-[10px] bg-amber-950/90 text-amber-300 border border-amber-700/50"
+                                          >
+                                            +{s}
+                                          </span>
+                                        ))}
+                                        {c.toppingLabels?.map((t, idx) => (
+                                          <span
+                                            key={idx}
+                                            className="px-1.5 py-0.5 rounded text-[10px] bg-purple-950/80 text-purple-200 border border-purple-700/50"
+                                          >
+                                            +{t}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {item.type === "bakery" && (
+                                      <div className="mt-1 flex flex-wrap gap-1">
+                                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300">
+                                          {c.warmingLabel || "Warmed"}
+                                        </span>
+                                        {c.spreadLabels?.map((sp, idx) => (
+                                          <span
+                                            key={idx}
+                                            className="px-1.5 py-0.5 rounded text-[10px] bg-stone-700 text-stone-200"
+                                          >
+                                            +{sp}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {c.notes && (
+                                      <div className="mt-1.5 px-2 py-1 rounded bg-rose-950/80 border border-rose-700/60 text-[11px] text-rose-200 font-semibold">
+                                        âš ï¸ Note: {c.notes}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Ticket Action Footer */}
+                      <div className="px-3 py-2.5 bg-stone-950/80 border-t border-stone-800 flex items-center justify-between gap-2">
+                        {order.status === "queued" && (
+                          <button
+                            type="button"
+                            onClick={() => onUpdateOrderStatus(order.id, "brewing")}
+                            className="w-full py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs shadow transition"
+                          >
+                            Start Brewing â†’
+                          </button>
+                        )}
+                        {order.status === "brewing" && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => onUpdateOrderStatus(order.id, "queued")}
+                              className="px-3 py-2 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
+                            >
+                              â†
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onUpdateOrderStatus(order.id, "ready")}
+                              className={`flex-1 py-2 rounded-lg font-bold text-xs transition ${
+                                allItemsChecked
+                                  ? "bg-emerald-500 hover:bg-emerald-400 text-stone-950 shadow-lg"
+                                  : "bg-emerald-700/80 hover:bg-emerald-600 text-white"
+                              }`}
+                            >
+                              âœ“ Mark Ready for Handoff
+                            </button>
+                          </>
+                        )}
+                        {order.status === "ready" && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => onUpdateOrderStatus(order.id, "brewing")}
+                              className="px-3 py-2 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
+                            >
+                              â† Recall
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onUpdateOrderStatus(order.id, "completed")}
+                              className="flex-1 py-2 rounded-lg bg-stone-700 hover:bg-stone-600 text-amber-200 font-bold text-xs transition"
+                            >
+                              Picked Up / Complete Archive âœ“
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+
+function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter((o) => {
+      if (statusFilter !== "all" && o.status !== statusFilter) return false;
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        o.orderNumber.toLowerCase().includes(q) ||
+        (o.customerName || "").toLowerCase().includes(q) ||
+        o.items.some((i) => i.name.toLowerCase().includes(q))
+      );
+    });
+  }, [orders, searchQuery, statusFilter]);
+
+  const stats = useMemo(() => {
+    const valid = orders.filter((o) => o.status !== "refunded");
+    const revenue = valid.reduce((acc, o) => acc + o.total, 0);
+    const tips = valid.reduce((acc, o) => acc + (o.tip || 0), 0);
+    const cashTotal = valid
+      .filter((o) => o.paymentMethod === "Cash")
+      .reduce((acc, o) => acc + o.total, 0);
+    const cardTotal = revenue - cashTotal;
+    const avgTicket = valid.length > 0 ? revenue / valid.length : 0;
+
+    return {
+      count: valid.length,
+      revenue,
+      tips,
+      cashTotal,
+      cardTotal,
+      avgTicket
+    };
+  }, [orders]);
+
+  return (
+    <div className="flex-1 flex flex-col h-full overflow-y-auto bg-stone-950 p-4 md:p-6 space-y-6">
+      {/* Shift KPI Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-xs text-stone-400 uppercase font-semibold">Gross Shift Sales</div>
+          <div className="text-2xl font-extrabold text-amber-400 mt-1">
+            ${stats.revenue.toFixed(2)}
+          </div>
+          <div className="text-[11px] text-stone-500 mt-0.5">{stats.count} Paid Orders</div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-xs text-stone-400 uppercase font-semibold">Average Ticket</div>
+          <div className="text-2xl font-extrabold text-stone-100 mt-1">
+            ${stats.avgTicket.toFixed(2)}
+          </div>
+          <div className="text-[11px] text-stone-500 mt-0.5">Per transaction</div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-xs text-stone-400 uppercase font-semibold">Barista Tips</div>
+          <div className="text-2xl font-extrabold text-emerald-400 mt-1">
+            ${stats.tips.toFixed(2)}
+          </div>
+          <div className="text-[11px] text-stone-500 mt-0.5">100% distributed to crew</div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-xs text-stone-400 uppercase font-semibold">Cash Drawer Sales</div>
+          <div className="text-2xl font-extrabold text-stone-200 mt-1">
+            ${stats.cashTotal.toFixed(2)}
+          </div>
+          <div className="text-[11px] text-stone-500 mt-0.5">Physical tender</div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
+          <div className="text-xs text-stone-400 uppercase font-semibold">Card & NFC Sales</div>
+          <div className="text-2xl font-extrabold text-sky-400 mt-1">
+            ${stats.cardTotal.toFixed(2)}
+          </div>
+          <div className="text-[11px] text-stone-500 mt-0.5">Settled electronically</div>
+        </div>
+      </div>
+
+      {/* Filter & Search Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-stone-900 p-4 rounded-2xl border border-stone-800">
+        <div className="flex items-center gap-2 flex-1 min-w-[240px]">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by Order #, Customer Name, or Drink..."
+            className="w-full px-4 py-2 rounded-xl bg-stone-950 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          {["all", "queued", "brewing", "ready", "completed", "refunded"].map((st) => (
+            <button
+              key={st}
+              type="button"
+              onClick={() => setStatusFilter(st)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition ${
+                statusFilter === st
+                  ? "bg-amber-600 text-stone-950"
+                  : "bg-stone-800 text-stone-400 hover:text-white"
+              }`}
+            >
+              {st}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <div className="bg-stone-900 rounded-2xl border border-stone-800 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr className="bg-stone-800/80 text-stone-400 text-xs uppercase border-b border-stone-700">
+                <th className="py-3.5 px-4">Order #</th>
+                <th className="py-3.5 px-4">Time</th>
+                <th className="py-3.5 px-4">Customer & Type</th>
+                <th className="py-3.5 px-4">Items Summary</th>
+                <th className="py-3.5 px-4">Payment</th>
+                <th className="py-3.5 px-4">Status</th>
+                <th className="py-3.5 px-4 text-right">Total</th>
+                <th className="py-3.5 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-stone-800">
+              {filteredOrders.map((order) => (
+                <tr key={order.id} className="hover:bg-stone-800/40 transition">
+                  <td className="py-3.5 px-4 font-mono font-bold text-amber-300">
+                    #{order.orderNumber}
+                  </td>
+                  <td className="py-3.5 px-4 text-xs text-stone-400">
+                    {new Date(order.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    })}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <div className="font-semibold text-stone-100">
+                      {order.customerName || "Walk-In Guest"}
+                    </div>
+                    <div className="text-xs text-stone-400">
+                      {order.orderType} {order.tableNumber ? `(${order.tableNumber})` : ""}
+                    </div>
+                  </td>
+                  <td className="py-3.5 px-4 max-w-xs">
+                    <div className="text-xs text-stone-300 truncate">
+                      {order.items.map((i) => `${i.quantity}x ${i.name}`).join(", ")}
+                    </div>
+                  </td>
+                  <td className="py-3.5 px-4 text-xs text-stone-300">{order.paymentMethod}</td>
+                  <td className="py-3.5 px-4">
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${
+                        order.status === "completed"
+                          ? "bg-stone-800 text-stone-300"
+                          : order.status === "ready"
+                          ? "bg-emerald-950 text-emerald-300 border border-emerald-700"
+                          : order.status === "refunded"
+                          ? "bg-rose-950 text-rose-300 border border-rose-800"
+                          : "bg-amber-950 text-amber-300 border border-amber-700"
+                      }`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-right font-bold text-amber-400">
+                    ${order.total.toFixed(2)}
+                  </td>
+                  <td className="py-3.5 px-4 text-right space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => onViewReceipt(order)}
+                      className="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-amber-200 text-xs font-semibold border border-stone-700 transition"
+                    >
+                      ðŸ§¾ Receipt / Labels
+                    </button>
+                    {order.status !== "refunded" && (
+                      <button
+                        type="button"
+                        onClick={() => onRefundOrder(order.id)}
+                        className="px-2.5 py-1.5 rounded-lg bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 text-xs border border-rose-800/50 transition"
+                      >
+                        Void
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+function App() {
+  const [activeTab, setActiveTab] = useState("pos"); // pos | kds | history
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [quickFilter, setQuickFilter] = useState("all"); // all | popular | hot | iced
+
+  // Cart & Order State
+  const [cart, setCart] = useState([]);
+  const [customerName, setCustomerName] = useState("");
+  const [orderType, setOrderType] = useState("Dine-In");
+  const [tableNumber, setTableNumber] = useState("");
+  const [selectedDiscountId, setSelectedDiscountId] = useState("none");
+  const [heldOrders, setHeldOrders] = useState([]);
+
+  // Modals State
+  const [customizingItem, setCustomizingItem] = useState(null);
+  const [editingCartLine, setEditingCartLine] = useState(null);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [receiptOrder, setReceiptOrder] = useState(null);
+
+  // Orders Queue & History (persisted in localStorage)
+  const [orders, setOrders] = useState(() => {
+    try {
+      const saved = localStorage.getItem("roast_ritual_orders_v1");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      // ignore
+    }
+    return INITIAL_ORDERS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("roast_ritual_orders_v1", JSON.stringify(orders));
+    } catch (e) {
+      // ignore
+    }
+  }, [orders]);
+
+  // Filtered Menu Items
+  const filteredMenu = useMemo(() => {
+    return MENU_ITEMS.filter((item) => {
+      if (selectedCategory !== "all" && item.category !== selectedCategory) return false;
+      if (quickFilter === "popular" && !item.popular) return false;
+      if (quickFilter === "hot" && item.defaultTemp !== "hot") return false;
+      if (quickFilter === "iced" && item.defaultTemp !== "iced") return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        return (
+          item.name.toLowerCase().includes(q) ||
+          item.sku.toLowerCase().includes(q) ||
+          item.description.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [selectedCategory, quickFilter, searchQuery]);
+
+  // Quick Add default item to Cart
+  const handleQuickAdd = (item, e) => {
+    e.stopPropagation();
+    let customization = {};
+    if (item.type === "drink") {
+      const milkObj = MODIFIERS.milks.find((m) => m.id === (item.defaultMilk || "whole"));
+      const shotObj = MODIFIERS.shots.find((s) => s.id === (item.defaultShots || "standard"));
+      customization = {
+        size: "md",
+        sizeLabel: "Medium (16 oz)",
+        temp: item.defaultTemp || "hot",
+        tempLabel: item.defaultTemp === "iced" ? "Iced" : "Hot",
+        milk: item.defaultMilk || "whole",
+        milkLabel: milkObj ? milkObj.name : "Whole Milk",
+        shots: item.defaultShots || "standard",
+        shotsLabel: shotObj ? shotObj.name : "Standard Double (2)",
+        sweetness: "100",
+        sweetnessLabel: "100% Standard",
+        ice: item.defaultTemp === "iced" ? "regular" : "none",
+        iceLabel: item.defaultTemp === "iced" ? "Regular Ice" : "",
+        syrups: item.defaultSyrups || [],
+        syrupLabels: (item.defaultSyrups || [])
+          .map((id) => MODIFIERS.syrups.find((s) => s.id === id)?.name)
+          .filter(Boolean),
+        toppings: item.defaultToppings || [],
+        toppingLabels: (item.defaultToppings || [])
+          .map((id) => MODIFIERS.toppings.find((t) => t.id === id)?.name)
+          .filter(Boolean),
+        notes: ""
+      };
+    } else if (item.type === "bakery") {
+      customization = {
+        warming: "warmed",
+        warmingLabel: "Warmed in Oven",
+        spreads: [],
+        spreadLabels: [],
+        notes: ""
+      };
+    } else {
+      customization = { notes: "" };
+    }
+
+    const newLine = {
+      lineId: `L-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      itemId: item.id,
+      name: item.name,
+      sku: item.sku,
+      type: item.type,
+      quantity: 1,
+      unitPrice: item.price,
+      completed: false,
+      customization
+    };
+    setCart((prev) => [...prev, newLine]);
+  };
+
+  // Save Customized Item
+  const handleSaveCustomized = (lineItem) => {
+    if (editingCartLine) {
+      setCart((prev) =>
+        prev.map((c) => (c.lineId === editingCartLine.lineId ? lineItem : c))
+      );
+    } else {
+      setCart((prev) => [...prev, lineItem]);
+    }
+    setCustomizingItem(null);
+    setEditingCartLine(null);
+  };
+
+  // Edit existing cart line
+  const handleEditCartLine = (line) => {
+    const baseItem = MENU_ITEMS.find((m) => m.id === line.itemId);
+    if (!baseItem) return;
+    setEditingCartLine(line);
+    setCustomizingItem(baseItem);
+  };
+
+  // Update quantity in cart
+  const handleUpdateQty = (lineId, delta) => {
+    setCart((prev) =>
+      prev
+        .map((c) => (c.lineId === lineId ? { ...c, quantity: c.quantity + delta } : c))
+        .filter((c) => c.quantity > 0)
+    );
+  };
+
+  // Hold / Park Current Order
+  const handleHoldOrder = () => {
+    if (cart.length === 0) return;
+    const held = {
+      id: `HOLD-${Date.now()}`,
+      customerName: customerName || `Guest #${heldOrders.length + 1}`,
+      orderType,
+      tableNumber,
+      cart,
+      savedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    };
+    setHeldOrders((prev) => [held, ...prev]);
+    setCart([]);
+    setCustomerName("");
+    setTableNumber("");
+    setSelectedDiscountId("none");
+  };
+
+  const handleRecallHeldOrder = (held) => {
+    setCart(held.cart);
+    setCustomerName(held.customerName);
+    setOrderType(held.orderType);
+    setTableNumber(held.tableNumber);
+    setHeldOrders((prev) => prev.filter((h) => h.id !== held.id));
+  };
+
+  // Totals Calculation
+  const subtotal = useMemo(() => {
+    return Number(
+      cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0).toFixed(2)
+    );
+  }, [cart]);
+
+  const discountAmount = useMemo(() => {
+    const preset = DISCOUNT_PRESETS.find((d) => d.id === selectedDiscountId);
+    if (!preset || preset.value === 0 || subtotal === 0) return 0;
+    if (preset.type === "percent") {
+      return Number(((subtotal * preset.value) / 100).toFixed(2));
+    }
+    return Math.min(subtotal, Number(preset.value.toFixed(2)));
+  }, [subtotal, selectedDiscountId]);
+
+  const taxableSubtotal = Math.max(0, Number((subtotal - discountAmount).toFixed(2)));
+  const taxAmount = Number((taxableSubtotal * SHOP_CONFIG.taxRate).toFixed(2));
+  const baseTotal = Number((taxableSubtotal + taxAmount).toFixed(2));
+
+  // Complete Checkout
+  const handleCompleteOrder = (paymentDetails) => {
+    const nextNum = 1001 + orders.length + Math.floor(Math.random() * 10);
+    const newOrder = {
+      id: `ORD-${nextNum}`,
+      orderNumber: String(nextNum),
+      customerName: customerName.trim() || "Walk-In Guest",
+      orderType,
+      tableNumber: tableNumber.trim(),
+      status: "queued",
+      priority: false,
+      createdAt: Date.now(),
+      cashier: SHOP_CONFIG.cashierName,
+      paymentMethod: paymentDetails.paymentMethod,
+      subtotal,
+      discount: discountAmount,
+      tax: taxAmount,
+      tip: paymentDetails.tip,
+      total: paymentDetails.total,
+      amountTendered: paymentDetails.amountTendered,
+      changeDue: paymentDetails.changeDue,
+      items: cart
+    };
+
+    setOrders((prev) => [newOrder, ...prev]);
+    setIsCheckoutOpen(false);
+    setReceiptOrder(newOrder);
+    setCart([]);
+    setCustomerName("");
+    setTableNumber("");
+    setSelectedDiscountId("none");
+  };
+
+  // KDS Handlers
+  const handleUpdateOrderStatus = (orderId, newStatus) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === orderId
+          ? {
+              ...o,
+              status: newStatus,
+              items:
+                newStatus === "ready" || newStatus === "completed"
+                  ? o.items.map((i) => ({ ...i, completed: true }))
+                  : o.items
+            }
+          : o
+      )
+    );
+  };
+
+  const handleToggleItemCompleted = (orderId, lineId) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === orderId
+          ? {
+              ...o,
+              items: o.items.map((i) =>
+                i.lineId === lineId ? { ...i, completed: !i.completed } : i
+              )
+            }
+          : o
+      )
+    );
+  };
+
+  const handleToggleOrderPriority = (orderId) => {
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, priority: !o.priority } : o))
+    );
+  };
+
+  const handleRefundOrder = (orderId) => {
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, status: "refunded" } : o))
+    );
+  };
+
+  const activeKdsCount = orders.filter(
+    (o) => o.status === "queued" || o.status === "brewing" || o.status === "ready"
+  ).length;
+
+  return (
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-stone-950 text-stone-100 select-none">
+      {/* Top POS Navigation Header */}
+      <header className="no-print h-16 px-5 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-stone-950 font-black text-xl shadow-md">
+            â˜•
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold tracking-tight text-amber-50 text-base">
+                {SHOP_CONFIG.name}
+              </span>
+              <span className="text-[11px] px-2 py-0.5 rounded bg-stone-800 text-amber-400 border border-stone-700 font-mono">
+                {SHOP_CONFIG.registerId}
+              </span>
+            </div>
+            <div className="text-[11px] text-stone-400">
+              Barista on Shift: <strong className="text-stone-200">{SHOP_CONFIG.cashierName}</strong>
+            </div>
+          </div>
+        </div>
+
+        {/* Main View Switcher */}
+        <nav className="flex items-center gap-2 bg-stone-950 p-1.5 rounded-2xl border border-stone-800">
+          <button
+            type="button"
+            onClick={() => setActiveTab("pos")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              activeTab === "pos"
+                ? "bg-amber-500 text-stone-950 shadow"
+                : "text-stone-400 hover:text-white"
+            }`}
+          >
+            <span>ðŸ–¥ï¸ POS Register</span>
+            {cart.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-stone-900 text-amber-400 text-[10px]">
+                {cart.reduce((s, i) => s + i.quantity, 0)}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("kds")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              activeTab === "kds"
+                ? "bg-amber-500 text-stone-950 shadow"
+                : "text-stone-400 hover:text-white"
+            }`}
+          >
+            <span>ðŸ”¥ Barista KDS Queue</span>
+            {activeKdsCount > 0 && (
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                  activeTab === "kds"
+                    ? "bg-stone-950 text-amber-400"
+                    : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                }`}
+              >
+                {activeKdsCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("history")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              activeTab === "history"
+                ? "bg-amber-500 text-stone-950 shadow"
+                : "text-stone-400 hover:text-white"
+            }`}
+          >
+            <span>ðŸ§¾ Receipts & Shift Sales</span>
+          </button>
+        </nav>
+
+        {/* Held Orders & Status */}
+        <div className="hidden md:flex items-center gap-3">
+          {heldOrders.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              {heldOrders.slice(0, 2).map((h) => (
+                <button
+                  key={h.id}
+                  type="button"
+                  onClick={() => handleRecallHeldOrder(h)}
+                  className="px-3 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-700/60 text-amber-200 text-xs font-semibold flex items-center gap-1.5 transition"
+                >
+                  <span>â¸ Recall: {h.customerName}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="text-right text-xs text-stone-400 font-mono">
+            {new Date().toLocaleDateString([], { month: "short", day: "numeric" })}
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      {activeTab === "pos" && (
+        <div className="no-print flex-1 flex overflow-hidden">
+          {/* LEFT / CENTER: Categories + Menu Grid */}
+          <div className="flex-1 flex flex-col overflow-hidden border-r border-stone-800">
+            {/* Search & Quick Filter Bar */}
+            <div className="p-4 bg-stone-900/60 border-b border-stone-800 flex flex-wrap items-center justify-between gap-3">
+              <div className="relative flex-1 min-w-[220px]">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search drinks, pastries, or SKU (e.g. Matcha, Latte, ESP-101)..."
+                  className="w-full pl-9 pr-4 py-2 rounded-xl bg-stone-900 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                />
+                <span className="absolute left-3 top-2.5 text-stone-500 text-sm">ðŸ”</span>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-2.5 text-xs text-stone-400 hover:text-white"
+                  >
+                    âœ•
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {[
+                  { id: "all", label: "All" },
+                  { id: "popular", label: "â­ Popular" },
+                  { id: "hot", label: "ðŸ”¥ Hot" },
+                  { id: "iced", label: "ðŸ§Š Iced" }
+                ].map((qf) => (
+                  <button
+                    key={qf.id}
+                    type="button"
+                    onClick={() => setQuickFilter(qf.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
+                      quickFilter === qf.id
+                        ? "bg-amber-500/20 border-amber-500 text-amber-200"
+                        : "bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200"
+                    }`}
+                  >
+                    {qf.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Category Pills */}
+            <div className="px-4 py-2.5 bg-stone-900/30 border-b border-stone-800 flex items-center gap-2 overflow-x-auto shrink-0">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+                    selectedCategory === cat.id
+                      ? "bg-amber-500 text-stone-950 shadow-md shadow-amber-950/50"
+                      : "bg-stone-900 text-stone-300 hover:bg-stone-800 border border-stone-800"
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+
+            {/* Menu Grid */}
+            <div className="flex-1 overflow-y-auto p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 content-start">
+              {filteredMenu.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => {
+                    setEditingCartLine(null);
+                    setCustomizingItem(item);
+                  }}
+                  className="group relative rounded-2xl bg-stone-900/90 hover:bg-stone-800/90 border border-stone-800 hover:border-amber-500/60 p-4 flex flex-col justify-between cursor-pointer transition shadow-md"
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-2 mb-2.5">
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-extrabold text-white shadow-inner shrink-0"
+                        style={{ backgroundColor: item.color }}
+                      >
+                        {item.sku.split("-")[0]}
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <span className="text-base font-extrabold text-amber-400">
+                          ${item.price.toFixed(2)}
+                        </span>
+                        <span className="text-[10px] text-stone-500 font-mono">
+                          {item.calories > 0 ? `${item.calories} cal` : item.sku}
+                        </span>
+                      </div>
+                    </div>
+
+                    {item.badge && (
+                      <span className="inline-block mb-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                        {item.badge}
+                      </span>
+                    )}
+
+                    <h3 className="font-bold text-sm text-stone-100 group-hover:text-amber-200 leading-snug">
+                      {item.name}
+                    </h3>
+                    <p className="text-xs text-stone-400 line-clamp-2 mt-1 leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-stone-800/80 flex items-center justify-between gap-2">
+                    <span className="text-[11px] text-amber-400/90 font-semibold group-hover:underline">
+                      âš™ï¸ Customize
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => handleQuickAdd(item, e)}
+                      className="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-amber-500 hover:text-stone-950 text-stone-200 text-xs font-bold border border-stone-700 hover:border-amber-400 transition"
+                    >
+                      + Quick Add
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT: Current Order Cart & Checkout Ticket */}
+          <div className="w-full max-w-md bg-stone-900 flex flex-col h-full shrink-0">
+            {/* Customer & Order Type Header */}
+            <div className="p-4 bg-stone-900 border-b border-stone-800 space-y-3">
+              <div className="grid grid-cols-4 gap-1.5 bg-stone-950 p-1 rounded-xl border border-stone-800">
+                {["Dine-In", "Takeout", "Pickup", "Drive-Thru"].map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setOrderType(type)}
+                    className={`py-1.5 rounded-lg text-[11px] font-bold transition ${
+                      orderType === type
+                        ? "bg-amber-500 text-stone-950"
+                        : "text-stone-400 hover:text-white"
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Customer Name (for Cup Label)..."
+                  className="flex-1 px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                />
+                <input
+                  type="text"
+                  value={tableNumber}
+                  onChange={(e) => setTableNumber(e.target.value)}
+                  placeholder="Tbl / Pager #"
+                  className="w-24 px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+            </div>
+
+            {/* Cart Items List */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+              {cart.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center text-stone-500 p-6">
+                  <div className="w-14 h-14 rounded-2xl bg-stone-800/60 flex items-center justify-center text-2xl mb-3">
+                    â˜•
+                  </div>
+                  <p className="text-sm font-semibold text-stone-400">Current Ticket is Empty</p>
+                  <p className="text-xs text-stone-500 mt-1 max-w-xs">
+                    Tap any drink or pastry on the left to customize size, milk, espresso shots, and syrups.
+                  </p>
+                </div>
+              ) : (
+                cart.map((line) => {
+                  const c = line.customization || {};
+                  return (
+                    <div
+                      key={line.lineId}
+                      className="p-3 rounded-xl bg-stone-950/80 border border-stone-800 hover:border-stone-700 transition"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div
+                          onClick={() => handleEditCartLine(line)}
+                          className="cursor-pointer flex-1"
+                        >
+                          <div className="font-bold text-sm text-amber-100 hover:text-amber-300 flex items-center gap-1.5">
+                            <span>{line.name}</span>
+                            <span className="text-[10px] text-stone-500 font-normal underline">
+                              Edit
+                            </span>
+                          </div>
+
+                          {line.type === "drink" && (
+                            <div className="text-[11px] text-stone-400 mt-1 space-y-0.5">
+                              <div className="text-amber-400/90 font-medium">
+                                {c.sizeLabel} â€¢ {c.tempLabel} â€¢ {c.milkLabel}
+                              </div>
+                              <div>
+                                {c.shotsLabel}
+                                {c.sweetness !== "100" ? ` â€¢ ${c.sweetnessLabel}` : ""}
+                                {c.temp === "iced" && c.ice !== "regular"
+                                  ? ` â€¢ ${c.iceLabel}`
+                                  : ""}
+                              </div>
+                              {c.syrupLabels?.length > 0 && (
+                                <div className="text-stone-300">
+                                  + Syrup: {c.syrupLabels.join(", ")}
+                                </div>
+                              )}
+                              {c.toppingLabels?.length > 0 && (
+                                <div className="text-stone-300">
+                                  + Top: {c.toppingLabels.join(", ")}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {line.type === "bakery" && (
+                            <div className="text-[11px] text-stone-400 mt-1">
+                              {c.warmingLabel}
+                              {c.spreadLabels?.length > 0
+                                ? ` â€¢ +${c.spreadLabels.join(", ")}`
+                                : ""}
+                            </div>
+                          )}
+
+                          {c.notes && (
+                            <div className="mt-1 text-[11px] italic text-rose-300">
+                              Note: "{c.notes}"
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col items-end gap-2">
+                          <span className="font-bold text-sm text-amber-400">
+                            ${(line.unitPrice * line.quantity).toFixed(2)}
+                          </span>
+                          <div className="flex items-center bg-stone-900 border border-stone-700 rounded-lg">
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateQty(line.lineId, -1)}
+                              className="px-2 py-0.5 text-xs font-bold text-stone-400 hover:text-white"
+                            >
+                              âˆ’
+                            </button>
+                            <span className="px-2 text-xs font-bold text-stone-100">
+                              {line.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateQty(line.lineId, 1)}
+                              className="px-2 py-0.5 text-xs font-bold text-stone-400 hover:text-white"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Discount, Totals & Checkout Button */}
+            <div className="p-4 bg-stone-950 border-t border-stone-800 space-y-3">
+              {/* Discount Selector */}
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs text-stone-400 font-medium">Promo / Discount:</span>
+                <select
+                  value={selectedDiscountId}
+                  onChange={(e) => setSelectedDiscountId(e.target.value)}
+                  className="px-2.5 py-1.5 rounded-lg bg-stone-900 border border-stone-700 text-xs text-amber-200 focus:outline-none focus:border-amber-500"
+                >
+                  {DISCOUNT_PRESETS.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Price Breakdown */}
+              <div className="space-y-1 text-xs border-t border-stone-800 pt-2.5">
+                <div className="flex justify-between text-stone-400">
+                  <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-emerald-400 font-semibold">
+                    <span>Discount Applied</span>
+                    <span>âˆ’${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-stone-400">
+                  <span>Tax (8.5%)</span>
+                  <span>${taxAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-baseline text-base font-extrabold text-white pt-1">
+                  <span>Total Due</span>
+                  <span className="text-xl text-amber-400">${baseTotal.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-4 gap-2 pt-1">
+                <button
+                  type="button"
+                  disabled={cart.length === 0}
+                  onClick={() => setCart([])}
+                  className="py-3 rounded-xl border border-stone-800 bg-stone-900 hover:bg-rose-950/50 hover:border-rose-800 text-stone-400 hover:text-rose-300 text-xs font-bold disabled:opacity-40 transition"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  disabled={cart.length === 0}
+                  onClick={handleHoldOrder}
+                  className="py-3 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-bold disabled:opacity-40 transition"
+                >
+                  â¸ Hold
+                </button>
+                <button
+                  type="button"
+                  disabled={cart.length === 0}
+                  onClick={() => setIsCheckoutOpen(true)}
+                  className="col-span-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:bg-stone-800 disabled:text-stone-600 text-stone-950 font-extrabold text-sm shadow-lg shadow-amber-950/40 transition"
+                >
+                  Pay ${baseTotal.toFixed(2)} â†’
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "kds" && (
+        <BaristaKDS
+          orders={orders}
+          onUpdateOrderStatus={handleUpdateOrderStatus}
+          onToggleItemCompleted={handleToggleItemCompleted}
+          onToggleOrderPriority={handleToggleOrderPriority}
+          onViewReceipt={(ord) => setReceiptOrder(ord)}
+        />
+      )}
+
+      {activeTab === "history" && (
+        <OrderHistory
+          orders={orders}
+          onViewReceipt={(ord) => setReceiptOrder(ord)}
+          onRefundOrder={handleRefundOrder}
+        />
+      )}
+
+      {/* Modals */}
+      {customizingItem && (
+        <CustomizationModal
+          item={customizingItem}
+          initialEditItem={editingCartLine}
+          onClose={() => {
+            setCustomizingItem(null);
+            setEditingCartLine(null);
+          }}
+          onSave={handleSaveCustomized}
+        />
+      )}
+
+      {isCheckoutOpen && (
+        <CheckoutModal
+          subtotal={subtotal}
+          discountAmount={discountAmount}
+          taxAmount={taxAmount}
+          baseTotal={baseTotal}
+          customerName={customerName}
+          orderType={orderType}
+          tableNumber={tableNumber}
+          onClose={() => setIsCheckoutOpen(false)}
+          onCompleteOrder={handleCompleteOrder}
+        />
+      )}
+
+      {receiptOrder && (
+        <ReceiptModal
+          order={receiptOrder}
+          onClose={() => setReceiptOrder(null)}
+          onNewOrder={() => setActiveTab("pos")}
+        />
+      )}
+    </div>
+  );
+}
+
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
