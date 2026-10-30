@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="rrGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A" />
+      <stop offset="45%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#B45309" />
+    </linearGradient>
+    <linearGradient id="rrBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#29201B" />
+      <stop offset="100%" stop-color="#120E0C" />
+    </linearGradient>
+    <filter id="rrGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <!-- Outer Rounded Crest Shield -->
+  <rect x="4" y="4" width="112" height="112" rx="28" fill="url(#rrBg)" stroke="url(#rrGold)" stroke-width="3.5" />
+
+  <!-- Inner Subtle Geometric Ring -->
+  <circle cx="60" cy="60" r="46" stroke="url(#rrGold)" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.55" />
+
+  <!-- Botanical Coffee Leaves (Left & Right) -->
+  <path d="M26 72 C20 56, 26 38, 40 32 C38 48, 34 62, 26 72 Z" fill="url(#rrGold)" opacity="0.28" />
+  <path d="M94 72 C100 56, 94 38, 80 32 C82 48, 86 62, 94 72 Z" fill="url(#rrGold)" opacity="0.28" />
+
+  <!-- Rising Aroma / Steam Waves -->
+  <path d="M51 42 C48 35, 55 30, 52 22" stroke="url(#rrGold)" stroke-width="3" stroke-linecap="round" />
+  <path d="M60 39 C57 31, 65 26, 61 17" stroke="url(#rrGold)" stroke-width="3.2" stroke-linecap="round" />
+  <path d="M69 42 C66 35, 73 30, 70 22" stroke="url(#rrGold)" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Artisan Espresso Cup Body -->
+  <g filter="url(#rrGlow)">
+    <path d="M35 49 H81 V62 C81 75.8 69.8 87 56 87 H60 C46.2 87 35 75.8 35 62 V49 Z" fill="url(#rrGold)" />
+    <!-- Cup Handle -->
+    <path d="M81 54 H86 C91.5 54 95 58 95 63.5 C95 69 91.5 73 86 73 H79" stroke="url(#rrGold)" stroke-width="5" stroke-linecap="round" fill="none" />
+    <!-- Roasted Coffee Bean Emblem Inside Cup -->
+    <ellipse cx="58" cy="66" rx="9" ry="11.5" transform="rotate(-18 58 66)" fill="#1C1410" />
+    <path d="M55 56 C53 63, 63 68, 61 76" stroke="url(#rrGold)" stroke-width="2.2" stroke-linecap="round" />
+  </g>
+
+  <!-- Saucer Base -->
+  <path d="M32 94 H88" stroke="url(#rrGold)" stroke-width="4" stroke-linecap="round" />
+  <path d="M42 100 H78" stroke="url(#rrGold)" stroke-width="2.2" stroke-linecap="round" opacity="0.75" />
+</svg>

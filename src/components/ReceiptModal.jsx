@@ -84,6 +84,20 @@ export default function ReceiptModal({ order, onClose, onNewOrder }) {
             >
               {/* Shop Header */}
               <div className="text-center border-b border-dashed border-stone-400 pb-3 mb-3">
+                <div className="flex justify-center mb-1.5">
+                  <svg className="w-11 h-11 text-stone-900" viewBox="0 0 120 120" fill="none">
+                    <rect x="6" y="6" width="108" height="108" rx="26" stroke="currentColor" strokeWidth="5" />
+                    <circle cx="60" cy="60" r="44" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" />
+                    <path d="M51 42 C48 35, 55 30, 52 22" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                    <path d="M60 39 C57 31, 65 26, 61 17" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                    <path d="M69 42 C66 35, 73 30, 70 22" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                    <path d="M35 49 H81 V62 C81 75.8 69.8 87 56 87 H60 C46.2 87 35 75.8 35 62 V49 Z" fill="currentColor" />
+                    <path d="M81 54 H86 C91.5 54 95 58 95 63.5 C95 69 91.5 73 86 73 H79" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+                    <ellipse cx="58" cy="66" rx="8.5" ry="11" transform="rotate(-18 58 66)" fill="#fafaf9" />
+                    <path d="M55 56 C53 63, 63 68, 61 76" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                    <path d="M32 94 H88" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+                  </svg>
+                </div>
                 <div className="text-base font-extrabold tracking-widest uppercase">
                   {SHOP_CONFIG.name}
                 </div>

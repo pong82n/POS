@@ -13,6 +13,114 @@ import ReceiptModal from "./components/ReceiptModal";
 import BaristaKDS from "./components/BaristaKDS";
 import OrderHistory from "./components/OrderHistory";
 
+function BrandLogo({ className = "w-11 h-11" }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 120 120"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <linearGradient id="rrGold" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FDE68A" />
+          <stop offset="45%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#B45309" />
+        </linearGradient>
+        <linearGradient id="rrBg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#29201B" />
+          <stop offset="100%" stopColor="#120E0C" />
+        </linearGradient>
+      </defs>
+      <rect
+        x="4"
+        y="4"
+        width="112"
+        height="112"
+        rx="28"
+        fill="url(#rrBg)"
+        stroke="url(#rrGold)"
+        strokeWidth="3.5"
+      />
+      <circle
+        cx="60"
+        cy="60"
+        r="46"
+        stroke="url(#rrGold)"
+        strokeWidth="1.2"
+        strokeDasharray="3 3"
+        opacity="0.55"
+      />
+      <path
+        d="M26 72 C20 56, 26 38, 40 32 C38 48, 34 62, 26 72 Z"
+        fill="url(#rrGold)"
+        opacity="0.28"
+      />
+      <path
+        d="M94 72 C100 56, 94 38, 80 32 C82 48, 86 62, 94 72 Z"
+        fill="url(#rrGold)"
+        opacity="0.28"
+      />
+      <path
+        d="M51 42 C48 35, 55 30, 52 22"
+        stroke="url(#rrGold)"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M60 39 C57 31, 65 26, 61 17"
+        stroke="url(#rrGold)"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M69 42 C66 35, 73 30, 70 22"
+        stroke="url(#rrGold)"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M35 49 H81 V62 C81 75.8 69.8 87 56 87 H60 C46.2 87 35 75.8 35 62 V49 Z"
+        fill="url(#rrGold)"
+      />
+      <path
+        d="M81 54 H86 C91.5 54 95 58 95 63.5 C95 69 91.5 73 86 73 H79"
+        stroke="url(#rrGold)"
+        strokeWidth="5"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <ellipse
+        cx="58"
+        cy="66"
+        rx="9"
+        ry="11.5"
+        transform="rotate(-18 58 66)"
+        fill="#1C1410"
+      />
+      <path
+        d="M55 56 C53 63, 63 68, 61 76"
+        stroke="url(#rrGold)"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M32 94 H88"
+        stroke="url(#rrGold)"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+      <path
+        d="M42 100 H78"
+        stroke="url(#rrGold)"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        opacity="0.75"
+      />
+    </svg>
+  );
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState("pos"); // pos | kds | history
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -290,12 +398,10 @@ export default function App() {
       {/* Top POS Navigation Header */}
       <header className="no-print h-16 px-5 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-stone-950 font-black text-xl shadow-md">
-            ☕
-          </div>
+          <BrandLogo className="w-11 h-11 shrink-0 drop-shadow-md" />
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold tracking-tight text-amber-50 text-base">
+              <span className="font-extrabold tracking-wider text-amber-50 text-base">
                 {SHOP_CONFIG.name}
               </span>
               <span className="text-[11px] px-2 py-0.5 rounded bg-stone-800 text-amber-400 border border-stone-700 font-mono">
@@ -303,7 +409,7 @@ export default function App() {
               </span>
             </div>
             <div className="text-[11px] text-stone-400">
-              Barista on Shift: <strong className="text-stone-200">{SHOP_CONFIG.cashierName}</strong>
+              {SHOP_CONFIG.tagline} • Barista: <strong className="text-stone-200">{SHOP_CONFIG.cashierName}</strong>
             </div>
           </div>
         </div>
@@ -556,10 +662,10 @@ export default function App() {
             <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center text-stone-500 p-6">
-                  <div className="w-14 h-14 rounded-2xl bg-stone-800/60 flex items-center justify-center text-2xl mb-3">
-                    ☕
+                  <div className="mb-3 opacity-85">
+                    <BrandLogo className="w-16 h-16" />
                   </div>
-                  <p className="text-sm font-semibold text-stone-400">Current Ticket is Empty</p>
+                  <p className="text-sm font-semibold text-stone-300">Current Ticket is Empty</p>
                   <p className="text-xs text-stone-500 mt-1 max-w-xs">
                     Tap any drink or pastry on the left to customize size, milk, espresso shots, and syrups.
                   </p>
