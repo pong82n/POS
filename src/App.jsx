@@ -12,6 +12,7 @@ import CheckoutModal from "./components/CheckoutModal";
 import ReceiptModal from "./components/ReceiptModal";
 import BaristaKDS from "./components/BaristaKDS";
 import OrderHistory from "./components/OrderHistory";
+import MobileAppQRModal from "./components/MobileAppQRModal";
 
 function BrandLogo({ className = "w-11 h-11" }) {
   return (
@@ -141,6 +142,41 @@ export default function App() {
   const [editingCartLine, setEditingCartLine] = useState(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [receiptOrder, setReceiptOrder] = useState(null);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(() => {
+    try {
+      return new URLSearchParams(window.location.search).get("install") === "1";
+    } catch (e) {
+      return false;
+    }
+  });
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
+
+  useEffect(() => {
+    const onBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    const onAppInstalled = () => {
+      setIsAppInstalled(true);
+      setDeferredPrompt(null);
+    };
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    window.addEventListener("appinstalled", onAppInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", onAppInstalled);
+    };
+  }, []);
+
+  const handleTriggerInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      setDeferredPrompt(null);
+    }
+  };
 
   // Orders Queue & History (persisted in localStorage)
   const [orders, setOrders] = useState(() => {
@@ -475,7 +511,7 @@ export default function App() {
           </button>
         </nav>
 
-        {/* Held Orders & Date */}
+        {/* Held Orders, QR Mobile App Button & Date */}
         <div className="flex items-center gap-2">
           {heldOrders.length > 0 && (
             <div className="flex items-center gap-1.5">
@@ -494,7 +530,17 @@ export default function App() {
               ))}
             </div>
           )}
-          <div className="hidden sm:block text-right text-xs text-stone-400 font-mono">
+
+          <button
+            type="button"
+            onClick={() => setIsQrModalOpen(true)}
+            className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/50 text-amber-300 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
+          >
+            <span>📱</span>
+            <span className="hidden xs:inline sm:inline">App QR</span>
+          </button>
+
+          <div className="hidden md:block text-right text-xs text-stone-400 font-mono">
             {new Date().toLocaleDateString([], { month: "short", day: "numeric" })}
           </div>
         </div>
@@ -1002,6 +1048,15 @@ export default function App() {
           order={receiptOrder}
           onClose={() => setReceiptOrder(null)}
           onNewOrder={() => setActiveTab("pos")}
+        />
+      )}
+
+      {isQrModalOpen && (
+        <MobileAppQRModal
+          onClose={() => setIsQrModalOpen(false)}
+          deferredPrompt={deferredPrompt}
+          onTriggerInstall={handleTriggerInstall}
+          isInstalled={isAppInstalled}
         />
       )}
     </div>
