@@ -36,7 +36,7 @@ export default function App() {
   // Orders Queue & History (persisted in localStorage)
   const [orders, setOrders] = useState(() => {
     try {
-      const saved = localStorage.getItem("roast_ritual_orders_php_v1");
+      const saved = localStorage.getItem("roast_ritual_orders_en_php_v2");
       if (saved) return JSON.parse(saved);
     } catch (e) {
       // ignore
@@ -46,7 +46,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("roast_ritual_orders_php_v1", JSON.stringify(orders));
+      localStorage.setItem("roast_ritual_orders_en_php_v2", JSON.stringify(orders));
     } catch (e) {
       // ignore
     }

@@ -2,7 +2,7 @@ export const SHOP_CONFIG = {
   name: "ROAST & RITUAL",
   tagline: "Specialty Coffee & Artisan Bakery",
   address: "Bonifacio High Street, BGC, Taguig City, Metro Manila",
-  phone: "(02) 8555-0194 • +63 917 555 0194",
+  phone: "(02) 8555-0194 | +63 917 555 0194",
   taxRate: 0.12, // 12% PH VAT
   cashierName: "Alex Rivera",
   registerId: "REG-01"
@@ -10,12 +10,12 @@ export const SHOP_CONFIG = {
 
 export const CATEGORIES = [
   { id: "all", name: "All Items", icon: "LayoutGrid" },
-  { id: "espresso", name: "Espresso & Coffee", icon: "Coffee" },
-  { id: "iced", name: "Cold Brew & Iced", icon: "CupSoda" },
+  { id: "espresso", name: "Espresso & Hot Coffee", icon: "Coffee" },
+  { id: "iced", name: "Cold Brew & Iced Coffee", icon: "CupSoda" },
   { id: "tea", name: "Tea & Matcha", icon: "Leaf" },
   { id: "blended", name: "Frappes & Blended", icon: "Sparkles" },
   { id: "bakery", name: "Bakery & Pastries", icon: "Croissant" },
-  { id: "beans", name: "Whole Bean & Merch", icon: "Package" }
+  { id: "beans", name: "Coffee Beans & Merch", icon: "Package" }
 ];
 
 export const MODIFIERS = {
@@ -30,15 +30,15 @@ export const MODIFIERS = {
     { id: "extra-hot", name: "Extra Hot (165°F)", price: 0 }
   ],
   milks: [
-    { id: "whole", name: "Whole Milk", price: 0.00 },
+    { id: "whole", name: "Full Cream Whole Milk", price: 0.00 },
     { id: "oat", name: "Barista Oat Milk", price: 45.00 },
     { id: "almond", name: "Almond Milk", price: 40.00 },
-    { id: "2percent", name: "2% Reduced Fat", price: 0.00 },
+    { id: "2percent", name: "Low-Fat 2% Milk", price: 0.00 },
     { id: "skim", name: "Nonfat Skim Milk", price: 0.00 },
     { id: "soy", name: "Organic Soy Milk", price: 35.00 },
     { id: "coconut", name: "Coconut Milk", price: 40.00 },
-    { id: "breve", name: "Breve (Half & Half)", price: 45.00 },
-    { id: "none", name: "No Milk / Black", price: 0.00 }
+    { id: "breve", name: "Half & Half Cream", price: 45.00 },
+    { id: "none", name: "No Milk (Black)", price: 0.00 }
   ],
   shots: [
     { id: "single", name: "Single Shot (1)", price: -25.00 },
@@ -49,7 +49,7 @@ export const MODIFIERS = {
     { id: "halfcaf", name: "Half-Caf (1 Reg / 1 Decaf)", price: 0.00 }
   ],
   sweetness: [
-    { id: "100", name: "100% Standard" },
+    { id: "100", name: "100% Regular Sweet" },
     { id: "75", name: "75% Less Sweet" },
     { id: "50", name: "50% Half Sweet" },
     { id: "25", name: "25% Light Sweet" },
@@ -63,22 +63,22 @@ export const MODIFIERS = {
     { id: "no-ice", name: "No Ice" }
   ],
   syrups: [
-    { id: "vanilla", name: "Madagascar Vanilla", price: 30.00 },
+    { id: "vanilla", name: "Classic Vanilla", price: 30.00 },
     { id: "caramel", name: "Salted Caramel", price: 30.00 },
     { id: "brownsugar", name: "Brown Sugar Cinnamon", price: 35.00 },
     { id: "hazelnut", name: "Roasted Hazelnut", price: 30.00 },
     { id: "mocha", name: "Dark Chocolate Mocha", price: 35.00 },
     { id: "whitemocha", name: "White Chocolate Sauce", price: 35.00 },
-    { id: "lavender", name: "Honey Lavender", price: 40.00 },
+    { id: "lavender", name: "Honey Vanilla Bean", price: 40.00 },
     { id: "sf-vanilla", name: "Sugar-Free Vanilla", price: 30.00 }
   ],
   toppings: [
     { id: "cold-foam", name: "Vanilla Sweet Cream Cold Foam", price: 55.00 },
-    { id: "whip", name: "House Whipped Cream", price: 25.00 },
-    { id: "caramel-drizzle", name: "Caramel Crosshatch Drizzle", price: 25.00 },
-    { id: "mocha-drizzle", name: "Mocha Drizzle", price: 25.00 },
-    { id: "cinnamon", name: "Ceylon Cinnamon Dust", price: 0.00 },
-    { id: "cocoa", name: "Dutch Cocoa Powder", price: 0.00 }
+    { id: "whip", name: "Whipped Cream", price: 25.00 },
+    { id: "caramel-drizzle", name: "Caramel Drizzle", price: 25.00 },
+    { id: "mocha-drizzle", name: "Chocolate Drizzle", price: 25.00 },
+    { id: "cinnamon", name: "Cinnamon Powder", price: 0.00 },
+    { id: "cocoa", name: "Cocoa Powder Dust", price: 0.00 }
   ],
   bakeryOptions: [
     { id: "warmed", name: "Warmed in Oven", price: 0.00 },
@@ -86,17 +86,17 @@ export const MODIFIERS = {
     { id: "toasted-dark", name: "Extra Toasted", price: 0.00 }
   ],
   bakerySpreads: [
-    { id: "butter", name: "Grass-Fed Butter", price: 25.00 },
-    { id: "cream-cheese", name: "Whipped Cream Cheese", price: 45.00 },
-    { id: "jam", name: "Strawberry Fig Preserve", price: 40.00 },
-    { id: "honey", name: "Wildflower Honey Packet", price: 25.00 }
+    { id: "butter", name: "Whipped Butter", price: 25.00 },
+    { id: "cream-cheese", name: "Cream Cheese Spread", price: 45.00 },
+    { id: "jam", name: "Strawberry Jam", price: 40.00 },
+    { id: "honey", name: "Wildflower Honey", price: 25.00 }
   ]
 };
 
 export const MENU_ITEMS = [
   {
     id: "esp-latte",
-    name: "Signature Caffè Latte",
+    name: "Signature Cafe Latte",
     category: "espresso",
     price: 165.00,
     calories: 190,
@@ -109,7 +109,7 @@ export const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#8C583A",
     badge: "Best Seller",
-    description: "Velvety steamed milk poured over our double-shot house espresso blend."
+    description: "Smooth steamed milk poured over our rich double-shot house espresso blend."
   },
   {
     id: "esp-cappuccino",
@@ -126,7 +126,7 @@ export const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#6E4228",
     badge: null,
-    description: "Equal parts rich espresso, steamed milk, and airy micro-foam."
+    description: "Equal parts bold espresso, steamed milk, and thick velvety milk foam."
   },
   {
     id: "esp-caramel-macchiato",
@@ -145,7 +145,7 @@ export const MENU_ITEMS = [
     defaultToppings: ["caramel-drizzle"],
     color: "#B46E35",
     badge: "Popular",
-    description: "Vanilla-steamed milk marked with espresso and finished with salted caramel crosshatch."
+    description: "Freshly steamed vanilla milk marked with espresso and topped with salted caramel drizzle."
   },
   {
     id: "esp-flat-white",
@@ -161,12 +161,12 @@ export const MENU_ITEMS = [
     defaultMilk: "whole",
     defaultShots: "triple",
     color: "#7D4E32",
-    badge: "Ristretto",
-    description: "Ristretto shots with glossy, thin-layered whole milk microfoam."
+    badge: "Strong",
+    description: "Three concentrated espresso shots topped with a thin, glossy layer of steamed whole milk."
   },
   {
     id: "esp-mocha",
-    name: "Belgian Dark Caffè Mocha",
+    name: "Dark Chocolate Cafe Mocha",
     category: "espresso",
     price: 185.00,
     calories: 340,
@@ -181,11 +181,11 @@ export const MENU_ITEMS = [
     defaultToppings: ["whip", "cocoa"],
     color: "#4A2C1D",
     badge: null,
-    description: "58% dark Belgian chocolate melted into double espresso, steamed milk, and whipped cream."
+    description: "Rich dark chocolate melted into double espresso, steamed milk, and topped with whipped cream."
   },
   {
     id: "esp-americano",
-    name: "Caffè Americano",
+    name: "Classic Cafe Americano",
     category: "espresso",
     price: 135.00,
     calories: 15,
@@ -198,24 +198,24 @@ export const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#3A2218",
     badge: null,
-    description: "Double espresso pulled directly over filtered hot water for a rich crema."
+    description: "Double espresso shots poured over hot filtered water for a bold, clean coffee flavor."
   },
   {
     id: "esp-cortado",
-    name: "Gibraltar Cortado",
+    name: "Spanish Latte (Sweetened)",
     category: "espresso",
-    price: 150.00,
-    calories: 90,
+    price: 175.00,
+    calories: 210,
     sku: "ESP-107",
-    popular: false,
+    popular: true,
     type: "drink",
-    defaultTemp: "hot",
-    allowTempChange: false,
+    defaultTemp: "iced",
+    allowTempChange: true,
     defaultMilk: "whole",
     defaultShots: "standard",
     color: "#7A482E",
-    badge: "Barista Pick",
-    description: "1:1 ratio of double espresso and lightly textured warm milk."
+    badge: "Customer Favorite",
+    description: "Double espresso blended with textured milk and sweet condensed milk, served hot or over ice."
   },
   {
     id: "iced-brownsugar-shaken",
@@ -234,11 +234,11 @@ export const MENU_ITEMS = [
     defaultToppings: ["cinnamon"],
     color: "#9A6238",
     badge: "Trending",
-    description: "Blonde espresso hand-shaken with brown sugar, Ceylon cinnamon, and topped with creamy oat milk."
+    description: "Triple espresso shaken with brown sugar and cinnamon, finished with creamy oat milk over ice."
   },
   {
     id: "iced-cold-brew",
-    name: "18-Hour Steeped Cold Brew",
+    name: "18-Hour Slow-Steeped Cold Brew",
     category: "iced",
     price: 160.00,
     calories: 5,
@@ -251,7 +251,7 @@ export const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#2F1B12",
     badge: null,
-    description: "Small-batch single-origin Colombian beans steeped cold for 18 hours for ultra-smooth cocoa notes."
+    description: "Small-batch roast coffee steeped cold for 18 hours for an ultra-smooth, low-acidity taste."
   },
   {
     id: "iced-vanilla-cream-cb",
@@ -270,11 +270,11 @@ export const MENU_ITEMS = [
     defaultToppings: ["cold-foam"],
     color: "#7E5134",
     badge: "Best Seller",
-    description: "Slow-steeped cold brew cascaded with house-made Madagascar vanilla sweet cream cold foam."
+    description: "Slow-steeped cold brew topped with house-made vanilla sweet cream cold foam."
   },
   {
     id: "iced-honey-lavender",
-    name: "Iced Honey Lavender Oat Latte",
+    name: "Iced Honey Oat Milk Latte",
     category: "iced",
     price: 195.00,
     calories: 210,
@@ -288,11 +288,11 @@ export const MENU_ITEMS = [
     defaultSyrups: ["lavender"],
     color: "#83658C",
     badge: "Seasonal",
-    description: "Botanical culinary lavender and wildflower honey paired with espresso and oat milk over ice."
+    description: "Wildflower honey and vanilla bean paired with double espresso and creamy oat milk over ice."
   },
   {
     id: "tea-matcha-latte",
-    name: "Ceremonial Uji Matcha Latte",
+    name: "Ceremonial Matcha Green Tea Latte",
     category: "tea",
     price: 190.00,
     calories: 180,
@@ -304,12 +304,12 @@ export const MENU_ITEMS = [
     defaultMilk: "oat",
     defaultShots: "standard",
     color: "#4B7A47",
-    badge: "First Harvest",
-    description: "Stone-ground first-harvest Uji green tea whisked to order with silky oat milk."
+    badge: "Best Seller",
+    description: "Stone-ground premium green tea whisked to order with creamy milk, served hot or iced."
   },
   {
     id: "tea-chai-latte",
-    name: "Masala Spiced Chai Latte",
+    name: "Spiced Chai Tea Latte",
     category: "tea",
     price: 175.00,
     calories: 240,
@@ -323,11 +323,11 @@ export const MENU_ITEMS = [
     defaultToppings: ["cinnamon"],
     color: "#A36336",
     badge: null,
-    description: "Black Assam tea infused with crushed cardamom, fresh ginger, star anise, clove, and steamed milk."
+    description: "Black tea infused with cinnamon, cardamom, ginger, and cloves, steamed with creamy milk."
   },
   {
     id: "tea-london-fog",
-    name: "Earl Grey London Fog",
+    name: "Earl Grey Vanilla Tea Latte",
     category: "tea",
     price: 165.00,
     calories: 160,
@@ -338,14 +338,14 @@ export const MENU_ITEMS = [
     allowTempChange: true,
     defaultMilk: "whole",
     defaultShots: "standard",
-    defaultSyrups: ["vanilla", "lavender"],
+    defaultSyrups: ["vanilla"],
     color: "#73695E",
-    badge: "Caffeine Light",
-    description: "Bergamot-rich Earl Grey steeped with lavender blossoms, vanilla bean syrup, and steamed microfoam."
+    badge: "Light Caffeine",
+    description: "Fragrant Earl Grey black tea steeped with sweet vanilla syrup and topped with steamed milk foam."
   },
   {
     id: "blended-mocha-frappe",
-    name: "Java Chip Espresso Frappe",
+    name: "Java Chip Mocha Frappe",
     category: "blended",
     price: 210.00,
     calories: 420,
@@ -360,7 +360,7 @@ export const MENU_ITEMS = [
     defaultToppings: ["whip", "mocha-drizzle"],
     color: "#523426",
     badge: null,
-    description: "Ice-blended roast coffee, dark chocolate chips, milk, whipped cream, and chocolate drizzle."
+    description: "Ice-blended coffee with dark chocolate chips, milk, whipped cream, and chocolate drizzle."
   },
   {
     id: "blended-caramel-frappe",
@@ -379,11 +379,11 @@ export const MENU_ITEMS = [
     defaultToppings: ["whip", "caramel-drizzle"],
     color: "#C27D3B",
     badge: null,
-    description: "Blended coffee with buttery caramel sauce, topped with whipped cream and salted toffee crunch."
+    description: "Blended iced coffee with buttery caramel sauce, whipped cream, and crunchy caramel topping."
   },
   {
     id: "bak-croissant",
-    name: "French Butter Croissant",
+    name: "Classic Butter Croissant",
     category: "bakery",
     price: 135.00,
     calories: 310,
@@ -392,11 +392,11 @@ export const MENU_ITEMS = [
     type: "bakery",
     color: "#D18E3E",
     badge: "Fresh Baked",
-    description: "Flaky 27-layer laminated pastry made with cultured Normandy butter, baked golden every morning."
+    description: "Flaky, golden-baked all-butter pastry with a crisp crust and soft, airy layers inside."
   },
   {
     id: "bak-almond-croissant",
-    name: "Twice-Baked Almond Croissant",
+    name: "Toasted Almond Croissant",
     category: "bakery",
     price: 165.00,
     calories: 430,
@@ -405,11 +405,11 @@ export const MENU_ITEMS = [
     type: "bakery",
     color: "#B87532",
     badge: "Best Seller",
-    description: "Filled with rum-kissed almond frangipane and crowned with toasted sliced almonds and powdered sugar."
+    description: "Baked with sweet almond cream filling and topped with toasted sliced almonds and powdered sugar."
   },
   {
     id: "bak-pain-chocolat",
-    name: "Pain au Chocolat",
+    name: "Double Chocolate Croissant",
     category: "bakery",
     price: 150.00,
     calories: 360,
@@ -418,11 +418,11 @@ export const MENU_ITEMS = [
     type: "bakery",
     color: "#8E5128",
     badge: null,
-    description: "Crisp laminated pastry wrapped around two batons of Valrhona dark chocolate."
+    description: "Crisp flaky butter pastry filled with two rich bars of dark Belgian chocolate."
   },
   {
     id: "bak-avocado-toast",
-    name: "Sourdough Avocado & Everything Toast",
+    name: "Sourdough Avocado & Egg Toast",
     category: "bakery",
     price: 245.00,
     calories: 380,
@@ -431,11 +431,11 @@ export const MENU_ITEMS = [
     type: "bakery",
     color: "#5E7B42",
     badge: "Savory",
-    description: "Thick-cut artisan country sourdough, smashed Hass avocado, pickled shallots, chili flakes & everything spice."
+    description: "Thick-cut toasted country sourdough topped with smashed ripe avocado, herbs, and sea salt."
   },
   {
     id: "bak-blueberry-muffin",
-    name: "Lemon Wild Blueberry Streusel Muffin",
+    name: "Lemon Blueberry Crumb Muffin",
     category: "bakery",
     price: 130.00,
     calories: 390,
@@ -444,11 +444,11 @@ export const MENU_ITEMS = [
     type: "bakery",
     color: "#574B78",
     badge: null,
-    description: "Moist lemon-zest crumb bursting with wild blueberries and cinnamon oat streusel."
+    description: "Soft lemon-zest bakery muffin packed with sweet blueberries and cinnamon oat streusel."
   },
   {
     id: "bean-espresso-blend",
-    name: "Ritual House Espresso (250g Bag)",
+    name: "House Espresso Roast Beans (250g Bag)",
     category: "beans",
     price: 550.00,
     calories: 0,
@@ -457,11 +457,11 @@ export const MENU_ITEMS = [
     type: "merch",
     color: "#3B2820",
     badge: "Whole Bean",
-    description: "Medium-dark roast blend from Brazil, Mt. Apo & Ethiopia. Notes of dark chocolate, roasted hazelnut, and cherry."
+    description: "Medium-dark roast whole bean coffee with tasting notes of dark chocolate and roasted nuts."
   },
   {
     id: "bean-ethiopia",
-    name: "Ethiopia Yirgacheffe Single Origin (250g)",
+    name: "Single Origin Arabica Beans (250g Bag)",
     category: "beans",
     price: 650.00,
     calories: 0,
@@ -470,18 +470,18 @@ export const MENU_ITEMS = [
     type: "merch",
     color: "#94523A",
     badge: "Light Roast",
-    description: "Washed process heirloom varietals. Floral jasmine aroma with bright bergamot and peach finish."
+    description: "100% highland Arabica whole beans with bright citrus, sweet honey, and floral notes."
   }
 ];
 
 export const DISCOUNT_PRESETS = [
   { id: "none", label: "No Discount", type: "percent", value: 0 },
-  { id: "cup", label: "Own Tumbler (-₱20.00)", type: "fixed", value: 20.00 },
+  { id: "cup", label: "Bring Your Own Cup (-₱20.00)", type: "fixed", value: 20.00 },
   { id: "scpwd", label: "Senior Citizen / PWD (20%)", type: "percent", value: 20 },
   { id: "student", label: "Student Discount (10%)", type: "percent", value: 10 },
   { id: "happyhour", label: "Afternoon Happy Hour (15%)", type: "percent", value: 15 },
-  { id: "staff", label: "Partner / Staff (25%)", type: "percent", value: 25 },
-  { id: "comp", label: "Recovery Voucher (-₱100)", type: "fixed", value: 100.00 }
+  { id: "staff", label: "Employee / Staff (25%)", type: "percent", value: 25 },
+  { id: "comp", label: "Gift Voucher (-₱100.00)", type: "fixed", value: 100.00 }
 ];
 
 export const INITIAL_ORDERS = [
@@ -529,14 +529,14 @@ export const INITIAL_ORDERS = [
           syrups: ["brownsugar"],
           syrupLabels: ["Brown Sugar Cinnamon"],
           toppings: ["cinnamon"],
-          toppingLabels: ["Ceylon Cinnamon Dust"],
+          toppingLabels: ["Cinnamon Powder"],
           notes: "Extra shake please!"
         }
       },
       {
         lineId: "L-2",
         itemId: "esp-latte",
-        name: "Signature Caffè Latte",
+        name: "Signature Cafe Latte",
         sku: "ESP-101",
         type: "drink",
         quantity: 1,
@@ -548,11 +548,11 @@ export const INITIAL_ORDERS = [
           temp: "hot",
           tempLabel: "Hot",
           milk: "whole",
-          milkLabel: "Whole Milk",
+          milkLabel: "Full Cream Whole Milk",
           shots: "standard",
           shotsLabel: "Standard Double (2)",
           sweetness: "100",
-          sweetnessLabel: "100% Standard",
+          sweetnessLabel: "100% Regular Sweet",
           ice: "regular",
           iceLabel: "Regular Ice",
           syrups: [],
@@ -565,7 +565,7 @@ export const INITIAL_ORDERS = [
       {
         lineId: "L-3",
         itemId: "bak-croissant",
-        name: "French Butter Croissant",
+        name: "Classic Butter Croissant",
         sku: "BAK-501",
         type: "bakery",
         quantity: 1,
@@ -603,7 +603,7 @@ export const INITIAL_ORDERS = [
       {
         lineId: "L-4",
         itemId: "tea-matcha-latte",
-        name: "Ceremonial Uji Matcha Latte",
+        name: "Ceremonial Matcha Green Tea Latte",
         sku: "TEA-301",
         type: "drink",
         quantity: 1,
@@ -623,7 +623,7 @@ export const INITIAL_ORDERS = [
           ice: "regular",
           iceLabel: "Regular Ice",
           syrups: ["vanilla"],
-          syrupLabels: ["Madagascar Vanilla"],
+          syrupLabels: ["Classic Vanilla"],
           toppings: [],
           toppingLabels: [],
           notes: ""
@@ -632,7 +632,7 @@ export const INITIAL_ORDERS = [
       {
         lineId: "L-5",
         itemId: "bak-almond-croissant",
-        name: "Twice-Baked Almond Croissant",
+        name: "Toasted Almond Croissant",
         sku: "BAK-502",
         type: "bakery",
         quantity: 1,
@@ -682,15 +682,15 @@ export const INITIAL_ORDERS = [
           temp: "iced",
           tempLabel: "Iced",
           milk: "breve",
-          milkLabel: "Breve (Half & Half)",
+          milkLabel: "Half & Half Cream",
           shots: "standard",
           shotsLabel: "Standard Double (2)",
           sweetness: "100",
-          sweetnessLabel: "100% Standard",
+          sweetnessLabel: "100% Regular Sweet",
           ice: "regular",
           iceLabel: "Regular Ice",
           syrups: ["vanilla"],
-          syrupLabels: ["Madagascar Vanilla"],
+          syrupLabels: ["Classic Vanilla"],
           toppings: ["cold-foam"],
           toppingLabels: ["Vanilla Sweet Cream Cold Foam"],
           notes: ""

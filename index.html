@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ROAST & RITUAL — Coffee Shop POS & Barista KDS (PHP)</title>
+  <title>ROAST & RITUAL - Coffee Shop POS & Barista KDS (PHP)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -37,7 +37,7 @@ const SHOP_CONFIG = {
   name: "ROAST & RITUAL",
   tagline: "Specialty Coffee & Artisan Bakery",
   address: "Bonifacio High Street, BGC, Taguig City, Metro Manila",
-  phone: "(02) 8555-0194 â€¢ +63 917 555 0194",
+  phone: "(02) 8555-0194 | +63 917 555 0194",
   taxRate: 0.12, // 12% PH VAT
   cashierName: "Alex Rivera",
   registerId: "REG-01"
@@ -45,12 +45,12 @@ const SHOP_CONFIG = {
 
 const CATEGORIES = [
   { id: "all", name: "All Items", icon: "LayoutGrid" },
-  { id: "espresso", name: "Espresso & Coffee", icon: "Coffee" },
-  { id: "iced", name: "Cold Brew & Iced", icon: "CupSoda" },
+  { id: "espresso", name: "Espresso & Hot Coffee", icon: "Coffee" },
+  { id: "iced", name: "Cold Brew & Iced Coffee", icon: "CupSoda" },
   { id: "tea", name: "Tea & Matcha", icon: "Leaf" },
   { id: "blended", name: "Frappes & Blended", icon: "Sparkles" },
   { id: "bakery", name: "Bakery & Pastries", icon: "Croissant" },
-  { id: "beans", name: "Whole Bean & Merch", icon: "Package" }
+  { id: "beans", name: "Coffee Beans & Merch", icon: "Package" }
 ];
 
 const MODIFIERS = {
@@ -62,18 +62,18 @@ const MODIFIERS = {
   temperatures: [
     { id: "hot", name: "Hot", price: 0 },
     { id: "iced", name: "Iced", price: 0 },
-    { id: "extra-hot", name: "Extra Hot (165Â°F)", price: 0 }
+    { id: "extra-hot", name: "Extra Hot (165°F)", price: 0 }
   ],
   milks: [
-    { id: "whole", name: "Whole Milk", price: 0.00 },
+    { id: "whole", name: "Full Cream Whole Milk", price: 0.00 },
     { id: "oat", name: "Barista Oat Milk", price: 45.00 },
     { id: "almond", name: "Almond Milk", price: 40.00 },
-    { id: "2percent", name: "2% Reduced Fat", price: 0.00 },
+    { id: "2percent", name: "Low-Fat 2% Milk", price: 0.00 },
     { id: "skim", name: "Nonfat Skim Milk", price: 0.00 },
     { id: "soy", name: "Organic Soy Milk", price: 35.00 },
     { id: "coconut", name: "Coconut Milk", price: 40.00 },
-    { id: "breve", name: "Breve (Half & Half)", price: 45.00 },
-    { id: "none", name: "No Milk / Black", price: 0.00 }
+    { id: "breve", name: "Half & Half Cream", price: 45.00 },
+    { id: "none", name: "No Milk (Black)", price: 0.00 }
   ],
   shots: [
     { id: "single", name: "Single Shot (1)", price: -25.00 },
@@ -84,7 +84,7 @@ const MODIFIERS = {
     { id: "halfcaf", name: "Half-Caf (1 Reg / 1 Decaf)", price: 0.00 }
   ],
   sweetness: [
-    { id: "100", name: "100% Standard" },
+    { id: "100", name: "100% Regular Sweet" },
     { id: "75", name: "75% Less Sweet" },
     { id: "50", name: "50% Half Sweet" },
     { id: "25", name: "25% Light Sweet" },
@@ -98,22 +98,22 @@ const MODIFIERS = {
     { id: "no-ice", name: "No Ice" }
   ],
   syrups: [
-    { id: "vanilla", name: "Madagascar Vanilla", price: 30.00 },
+    { id: "vanilla", name: "Classic Vanilla", price: 30.00 },
     { id: "caramel", name: "Salted Caramel", price: 30.00 },
     { id: "brownsugar", name: "Brown Sugar Cinnamon", price: 35.00 },
     { id: "hazelnut", name: "Roasted Hazelnut", price: 30.00 },
     { id: "mocha", name: "Dark Chocolate Mocha", price: 35.00 },
     { id: "whitemocha", name: "White Chocolate Sauce", price: 35.00 },
-    { id: "lavender", name: "Honey Lavender", price: 40.00 },
+    { id: "lavender", name: "Honey Vanilla Bean", price: 40.00 },
     { id: "sf-vanilla", name: "Sugar-Free Vanilla", price: 30.00 }
   ],
   toppings: [
     { id: "cold-foam", name: "Vanilla Sweet Cream Cold Foam", price: 55.00 },
-    { id: "whip", name: "House Whipped Cream", price: 25.00 },
-    { id: "caramel-drizzle", name: "Caramel Crosshatch Drizzle", price: 25.00 },
-    { id: "mocha-drizzle", name: "Mocha Drizzle", price: 25.00 },
-    { id: "cinnamon", name: "Ceylon Cinnamon Dust", price: 0.00 },
-    { id: "cocoa", name: "Dutch Cocoa Powder", price: 0.00 }
+    { id: "whip", name: "Whipped Cream", price: 25.00 },
+    { id: "caramel-drizzle", name: "Caramel Drizzle", price: 25.00 },
+    { id: "mocha-drizzle", name: "Chocolate Drizzle", price: 25.00 },
+    { id: "cinnamon", name: "Cinnamon Powder", price: 0.00 },
+    { id: "cocoa", name: "Cocoa Powder Dust", price: 0.00 }
   ],
   bakeryOptions: [
     { id: "warmed", name: "Warmed in Oven", price: 0.00 },
@@ -121,17 +121,17 @@ const MODIFIERS = {
     { id: "toasted-dark", name: "Extra Toasted", price: 0.00 }
   ],
   bakerySpreads: [
-    { id: "butter", name: "Grass-Fed Butter", price: 25.00 },
-    { id: "cream-cheese", name: "Whipped Cream Cheese", price: 45.00 },
-    { id: "jam", name: "Strawberry Fig Preserve", price: 40.00 },
-    { id: "honey", name: "Wildflower Honey Packet", price: 25.00 }
+    { id: "butter", name: "Whipped Butter", price: 25.00 },
+    { id: "cream-cheese", name: "Cream Cheese Spread", price: 45.00 },
+    { id: "jam", name: "Strawberry Jam", price: 40.00 },
+    { id: "honey", name: "Wildflower Honey", price: 25.00 }
   ]
 };
 
 const MENU_ITEMS = [
   {
     id: "esp-latte",
-    name: "Signature CaffÃ¨ Latte",
+    name: "Signature Cafe Latte",
     category: "espresso",
     price: 165.00,
     calories: 190,
@@ -144,7 +144,7 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#8C583A",
     badge: "Best Seller",
-    description: "Velvety steamed milk poured over our double-shot house espresso blend."
+    description: "Smooth steamed milk poured over our rich double-shot house espresso blend."
   },
   {
     id: "esp-cappuccino",
@@ -161,7 +161,7 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#6E4228",
     badge: null,
-    description: "Equal parts rich espresso, steamed milk, and airy micro-foam."
+    description: "Equal parts bold espresso, steamed milk, and thick velvety milk foam."
   },
   {
     id: "esp-caramel-macchiato",
@@ -180,7 +180,7 @@ const MENU_ITEMS = [
     defaultToppings: ["caramel-drizzle"],
     color: "#B46E35",
     badge: "Popular",
-    description: "Vanilla-steamed milk marked with espresso and finished with salted caramel crosshatch."
+    description: "Freshly steamed vanilla milk marked with espresso and topped with salted caramel drizzle."
   },
   {
     id: "esp-flat-white",
@@ -196,12 +196,12 @@ const MENU_ITEMS = [
     defaultMilk: "whole",
     defaultShots: "triple",
     color: "#7D4E32",
-    badge: "Ristretto",
-    description: "Ristretto shots with glossy, thin-layered whole milk microfoam."
+    badge: "Strong",
+    description: "Three concentrated espresso shots topped with a thin, glossy layer of steamed whole milk."
   },
   {
     id: "esp-mocha",
-    name: "Belgian Dark CaffÃ¨ Mocha",
+    name: "Dark Chocolate Cafe Mocha",
     category: "espresso",
     price: 185.00,
     calories: 340,
@@ -216,11 +216,11 @@ const MENU_ITEMS = [
     defaultToppings: ["whip", "cocoa"],
     color: "#4A2C1D",
     badge: null,
-    description: "58% dark Belgian chocolate melted into double espresso, steamed milk, and whipped cream."
+    description: "Rich dark chocolate melted into double espresso, steamed milk, and topped with whipped cream."
   },
   {
     id: "esp-americano",
-    name: "CaffÃ¨ Americano",
+    name: "Classic Cafe Americano",
     category: "espresso",
     price: 135.00,
     calories: 15,
@@ -233,24 +233,24 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#3A2218",
     badge: null,
-    description: "Double espresso pulled directly over filtered hot water for a rich crema."
+    description: "Double espresso shots poured over hot filtered water for a bold, clean coffee flavor."
   },
   {
     id: "esp-cortado",
-    name: "Gibraltar Cortado",
+    name: "Spanish Latte (Sweetened)",
     category: "espresso",
-    price: 150.00,
-    calories: 90,
+    price: 175.00,
+    calories: 210,
     sku: "ESP-107",
-    popular: false,
+    popular: true,
     type: "drink",
-    defaultTemp: "hot",
-    allowTempChange: false,
+    defaultTemp: "iced",
+    allowTempChange: true,
     defaultMilk: "whole",
     defaultShots: "standard",
     color: "#7A482E",
-    badge: "Barista Pick",
-    description: "1:1 ratio of double espresso and lightly textured warm milk."
+    badge: "Customer Favorite",
+    description: "Double espresso blended with textured milk and sweet condensed milk, served hot or over ice."
   },
   {
     id: "iced-brownsugar-shaken",
@@ -269,11 +269,11 @@ const MENU_ITEMS = [
     defaultToppings: ["cinnamon"],
     color: "#9A6238",
     badge: "Trending",
-    description: "Blonde espresso hand-shaken with brown sugar, Ceylon cinnamon, and topped with creamy oat milk."
+    description: "Triple espresso shaken with brown sugar and cinnamon, finished with creamy oat milk over ice."
   },
   {
     id: "iced-cold-brew",
-    name: "18-Hour Steeped Cold Brew",
+    name: "18-Hour Slow-Steeped Cold Brew",
     category: "iced",
     price: 160.00,
     calories: 5,
@@ -286,7 +286,7 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#2F1B12",
     badge: null,
-    description: "Small-batch single-origin Colombian beans steeped cold for 18 hours for ultra-smooth cocoa notes."
+    description: "Small-batch roast coffee steeped cold for 18 hours for an ultra-smooth, low-acidity taste."
   },
   {
     id: "iced-vanilla-cream-cb",
@@ -305,11 +305,11 @@ const MENU_ITEMS = [
     defaultToppings: ["cold-foam"],
     color: "#7E5134",
     badge: "Best Seller",
-    description: "Slow-steeped cold brew cascaded with house-made Madagascar vanilla sweet cream cold foam."
+    description: "Slow-steeped cold brew topped with house-made vanilla sweet cream cold foam."
   },
   {
     id: "iced-honey-lavender",
-    name: "Iced Honey Lavender Oat Latte",
+    name: "Iced Honey Oat Milk Latte",
     category: "iced",
     price: 195.00,
     calories: 210,
@@ -323,11 +323,11 @@ const MENU_ITEMS = [
     defaultSyrups: ["lavender"],
     color: "#83658C",
     badge: "Seasonal",
-    description: "Botanical culinary lavender and wildflower honey paired with espresso and oat milk over ice."
+    description: "Wildflower honey and vanilla bean paired with double espresso and creamy oat milk over ice."
   },
   {
     id: "tea-matcha-latte",
-    name: "Ceremonial Uji Matcha Latte",
+    name: "Ceremonial Matcha Green Tea Latte",
     category: "tea",
     price: 190.00,
     calories: 180,
@@ -339,12 +339,12 @@ const MENU_ITEMS = [
     defaultMilk: "oat",
     defaultShots: "standard",
     color: "#4B7A47",
-    badge: "First Harvest",
-    description: "Stone-ground first-harvest Uji green tea whisked to order with silky oat milk."
+    badge: "Best Seller",
+    description: "Stone-ground premium green tea whisked to order with creamy milk, served hot or iced."
   },
   {
     id: "tea-chai-latte",
-    name: "Masala Spiced Chai Latte",
+    name: "Spiced Chai Tea Latte",
     category: "tea",
     price: 175.00,
     calories: 240,
@@ -358,11 +358,11 @@ const MENU_ITEMS = [
     defaultToppings: ["cinnamon"],
     color: "#A36336",
     badge: null,
-    description: "Black Assam tea infused with crushed cardamom, fresh ginger, star anise, clove, and steamed milk."
+    description: "Black tea infused with cinnamon, cardamom, ginger, and cloves, steamed with creamy milk."
   },
   {
     id: "tea-london-fog",
-    name: "Earl Grey London Fog",
+    name: "Earl Grey Vanilla Tea Latte",
     category: "tea",
     price: 165.00,
     calories: 160,
@@ -373,14 +373,14 @@ const MENU_ITEMS = [
     allowTempChange: true,
     defaultMilk: "whole",
     defaultShots: "standard",
-    defaultSyrups: ["vanilla", "lavender"],
+    defaultSyrups: ["vanilla"],
     color: "#73695E",
-    badge: "Caffeine Light",
-    description: "Bergamot-rich Earl Grey steeped with lavender blossoms, vanilla bean syrup, and steamed microfoam."
+    badge: "Light Caffeine",
+    description: "Fragrant Earl Grey black tea steeped with sweet vanilla syrup and topped with steamed milk foam."
   },
   {
     id: "blended-mocha-frappe",
-    name: "Java Chip Espresso Frappe",
+    name: "Java Chip Mocha Frappe",
     category: "blended",
     price: 210.00,
     calories: 420,
@@ -395,7 +395,7 @@ const MENU_ITEMS = [
     defaultToppings: ["whip", "mocha-drizzle"],
     color: "#523426",
     badge: null,
-    description: "Ice-blended roast coffee, dark chocolate chips, milk, whipped cream, and chocolate drizzle."
+    description: "Ice-blended coffee with dark chocolate chips, milk, whipped cream, and chocolate drizzle."
   },
   {
     id: "blended-caramel-frappe",
@@ -414,11 +414,11 @@ const MENU_ITEMS = [
     defaultToppings: ["whip", "caramel-drizzle"],
     color: "#C27D3B",
     badge: null,
-    description: "Blended coffee with buttery caramel sauce, topped with whipped cream and salted toffee crunch."
+    description: "Blended iced coffee with buttery caramel sauce, whipped cream, and crunchy caramel topping."
   },
   {
     id: "bak-croissant",
-    name: "French Butter Croissant",
+    name: "Classic Butter Croissant",
     category: "bakery",
     price: 135.00,
     calories: 310,
@@ -427,11 +427,11 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#D18E3E",
     badge: "Fresh Baked",
-    description: "Flaky 27-layer laminated pastry made with cultured Normandy butter, baked golden every morning."
+    description: "Flaky, golden-baked all-butter pastry with a crisp crust and soft, airy layers inside."
   },
   {
     id: "bak-almond-croissant",
-    name: "Twice-Baked Almond Croissant",
+    name: "Toasted Almond Croissant",
     category: "bakery",
     price: 165.00,
     calories: 430,
@@ -440,11 +440,11 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#B87532",
     badge: "Best Seller",
-    description: "Filled with rum-kissed almond frangipane and crowned with toasted sliced almonds and powdered sugar."
+    description: "Baked with sweet almond cream filling and topped with toasted sliced almonds and powdered sugar."
   },
   {
     id: "bak-pain-chocolat",
-    name: "Pain au Chocolat",
+    name: "Double Chocolate Croissant",
     category: "bakery",
     price: 150.00,
     calories: 360,
@@ -453,11 +453,11 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#8E5128",
     badge: null,
-    description: "Crisp laminated pastry wrapped around two batons of Valrhona dark chocolate."
+    description: "Crisp flaky butter pastry filled with two rich bars of dark Belgian chocolate."
   },
   {
     id: "bak-avocado-toast",
-    name: "Sourdough Avocado & Everything Toast",
+    name: "Sourdough Avocado & Egg Toast",
     category: "bakery",
     price: 245.00,
     calories: 380,
@@ -466,11 +466,11 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#5E7B42",
     badge: "Savory",
-    description: "Thick-cut artisan country sourdough, smashed Hass avocado, pickled shallots, chili flakes & everything spice."
+    description: "Thick-cut toasted country sourdough topped with smashed ripe avocado, herbs, and sea salt."
   },
   {
     id: "bak-blueberry-muffin",
-    name: "Lemon Wild Blueberry Streusel Muffin",
+    name: "Lemon Blueberry Crumb Muffin",
     category: "bakery",
     price: 130.00,
     calories: 390,
@@ -479,11 +479,11 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#574B78",
     badge: null,
-    description: "Moist lemon-zest crumb bursting with wild blueberries and cinnamon oat streusel."
+    description: "Soft lemon-zest bakery muffin packed with sweet blueberries and cinnamon oat streusel."
   },
   {
     id: "bean-espresso-blend",
-    name: "Ritual House Espresso (250g Bag)",
+    name: "House Espresso Roast Beans (250g Bag)",
     category: "beans",
     price: 550.00,
     calories: 0,
@@ -492,11 +492,11 @@ const MENU_ITEMS = [
     type: "merch",
     color: "#3B2820",
     badge: "Whole Bean",
-    description: "Medium-dark roast blend from Brazil, Mt. Apo & Ethiopia. Notes of dark chocolate, roasted hazelnut, and cherry."
+    description: "Medium-dark roast whole bean coffee with tasting notes of dark chocolate and roasted nuts."
   },
   {
     id: "bean-ethiopia",
-    name: "Ethiopia Yirgacheffe Single Origin (250g)",
+    name: "Single Origin Arabica Beans (250g Bag)",
     category: "beans",
     price: 650.00,
     calories: 0,
@@ -505,18 +505,18 @@ const MENU_ITEMS = [
     type: "merch",
     color: "#94523A",
     badge: "Light Roast",
-    description: "Washed process heirloom varietals. Floral jasmine aroma with bright bergamot and peach finish."
+    description: "100% highland Arabica whole beans with bright citrus, sweet honey, and floral notes."
   }
 ];
 
 const DISCOUNT_PRESETS = [
   { id: "none", label: "No Discount", type: "percent", value: 0 },
-  { id: "cup", label: "Own Tumbler (-â‚±20.00)", type: "fixed", value: 20.00 },
+  { id: "cup", label: "Bring Your Own Cup (-₱20.00)", type: "fixed", value: 20.00 },
   { id: "scpwd", label: "Senior Citizen / PWD (20%)", type: "percent", value: 20 },
   { id: "student", label: "Student Discount (10%)", type: "percent", value: 10 },
   { id: "happyhour", label: "Afternoon Happy Hour (15%)", type: "percent", value: 15 },
-  { id: "staff", label: "Partner / Staff (25%)", type: "percent", value: 25 },
-  { id: "comp", label: "Recovery Voucher (-â‚±100)", type: "fixed", value: 100.00 }
+  { id: "staff", label: "Employee / Staff (25%)", type: "percent", value: 25 },
+  { id: "comp", label: "Gift Voucher (-₱100.00)", type: "fixed", value: 100.00 }
 ];
 
 const INITIAL_ORDERS = [
@@ -530,7 +530,7 @@ const INITIAL_ORDERS = [
     priority: true,
     createdAt: Date.now() - 4 * 60 * 1000, // 4 mins ago
     cashier: "Alex Rivera",
-    paymentMethod: "Card (â€¢â€¢â€¢â€¢ 4821)",
+    paymentMethod: "Card (•••• 4821)",
     subtotal: 525.00,
     discount: 0,
     tax: 63.00,
@@ -564,14 +564,14 @@ const INITIAL_ORDERS = [
           syrups: ["brownsugar"],
           syrupLabels: ["Brown Sugar Cinnamon"],
           toppings: ["cinnamon"],
-          toppingLabels: ["Ceylon Cinnamon Dust"],
+          toppingLabels: ["Cinnamon Powder"],
           notes: "Extra shake please!"
         }
       },
       {
         lineId: "L-2",
         itemId: "esp-latte",
-        name: "Signature CaffÃ¨ Latte",
+        name: "Signature Cafe Latte",
         sku: "ESP-101",
         type: "drink",
         quantity: 1,
@@ -583,11 +583,11 @@ const INITIAL_ORDERS = [
           temp: "hot",
           tempLabel: "Hot",
           milk: "whole",
-          milkLabel: "Whole Milk",
+          milkLabel: "Full Cream Whole Milk",
           shots: "standard",
           shotsLabel: "Standard Double (2)",
           sweetness: "100",
-          sweetnessLabel: "100% Standard",
+          sweetnessLabel: "100% Regular Sweet",
           ice: "regular",
           iceLabel: "Regular Ice",
           syrups: [],
@@ -600,7 +600,7 @@ const INITIAL_ORDERS = [
       {
         lineId: "L-3",
         itemId: "bak-croissant",
-        name: "French Butter Croissant",
+        name: "Classic Butter Croissant",
         sku: "BAK-501",
         type: "bakery",
         quantity: 1,
@@ -638,7 +638,7 @@ const INITIAL_ORDERS = [
       {
         lineId: "L-4",
         itemId: "tea-matcha-latte",
-        name: "Ceremonial Uji Matcha Latte",
+        name: "Ceremonial Matcha Green Tea Latte",
         sku: "TEA-301",
         type: "drink",
         quantity: 1,
@@ -658,7 +658,7 @@ const INITIAL_ORDERS = [
           ice: "regular",
           iceLabel: "Regular Ice",
           syrups: ["vanilla"],
-          syrupLabels: ["Madagascar Vanilla"],
+          syrupLabels: ["Classic Vanilla"],
           toppings: [],
           toppingLabels: [],
           notes: ""
@@ -667,7 +667,7 @@ const INITIAL_ORDERS = [
       {
         lineId: "L-5",
         itemId: "bak-almond-croissant",
-        name: "Twice-Baked Almond Croissant",
+        name: "Toasted Almond Croissant",
         sku: "BAK-502",
         type: "bakery",
         quantity: 1,
@@ -717,15 +717,15 @@ const INITIAL_ORDERS = [
           temp: "iced",
           tempLabel: "Iced",
           milk: "breve",
-          milkLabel: "Breve (Half & Half)",
+          milkLabel: "Half & Half Cream",
           shots: "standard",
           shotsLabel: "Standard Double (2)",
           sweetness: "100",
-          sweetnessLabel: "100% Standard",
+          sweetnessLabel: "100% Regular Sweet",
           ice: "regular",
           iceLabel: "Regular Ice",
           syrups: ["vanilla"],
-          syrupLabels: ["Madagascar Vanilla"],
+          syrupLabels: ["Classic Vanilla"],
           toppings: ["cold-foam"],
           toppingLabels: ["Vanilla Sweet Cream Cold Foam"],
           notes: ""
@@ -877,7 +877,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
               <h2 className="text-lg font-bold text-amber-50 flex items-center gap-2">
                 {item.name}
                 <span className="text-xs font-normal px-2 py-0.5 rounded bg-stone-700 text-stone-300">
-                  Base â‚±{item.price.toFixed(2)}
+                  Base ₱{item.price.toFixed(2)}
                 </span>
               </h2>
               <p className="text-xs text-stone-400">{item.description}</p>
@@ -887,7 +887,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
             onClick={onClose}
             className="p-2 rounded-lg text-stone-400 hover:text-white hover:bg-stone-700 transition"
           >
-            âœ•
+            ✕
           </button>
         </div>
 
@@ -919,8 +919,8 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                           {s.price === 0
                             ? "Base"
                             : s.price > 0
-                            ? `+â‚±${s.price.toFixed(2)}`
-                            : `-â‚±${Math.abs(s.price).toFixed(2)}`}
+                            ? `+₱${s.price.toFixed(2)}`
+                            : `-₱${Math.abs(s.price).toFixed(2)}`}
                         </div>
                       </button>
                     ))}
@@ -980,7 +980,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                       >
                         <span className="text-xs font-medium truncate">{m.name}</span>
                         <span className="text-[11px] text-amber-400 ml-1 shrink-0">
-                          {isDefault ? "Incl" : m.price > 0 ? `+â‚±${m.price.toFixed(2)}` : ""}
+                          {isDefault ? "Incl" : m.price > 0 ? `+₱${m.price.toFixed(2)}` : ""}
                         </span>
                       </button>
                     );
@@ -1012,9 +1012,9 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                           {isDefault
                             ? "Incl"
                             : sh.price > 0
-                            ? `+â‚±${sh.price.toFixed(2)}`
+                            ? `+₱${sh.price.toFixed(2)}`
                             : sh.price < 0
-                            ? `-â‚±${Math.abs(sh.price).toFixed(2)}`
+                            ? `-₱${Math.abs(sh.price).toFixed(2)}`
                             : ""}
                         </span>
                       </button>
@@ -1045,7 +1045,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                       >
                         <div className="text-xs font-medium truncate">{s.name}</div>
                         <div className="text-[11px] text-amber-400">
-                          {isDefault ? "Included" : `+â‚±${s.price.toFixed(2)}`}
+                          {isDefault ? "Included" : `+₱${s.price.toFixed(2)}`}
                         </div>
                       </button>
                     );
@@ -1124,7 +1124,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                       >
                         <div className="text-xs font-medium">{t.name}</div>
                         <div className="text-[11px] text-amber-400">
-                          {isDefault ? "Included" : t.price === 0 ? "Free" : `+â‚±${t.price.toFixed(2)}`}
+                          {isDefault ? "Included" : t.price === 0 ? "Free" : `+₱${t.price.toFixed(2)}`}
                         </div>
                       </button>
                     );
@@ -1177,7 +1177,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                         }`}
                       >
                         <div className="text-xs font-medium">{sp.name}</div>
-                        <div className="text-xs text-amber-400">+â‚±{sp.price.toFixed(2)}</div>
+                        <div className="text-xs text-amber-400">+₱{sp.price.toFixed(2)}</div>
                       </button>
                     );
                   })}
@@ -1195,7 +1195,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g., Double cup, kids temp (130Â°F), allergy alert, extra napkins..."
+              placeholder="e.g., Double cup, kids temp (130°F), allergy alert, extra napkins..."
               className="w-full px-4 py-2.5 rounded-xl bg-stone-800 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
             />
           </div>
@@ -1211,7 +1211,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 className="px-3.5 py-2 text-lg font-bold text-stone-300 hover:text-white"
               >
-                âˆ’
+                −
               </button>
               <span className="px-4 py-2 font-bold text-amber-400">{quantity}</span>
               <button
@@ -1237,7 +1237,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
               onClick={handleConfirm}
               className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-lg shadow-amber-900/30 transition"
             >
-              {initialEditItem ? "Update Item" : "Add to Order"} â€¢ â‚±{(unitPrice * quantity).toFixed(2)}
+              {initialEditItem ? "Update Item" : "Add to Order"} • ₱{(unitPrice * quantity).toFixed(2)}
             </button>
           </div>
         </div>
@@ -1306,7 +1306,7 @@ function CheckoutModal({
       setCashTenderedStr("");
       return;
     }
-    if (key === "âŒ«") {
+    if (key === "⌫") {
       setCashTenderedStr((prev) => prev.slice(0, -1));
       return;
     }
@@ -1319,7 +1319,7 @@ function CheckoutModal({
 
     const methodLabels = {
       cash: "Cash",
-      card: "Card (â€¢â€¢â€¢â€¢ 4829)",
+      card: "Card (•••• 4829)",
       mobile: "GCash / Maya / QR Ph"
     };
 
@@ -1354,7 +1354,7 @@ function CheckoutModal({
           <div>
             <h2 className="text-lg font-bold text-amber-50">Complete Payment & Send to Barista</h2>
             <p className="text-xs text-stone-400">
-              {orderType} {tableNumber ? `â€¢ ${tableNumber}` : ""} â€¢ Customer:{" "}
+              {orderType} {tableNumber ? `• ${tableNumber}` : ""} • Customer:{" "}
               <span className="text-amber-300 font-medium">{customerName || "Walk-In Guest"}</span>
             </p>
           </div>
@@ -1362,7 +1362,7 @@ function CheckoutModal({
             onClick={onClose}
             className="p-2 rounded-lg text-stone-400 hover:text-white hover:bg-stone-700"
           >
-            âœ•
+            ✕
           </button>
         </div>
 
@@ -1373,26 +1373,26 @@ function CheckoutModal({
               <div className="p-4 rounded-xl bg-stone-800/80 border border-stone-700/80 space-y-2 text-sm">
                 <div className="flex justify-between text-stone-300">
                   <span>Subtotal</span>
-                  <span>â‚±{subtotal.toFixed(2)}</span>
+                  <span>₱{subtotal.toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-emerald-400">
                     <span>Discount</span>
-                    <span>âˆ’â‚±{discountAmount.toFixed(2)}</span>
+                    <span>−₱{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-stone-300">
                   <span>12% VAT</span>
-                  <span>â‚±{taxAmount.toFixed(2)}</span>
+                  <span>₱{taxAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-amber-300">
                   <span>Barista Tip</span>
-                  <span>+â‚±{tipAmount.toFixed(2)}</span>
+                  <span>+₱{tipAmount.toFixed(2)}</span>
                 </div>
                 <div className="pt-2 border-t border-stone-700 flex justify-between items-baseline">
                   <span className="font-bold text-base text-white">Total Due</span>
                   <span className="text-2xl font-extrabold text-amber-400">
-                    â‚±{finalTotal.toFixed(2)}
+                    ₱{finalTotal.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -1409,7 +1409,7 @@ function CheckoutModal({
                     { id: "10", label: "10%" },
                     { id: "15", label: "15%" },
                     { id: "20", label: "20%" },
-                    { id: "custom", label: "Custom â‚±" }
+                    { id: "custom", label: "Custom ₱" }
                   ].map((t) => (
                     <button
                       key={t.id}
@@ -1433,7 +1433,7 @@ function CheckoutModal({
                       min="0"
                       value={customTip}
                       onChange={(e) => setCustomTip(e.target.value)}
-                      placeholder="Enter custom tip (â‚±)"
+                      placeholder="Enter custom tip (₱)"
                       className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-sm text-white focus:outline-none focus:border-amber-500"
                     />
                   </div>
@@ -1445,12 +1445,12 @@ function CheckoutModal({
               <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-700/50">
                 <div className="flex justify-between items-center text-xs text-emerald-300 uppercase tracking-wider font-semibold">
                   <span>Cash Tendered</span>
-                  <span>â‚±{cashTendered.toFixed(2)}</span>
+                  <span>₱{cashTendered.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-baseline mt-1">
                   <span className="text-sm font-bold text-emerald-200">Change Due</span>
                   <span className="text-2xl font-extrabold text-emerald-400">
-                    â‚±{changeDue.toFixed(2)}
+                    ₱{changeDue.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -1465,9 +1465,9 @@ function CheckoutModal({
               </label>
               <div className="grid grid-cols-3 gap-2.5">
                 {[
-                  { id: "cash", label: "ðŸ’µ Cash (PHP)", sub: "Peso Bills & Coins" },
-                  { id: "card", label: "ðŸ’³ Credit / Debit", sub: "Visa / Mastercard" },
-                  { id: "mobile", label: "ðŸ“± GCash / Maya", sub: "QR Ph / E-Wallet" }
+                  { id: "cash", label: "💵 Cash (PHP)", sub: "Peso Bills & Coins" },
+                  { id: "card", label: "💳 Credit / Debit", sub: "Visa / Mastercard" },
+                  { id: "mobile", label: "📱 GCash / Maya", sub: "QR Ph / E-Wallet" }
                 ].map((pm) => (
                   <button
                     key={pm.id}
@@ -1499,7 +1499,7 @@ function CheckoutModal({
                         onClick={() => setCashTenderedStr(amt.toFixed(2))}
                         className="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-600 text-xs font-bold text-amber-300 transition"
                       >
-                        {idx === 0 ? `Exact (â‚±${amt.toFixed(2)})` : `â‚±${amt.toFixed(2)}`}
+                        {idx === 0 ? `Exact (₱${amt.toFixed(2)})` : `₱${amt.toFixed(2)}`}
                       </button>
                     ))}
                   </div>
@@ -1510,18 +1510,18 @@ function CheckoutModal({
                   <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-700">
                     <span className="text-xs text-stone-400 uppercase">Tendered Input</span>
                     <span className="text-xl font-mono font-bold text-amber-400">
-                      â‚±{cashTenderedStr || finalTotal.toFixed(2)}
+                      ₱{cashTenderedStr || finalTotal.toFixed(2)}
                     </span>
                   </div>
                   <div className="grid grid-cols-4 gap-2">
-                    {["7", "8", "9", "C", "4", "5", "6", "âŒ«", "1", "2", "3", "00", "0", "."].map(
+                    {["7", "8", "9", "C", "4", "5", "6", "⌫", "1", "2", "3", "00", "0", "."].map(
                       (key) => (
                         <button
                           key={key}
                           type="button"
                           onClick={() => handleKeypad(key)}
                           className={`py-2.5 rounded-xl font-bold text-sm border transition ${
-                            key === "C" || key === "âŒ«"
+                            key === "C" || key === "⌫"
                               ? "bg-rose-950/50 border-rose-800/60 text-rose-300 hover:bg-rose-900/50"
                               : "bg-stone-800 border-stone-700 text-stone-100 hover:bg-stone-700"
                           } ${key === "0" ? "col-span-2" : ""}`}
@@ -1536,17 +1536,17 @@ function CheckoutModal({
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-6 rounded-2xl bg-stone-950/70 border border-stone-800 text-center space-y-3">
                 <div className="w-16 h-16 rounded-full bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-3xl">
-                  {isProcessingCard ? "â³" : paymentMethod === "card" ? "ðŸ’³" : "ðŸ“²"}
+                  {isProcessingCard ? "⏳" : paymentMethod === "card" ? "💳" : "📲"}
                 </div>
                 <h3 className="text-base font-bold text-amber-100">
                   {isProcessingCard
                     ? "Authorizing Terminal..."
                     : paymentMethod === "card"
-                    ? "Terminal Ready â€” Tap, Insert, or Swipe"
+                    ? "Terminal Ready — Tap, Insert, or Swipe"
                     : "Scan QR Ph (GCash / Maya)"}
                 </h3>
                 <p className="text-xs text-stone-400 max-w-xs">
-                  Charging <span className="text-amber-300 font-bold">â‚±{finalTotal.toFixed(2)}</span>{" "}
+                  Charging <span className="text-amber-300 font-bold">₱{finalTotal.toFixed(2)}</span>{" "}
                   to customer terminal #01. Click below to confirm payment.
                 </p>
               </div>
@@ -1573,7 +1573,7 @@ function CheckoutModal({
               >
                 {isProcessingCard
                   ? "Processing..."
-                  : `Charge â‚±${finalTotal.toFixed(2)} & Print Ticket`}
+                  : `Charge ₱${finalTotal.toFixed(2)} & Print Ticket`}
               </button>
             </div>
           </div>
@@ -1636,7 +1636,7 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
                     : "text-stone-400 hover:text-white"
                 }`}
               >
-                ðŸ§¾ Receipt (80mm)
+                🧾 Receipt (80mm)
               </button>
               <button
                 type="button"
@@ -1647,14 +1647,14 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
                     : "text-stone-400 hover:text-white"
                 }`}
               >
-                ðŸ·ï¸ Cup Labels ({totalStickers})
+                🏷️ Cup Labels ({totalStickers})
               </button>
             </div>
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg text-stone-400 hover:text-white hover:bg-stone-700"
             >
-              âœ•
+              ✕
             </button>
           </div>
         </div>
@@ -1702,38 +1702,38 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
                         <span>
                           {item.quantity}x {item.name}
                         </span>
-                        <span>â‚±{(item.unitPrice * item.quantity).toFixed(2)}</span>
+                        <span>₱{(item.unitPrice * item.quantity).toFixed(2)}</span>
                       </div>
                       {item.type === "drink" && (
                         <div className="pl-3 text-[11px] text-stone-600 space-y-0.5">
                           <div>
-                            â€¢ {c.sizeLabel} | {c.tempLabel}
+                            • {c.sizeLabel} | {c.tempLabel}
                           </div>
                           <div>
-                            â€¢ {c.milkLabel} | {c.shotsLabel}
+                            • {c.milkLabel} | {c.shotsLabel}
                           </div>
                           {(c.sweetness !== "100" || (c.temp === "iced" && c.ice !== "regular")) && (
                             <div>
-                              â€¢ Sweet: {c.sweetnessLabel}
+                              • Sweet: {c.sweetnessLabel}
                               {c.temp === "iced" ? ` | ${c.iceLabel}` : ""}
                             </div>
                           )}
                           {c.syrupLabels?.length > 0 && (
-                            <div>â€¢ +Syrup: {c.syrupLabels.join(", ")}</div>
+                            <div>• +Syrup: {c.syrupLabels.join(", ")}</div>
                           )}
                           {c.toppingLabels?.length > 0 && (
-                            <div>â€¢ +Top: {c.toppingLabels.join(", ")}</div>
+                            <div>• +Top: {c.toppingLabels.join(", ")}</div>
                           )}
-                          {c.notes && <div className="italic font-semibold">â€¢ Note: "{c.notes}"</div>}
+                          {c.notes && <div className="italic font-semibold">• Note: "{c.notes}"</div>}
                         </div>
                       )}
                       {item.type === "bakery" && (
                         <div className="pl-3 text-[11px] text-stone-600 space-y-0.5">
-                          {c.warmingLabel && <div>â€¢ {c.warmingLabel}</div>}
+                          {c.warmingLabel && <div>• {c.warmingLabel}</div>}
                           {c.spreadLabels?.length > 0 && (
-                            <div>â€¢ +Spread: {c.spreadLabels.join(", ")}</div>
+                            <div>• +Spread: {c.spreadLabels.join(", ")}</div>
                           )}
-                          {c.notes && <div className="italic font-semibold">â€¢ Note: "{c.notes}"</div>}
+                          {c.notes && <div className="italic font-semibold">• Note: "{c.notes}"</div>}
                         </div>
                       )}
                     </div>
@@ -1745,27 +1745,27 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
               <div className="border-b border-dashed border-stone-400 pb-3 mb-3 space-y-1">
                 <div className="flex justify-between">
                   <span>SUBTOTAL</span>
-                  <span>â‚±{order.subtotal.toFixed(2)}</span>
+                  <span>₱{order.subtotal.toFixed(2)}</span>
                 </div>
                 {order.discount > 0 && (
                   <div className="flex justify-between text-emerald-700 font-semibold">
                     <span>DISCOUNT</span>
-                    <span>-â‚±{order.discount.toFixed(2)}</span>
+                    <span>-₱{order.discount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span>VAT (12%)</span>
-                  <span>â‚±{order.tax.toFixed(2)}</span>
+                  <span>₱{order.tax.toFixed(2)}</span>
                 </div>
                 {order.tip > 0 && (
                   <div className="flex justify-between">
                     <span>BARISTA TIP</span>
-                    <span>â‚±{order.tip.toFixed(2)}</span>
+                    <span>₱{order.tip.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm font-extrabold pt-1 border-t border-stone-300">
                   <span>TOTAL</span>
-                  <span>â‚±{order.total.toFixed(2)}</span>
+                  <span>₱{order.total.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -1777,12 +1777,12 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
                 </div>
                 <div className="flex justify-between">
                   <span>AMOUNT TENDERED</span>
-                  <span>â‚±{(order.amountTendered || order.total).toFixed(2)}</span>
+                  <span>₱{(order.amountTendered || order.total).toFixed(2)}</span>
                 </div>
                 {order.changeDue > 0 && (
                   <div className="flex justify-between font-bold">
                     <span>CHANGE DUE</span>
-                    <span>â‚±{order.changeDue.toFixed(2)}</span>
+                    <span>₱{order.changeDue.toFixed(2)}</span>
                   </div>
                 )}
               </div>
@@ -1814,7 +1814,7 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
                         </span>
                       </div>
                       <span className="px-2 py-0.5 bg-stone-900 text-amber-300 font-bold rounded text-[10px]">
-                        {st.stickerIndex} of {totalStickers} â€¢ {order.orderType}
+                        {st.stickerIndex} of {totalStickers} • {order.orderType}
                       </span>
                     </div>
 
@@ -1892,7 +1892,7 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
             onClick={handlePrint}
             className="px-5 py-2.5 rounded-xl bg-stone-700 hover:bg-stone-600 text-amber-200 font-bold text-sm flex items-center gap-2 transition"
           >
-            ðŸ–¨ï¸ Print {printMode === "receipt" ? "Receipt" : "Cup Labels"}
+            🖨️ Print {printMode === "receipt" ? "Receipt" : "Cup Labels"}
           </button>
           <button
             type="button"
@@ -1902,7 +1902,7 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
             }}
             className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm shadow-lg transition"
           >
-            Start Next Customer Order â†’
+            Start Next Customer Order →
           </button>
         </div>
       </div>
@@ -1983,7 +1983,7 @@ function BaristaKDS({
       <div className="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-stone-800">
         <div>
           <h1 className="text-xl font-bold text-amber-50 flex items-center gap-2.5">
-            <span>â˜• Barista Kitchen Display System (KDS)</span>
+            <span>☕ Barista Kitchen Display System (KDS)</span>
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-medium">
               Live Sync
             </span>
@@ -2032,7 +2032,7 @@ function BaristaKDS({
             <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5">
               {lane.items.length === 0 ? (
                 <div className="h-48 flex flex-col items-center justify-center text-stone-500 text-xs border border-dashed border-stone-800 rounded-xl">
-                  <span className="text-2xl mb-1">âœ¨</span>
+                  <span className="text-2xl mb-1">✨</span>
                   <span>No tickets in {lane.title}</span>
                 </div>
               ) : (
@@ -2071,7 +2071,7 @@ function BaristaKDS({
                           </div>
                           <div className="text-[11px] text-stone-400">
                             {order.orderType}
-                            {order.tableNumber ? ` â€¢ ${order.tableNumber}` : ""}
+                            {order.tableNumber ? ` • ${order.tableNumber}` : ""}
                           </div>
                         </div>
 
@@ -2086,7 +2086,7 @@ function BaristaKDS({
                                 : "bg-stone-800 text-stone-400 border-stone-700 hover:text-white"
                             }`}
                           >
-                            ðŸ”¥
+                            🔥
                           </button>
                           <button
                             type="button"
@@ -2094,7 +2094,7 @@ function BaristaKDS({
                             onClick={() => onViewReceipt(order)}
                             className="px-2 py-1 rounded text-xs bg-stone-800 hover:bg-stone-700 text-stone-300 border border-stone-700"
                           >
-                            ðŸ·ï¸
+                            🏷️
                           </button>
                           <span
                             className={`px-2 py-1 rounded text-xs font-mono font-bold border ${getUrgencyBadge(
@@ -2102,7 +2102,7 @@ function BaristaKDS({
                               order.status
                             )}`}
                           >
-                            â± {getElapsedText(order.createdAt)}
+                            ⏱ {getElapsedText(order.createdAt)}
                           </span>
                         </div>
                       </div>
@@ -2130,7 +2130,7 @@ function BaristaKDS({
                                         : "border-stone-500 text-transparent"
                                     }`}
                                   >
-                                    âœ“
+                                    ✓
                                   </span>
                                   <div>
                                     <div
@@ -2152,7 +2152,7 @@ function BaristaKDS({
                                               : "bg-orange-950 text-orange-300 border border-orange-700/60"
                                           }`}
                                         >
-                                          {c.size?.toUpperCase()} â€¢ {c.tempLabel}
+                                          {c.size?.toUpperCase()} • {c.tempLabel}
                                         </span>
                                         <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-stone-700 text-stone-200">
                                           {c.milkLabel}
@@ -2207,7 +2207,7 @@ function BaristaKDS({
 
                                     {c.notes && (
                                       <div className="mt-1.5 px-2 py-1 rounded bg-rose-950/80 border border-rose-700/60 text-[11px] text-rose-200 font-semibold">
-                                        âš ï¸ Note: {c.notes}
+                                        ⚠️ Note: {c.notes}
                                       </div>
                                     )}
                                   </div>
@@ -2226,7 +2226,7 @@ function BaristaKDS({
                             onClick={() => onUpdateOrderStatus(order.id, "brewing")}
                             className="w-full py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs shadow transition"
                           >
-                            Start Brewing â†’
+                            Start Brewing →
                           </button>
                         )}
                         {order.status === "brewing" && (
@@ -2236,7 +2236,7 @@ function BaristaKDS({
                               onClick={() => onUpdateOrderStatus(order.id, "queued")}
                               className="px-3 py-2 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
                             >
-                              â†
+                              ←
                             </button>
                             <button
                               type="button"
@@ -2247,7 +2247,7 @@ function BaristaKDS({
                                   : "bg-emerald-700/80 hover:bg-emerald-600 text-white"
                               }`}
                             >
-                              âœ“ Mark Ready for Handoff
+                              ✓ Mark Ready for Handoff
                             </button>
                           </>
                         )}
@@ -2258,14 +2258,14 @@ function BaristaKDS({
                               onClick={() => onUpdateOrderStatus(order.id, "brewing")}
                               className="px-3 py-2 rounded-lg border border-stone-700 text-stone-400 hover:text-white text-xs"
                             >
-                              â† Recall
+                              ← Recall
                             </button>
                             <button
                               type="button"
                               onClick={() => onUpdateOrderStatus(order.id, "completed")}
                               className="flex-1 py-2 rounded-lg bg-stone-700 hover:bg-stone-600 text-amber-200 font-bold text-xs transition"
                             >
-                              Picked Up / Complete Archive âœ“
+                              Picked Up / Complete Archive ✓
                             </button>
                           </>
                         )}
@@ -2328,7 +2328,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Gross Shift Sales</div>
           <div className="text-2xl font-extrabold text-amber-400 mt-1">
-            â‚±{stats.revenue.toFixed(2)}
+            ₱{stats.revenue.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">{stats.count} Paid Orders</div>
         </div>
@@ -2336,7 +2336,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Average Ticket</div>
           <div className="text-2xl font-extrabold text-stone-100 mt-1">
-            â‚±{stats.avgTicket.toFixed(2)}
+            ₱{stats.avgTicket.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">Per transaction</div>
         </div>
@@ -2344,7 +2344,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Barista Tips</div>
           <div className="text-2xl font-extrabold text-emerald-400 mt-1">
-            â‚±{stats.tips.toFixed(2)}
+            ₱{stats.tips.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">100% distributed to crew</div>
         </div>
@@ -2352,7 +2352,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Cash Drawer Sales</div>
           <div className="text-2xl font-extrabold text-stone-200 mt-1">
-            â‚±{stats.cashTotal.toFixed(2)}
+            ₱{stats.cashTotal.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">Physical PHP tender</div>
         </div>
@@ -2360,7 +2360,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Card & E-Wallet Sales</div>
           <div className="text-2xl font-extrabold text-sky-400 mt-1">
-            â‚±{stats.cardTotal.toFixed(2)}
+            ₱{stats.cardTotal.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">Card / GCash / Maya</div>
         </div>
@@ -2454,7 +2454,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
                     </span>
                   </td>
                   <td className="py-3.5 px-4 text-right font-bold text-amber-400">
-                    â‚±{order.total.toFixed(2)}
+                    ₱{order.total.toFixed(2)}
                   </td>
                   <td className="py-3.5 px-4 text-right space-x-2">
                     <button
@@ -2462,7 +2462,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
                       onClick={() => onViewReceipt(order)}
                       className="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-amber-200 text-xs font-semibold border border-stone-700 transition"
                     >
-                      ðŸ§¾ Receipt / Labels
+                      🧾 Receipt / Labels
                     </button>
                     {order.status !== "refunded" && (
                       <button
@@ -2509,7 +2509,7 @@ function App() {
   // Orders Queue & History (persisted in localStorage)
   const [orders, setOrders] = useState(() => {
     try {
-      const saved = localStorage.getItem("roast_ritual_orders_php_v1");
+      const saved = localStorage.getItem("roast_ritual_orders_en_php_v2");
       if (saved) return JSON.parse(saved);
     } catch (e) {
       // ignore
@@ -2519,7 +2519,7 @@ function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("roast_ritual_orders_php_v1", JSON.stringify(orders));
+      localStorage.setItem("roast_ritual_orders_en_php_v2", JSON.stringify(orders));
     } catch (e) {
       // ignore
     }
@@ -2764,7 +2764,7 @@ function App() {
       <header className="no-print h-16 px-5 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-stone-950 font-black text-xl shadow-md">
-            â˜•
+            ☕
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -2792,7 +2792,7 @@ function App() {
                 : "text-stone-400 hover:text-white"
             }`}
           >
-            <span>ðŸ–¥ï¸ POS Register</span>
+            <span>🖥️ POS Register</span>
             {cart.length > 0 && (
               <span className="px-1.5 py-0.2 rounded-full bg-stone-900 text-amber-400 text-[10px]">
                 {cart.reduce((s, i) => s + i.quantity, 0)}
@@ -2809,7 +2809,7 @@ function App() {
                 : "text-stone-400 hover:text-white"
             }`}
           >
-            <span>ðŸ”¥ Barista KDS Queue</span>
+            <span>🔥 Barista KDS Queue</span>
             {activeKdsCount > 0 && (
               <span
                 className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
@@ -2832,7 +2832,7 @@ function App() {
                 : "text-stone-400 hover:text-white"
             }`}
           >
-            <span>ðŸ§¾ Receipts & Shift Sales</span>
+            <span>🧾 Receipts & Shift Sales</span>
           </button>
         </nav>
 
@@ -2847,7 +2847,7 @@ function App() {
                   onClick={() => handleRecallHeldOrder(h)}
                   className="px-3 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-700/60 text-amber-200 text-xs font-semibold flex items-center gap-1.5 transition"
                 >
-                  <span>â¸ Recall: {h.customerName}</span>
+                  <span>⏸ Recall: {h.customerName}</span>
                 </button>
               ))}
             </div>
@@ -2873,14 +2873,14 @@ function App() {
                   placeholder="Search drinks, pastries, or SKU (e.g. Matcha, Latte, ESP-101)..."
                   className="w-full pl-9 pr-4 py-2 rounded-xl bg-stone-900 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
                 />
-                <span className="absolute left-3 top-2.5 text-stone-500 text-sm">ðŸ”</span>
+                <span className="absolute left-3 top-2.5 text-stone-500 text-sm">🔍</span>
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
                     className="absolute right-3 top-2.5 text-xs text-stone-400 hover:text-white"
                   >
-                    âœ•
+                    ✕
                   </button>
                 )}
               </div>
@@ -2888,9 +2888,9 @@ function App() {
               <div className="flex items-center gap-1.5">
                 {[
                   { id: "all", label: "All" },
-                  { id: "popular", label: "â­ Popular" },
-                  { id: "hot", label: "ðŸ”¥ Hot" },
-                  { id: "iced", label: "ðŸ§Š Iced" }
+                  { id: "popular", label: "⭐ Popular" },
+                  { id: "hot", label: "🔥 Hot" },
+                  { id: "iced", label: "🧊 Iced" }
                 ].map((qf) => (
                   <button
                     key={qf.id}
@@ -2947,7 +2947,7 @@ function App() {
                       </div>
                       <div className="flex flex-col items-end">
                         <span className="text-base font-extrabold text-amber-400">
-                          â‚±{item.price.toFixed(2)}
+                          ₱{item.price.toFixed(2)}
                         </span>
                         <span className="text-[10px] text-stone-500 font-mono">
                           {item.calories > 0 ? `${item.calories} cal` : item.sku}
@@ -2971,7 +2971,7 @@ function App() {
 
                   <div className="mt-4 pt-3 border-t border-stone-800/80 flex items-center justify-between gap-2">
                     <span className="text-[11px] text-amber-400/90 font-semibold group-hover:underline">
-                      âš™ï¸ Customize
+                      ⚙️ Customize
                     </span>
                     <button
                       type="button"
@@ -3030,7 +3030,7 @@ function App() {
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center text-stone-500 p-6">
                   <div className="w-14 h-14 rounded-2xl bg-stone-800/60 flex items-center justify-center text-2xl mb-3">
-                    â˜•
+                    ☕
                   </div>
                   <p className="text-sm font-semibold text-stone-400">Current Ticket is Empty</p>
                   <p className="text-xs text-stone-500 mt-1 max-w-xs">
@@ -3060,13 +3060,13 @@ function App() {
                           {line.type === "drink" && (
                             <div className="text-[11px] text-stone-400 mt-1 space-y-0.5">
                               <div className="text-amber-400/90 font-medium">
-                                {c.sizeLabel} â€¢ {c.tempLabel} â€¢ {c.milkLabel}
+                                {c.sizeLabel} • {c.tempLabel} • {c.milkLabel}
                               </div>
                               <div>
                                 {c.shotsLabel}
-                                {c.sweetness !== "100" ? ` â€¢ ${c.sweetnessLabel}` : ""}
+                                {c.sweetness !== "100" ? ` • ${c.sweetnessLabel}` : ""}
                                 {c.temp === "iced" && c.ice !== "regular"
-                                  ? ` â€¢ ${c.iceLabel}`
+                                  ? ` • ${c.iceLabel}`
                                   : ""}
                               </div>
                               {c.syrupLabels?.length > 0 && (
@@ -3086,7 +3086,7 @@ function App() {
                             <div className="text-[11px] text-stone-400 mt-1">
                               {c.warmingLabel}
                               {c.spreadLabels?.length > 0
-                                ? ` â€¢ +${c.spreadLabels.join(", ")}`
+                                ? ` • +${c.spreadLabels.join(", ")}`
                                 : ""}
                             </div>
                           )}
@@ -3100,7 +3100,7 @@ function App() {
 
                         <div className="flex flex-col items-end gap-2">
                           <span className="font-bold text-sm text-amber-400">
-                            â‚±{(line.unitPrice * line.quantity).toFixed(2)}
+                            ₱{(line.unitPrice * line.quantity).toFixed(2)}
                           </span>
                           <div className="flex items-center bg-stone-900 border border-stone-700 rounded-lg">
                             <button
@@ -3108,7 +3108,7 @@ function App() {
                               onClick={() => handleUpdateQty(line.lineId, -1)}
                               className="px-2 py-0.5 text-xs font-bold text-stone-400 hover:text-white"
                             >
-                              âˆ’
+                              −
                             </button>
                             <span className="px-2 text-xs font-bold text-stone-100">
                               {line.quantity}
@@ -3151,21 +3151,21 @@ function App() {
               <div className="space-y-1 text-xs border-t border-stone-800 pt-2.5">
                 <div className="flex justify-between text-stone-400">
                   <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
-                  <span>â‚±{subtotal.toFixed(2)}</span>
+                  <span>₱{subtotal.toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-emerald-400 font-semibold">
                     <span>Discount Applied</span>
-                    <span>âˆ’â‚±{discountAmount.toFixed(2)}</span>
+                    <span>−₱{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-stone-400">
                   <span>12% VAT</span>
-                  <span>â‚±{taxAmount.toFixed(2)}</span>
+                  <span>₱{taxAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-baseline text-base font-extrabold text-white pt-1">
                   <span>Total Due</span>
-                  <span className="text-xl text-amber-400">â‚±{baseTotal.toFixed(2)}</span>
+                  <span className="text-xl text-amber-400">₱{baseTotal.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -3185,7 +3185,7 @@ function App() {
                   onClick={handleHoldOrder}
                   className="py-3 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-bold disabled:opacity-40 transition"
                 >
-                  â¸ Hold
+                  ⏸ Hold
                 </button>
                 <button
                   type="button"
@@ -3193,7 +3193,7 @@ function App() {
                   onClick={() => setIsCheckoutOpen(true)}
                   className="col-span-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:bg-stone-800 disabled:text-stone-600 text-stone-950 font-extrabold text-sm shadow-lg shadow-amber-950/40 transition"
                 >
-                  Pay â‚±{baseTotal.toFixed(2)} â†’
+                  Pay ₱{baseTotal.toFixed(2)} →
                 </button>
               </div>
             </div>
