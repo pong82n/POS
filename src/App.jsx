@@ -36,7 +36,7 @@ export default function App() {
   // Orders Queue & History (persisted in localStorage)
   const [orders, setOrders] = useState(() => {
     try {
-      const saved = localStorage.getItem("roast_ritual_orders_v1");
+      const saved = localStorage.getItem("roast_ritual_orders_php_v1");
       if (saved) return JSON.parse(saved);
     } catch (e) {
       // ignore
@@ -46,7 +46,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("roast_ritual_orders_v1", JSON.stringify(orders));
+      localStorage.setItem("roast_ritual_orders_php_v1", JSON.stringify(orders));
     } catch (e) {
       // ignore
     }
@@ -474,7 +474,7 @@ export default function App() {
                       </div>
                       <div className="flex flex-col items-end">
                         <span className="text-base font-extrabold text-amber-400">
-                          ${item.price.toFixed(2)}
+                          ₱{item.price.toFixed(2)}
                         </span>
                         <span className="text-[10px] text-stone-500 font-mono">
                           {item.calories > 0 ? `${item.calories} cal` : item.sku}
@@ -627,7 +627,7 @@ export default function App() {
 
                         <div className="flex flex-col items-end gap-2">
                           <span className="font-bold text-sm text-amber-400">
-                            ${(line.unitPrice * line.quantity).toFixed(2)}
+                            ₱{(line.unitPrice * line.quantity).toFixed(2)}
                           </span>
                           <div className="flex items-center bg-stone-900 border border-stone-700 rounded-lg">
                             <button
@@ -678,21 +678,21 @@ export default function App() {
               <div className="space-y-1 text-xs border-t border-stone-800 pt-2.5">
                 <div className="flex justify-between text-stone-400">
                   <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₱{subtotal.toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-emerald-400 font-semibold">
                     <span>Discount Applied</span>
-                    <span>−${discountAmount.toFixed(2)}</span>
+                    <span>−₱{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-stone-400">
-                  <span>Tax (8.5%)</span>
-                  <span>${taxAmount.toFixed(2)}</span>
+                  <span>12% VAT</span>
+                  <span>₱{taxAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-baseline text-base font-extrabold text-white pt-1">
                   <span>Total Due</span>
-                  <span className="text-xl text-amber-400">${baseTotal.toFixed(2)}</span>
+                  <span className="text-xl text-amber-400">₱{baseTotal.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -720,7 +720,7 @@ export default function App() {
                   onClick={() => setIsCheckoutOpen(true)}
                   className="col-span-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:bg-stone-800 disabled:text-stone-600 text-stone-950 font-extrabold text-sm shadow-lg shadow-amber-950/40 transition"
                 >
-                  Pay ${baseTotal.toFixed(2)} →
+                  Pay ₱{baseTotal.toFixed(2)} →
                 </button>
               </div>
             </div>

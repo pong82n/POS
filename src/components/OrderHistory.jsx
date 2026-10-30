@@ -44,7 +44,7 @@ export default function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Gross Shift Sales</div>
           <div className="text-2xl font-extrabold text-amber-400 mt-1">
-            ${stats.revenue.toFixed(2)}
+            ₱{stats.revenue.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">{stats.count} Paid Orders</div>
         </div>
@@ -52,7 +52,7 @@ export default function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Average Ticket</div>
           <div className="text-2xl font-extrabold text-stone-100 mt-1">
-            ${stats.avgTicket.toFixed(2)}
+            ₱{stats.avgTicket.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">Per transaction</div>
         </div>
@@ -60,7 +60,7 @@ export default function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Barista Tips</div>
           <div className="text-2xl font-extrabold text-emerald-400 mt-1">
-            ${stats.tips.toFixed(2)}
+            ₱{stats.tips.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">100% distributed to crew</div>
         </div>
@@ -68,17 +68,17 @@ export default function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Cash Drawer Sales</div>
           <div className="text-2xl font-extrabold text-stone-200 mt-1">
-            ${stats.cashTotal.toFixed(2)}
+            ₱{stats.cashTotal.toFixed(2)}
           </div>
-          <div className="text-[11px] text-stone-500 mt-0.5">Physical tender</div>
+          <div className="text-[11px] text-stone-500 mt-0.5">Physical PHP tender</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Card & NFC Sales</div>
+          <div className="text-xs text-stone-400 uppercase font-semibold">Card & E-Wallet Sales</div>
           <div className="text-2xl font-extrabold text-sky-400 mt-1">
-            ${stats.cardTotal.toFixed(2)}
+            ₱{stats.cardTotal.toFixed(2)}
           </div>
-          <div className="text-[11px] text-stone-500 mt-0.5">Settled electronically</div>
+          <div className="text-[11px] text-stone-500 mt-0.5">Card / GCash / Maya</div>
         </div>
       </div>
 
@@ -170,7 +170,7 @@ export default function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
                     </span>
                   </td>
                   <td className="py-3.5 px-4 text-right font-bold text-amber-400">
-                    ${order.total.toFixed(2)}
+                    ₱{order.total.toFixed(2)}
                   </td>
                   <td className="py-3.5 px-4 text-right space-x-2">
                     <button

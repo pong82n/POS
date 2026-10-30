@@ -12,7 +12,7 @@ export default function CheckoutModal({
   onCompleteOrder
 }) {
   const [paymentMethod, setPaymentMethod] = useState("cash"); // cash | card | mobile
-  const [tipMode, setTipMode] = useState("15"); // 0 | 10 | 15 | 18 | 20 | custom
+  const [tipMode, setTipMode] = useState("0"); // 0 | 5 | 10 | 15 | 20 | custom
   const [customTip, setCustomTip] = useState("");
   const [cashTenderedStr, setCashTenderedStr] = useState("");
   const [isProcessingCard, setIsProcessingCard] = useState(false);
@@ -46,10 +46,10 @@ export default function CheckoutModal({
 
   const quickCashAmounts = useMemo(() => {
     const exact = finalTotal;
-    const nextDollar = Math.ceil(finalTotal);
-    const bills = [5, 10, 20, 50, 100];
+    const nextFifty = Math.ceil(finalTotal / 50) * 50;
+    const bills = [100, 200, 500, 1000, 2000];
     const validBills = bills.filter((b) => b >= finalTotal);
-    const set = new Set([exact, nextDollar, ...validBills]);
+    const set = new Set([exact, nextFifty, ...validBills]);
     return Array.from(set).slice(0, 5);
   }, [finalTotal]);
 
@@ -72,7 +72,7 @@ export default function CheckoutModal({
     const methodLabels = {
       cash: "Cash",
       card: "Card (•••• 4829)",
-      mobile: "Apple Pay / NFC"
+      mobile: "GCash / Maya / QR Ph"
     };
 
     if (paymentMethod !== "cash") {
@@ -125,26 +125,26 @@ export default function CheckoutModal({
               <div className="p-4 rounded-xl bg-stone-800/80 border border-stone-700/80 space-y-2 text-sm">
                 <div className="flex justify-between text-stone-300">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₱{subtotal.toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-emerald-400">
                     <span>Discount</span>
-                    <span>−${discountAmount.toFixed(2)}</span>
+                    <span>−₱{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-stone-300">
-                  <span>Estimated Tax (8.5%)</span>
-                  <span>${taxAmount.toFixed(2)}</span>
+                  <span>12% VAT</span>
+                  <span>₱{taxAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-amber-300">
                   <span>Barista Tip</span>
-                  <span>+${tipAmount.toFixed(2)}</span>
+                  <span>+₱{tipAmount.toFixed(2)}</span>
                 </div>
                 <div className="pt-2 border-t border-stone-700 flex justify-between items-baseline">
                   <span className="font-bold text-base text-white">Total Due</span>
                   <span className="text-2xl font-extrabold text-amber-400">
-                    ${finalTotal.toFixed(2)}
+                    ₱{finalTotal.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -157,11 +157,11 @@ export default function CheckoutModal({
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { id: "0", label: "No Tip" },
+                    { id: "5", label: "5%" },
                     { id: "10", label: "10%" },
                     { id: "15", label: "15%" },
-                    { id: "18", label: "18%" },
                     { id: "20", label: "20%" },
-                    { id: "custom", label: "Custom" }
+                    { id: "custom", label: "Custom ₱" }
                   ].map((t) => (
                     <button
                       key={t.id}
@@ -181,11 +181,11 @@ export default function CheckoutModal({
                   <div className="mt-2">
                     <input
                       type="number"
-                      step="0.25"
+                      step="10"
                       min="0"
                       value={customTip}
                       onChange={(e) => setCustomTip(e.target.value)}
-                      placeholder="Enter custom tip ($)"
+                      placeholder="Enter custom tip (₱)"
                       className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-sm text-white focus:outline-none focus:border-amber-500"
                     />
                   </div>
@@ -197,12 +197,12 @@ export default function CheckoutModal({
               <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-700/50">
                 <div className="flex justify-between items-center text-xs text-emerald-300 uppercase tracking-wider font-semibold">
                   <span>Cash Tendered</span>
-                  <span>${cashTendered.toFixed(2)}</span>
+                  <span>₱{cashTendered.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-baseline mt-1">
                   <span className="text-sm font-bold text-emerald-200">Change Due</span>
                   <span className="text-2xl font-extrabold text-emerald-400">
-                    ${changeDue.toFixed(2)}
+                    ₱{changeDue.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -217,9 +217,9 @@ export default function CheckoutModal({
               </label>
               <div className="grid grid-cols-3 gap-2.5">
                 {[
-                  { id: "cash", label: "💵 Cash Drawer", sub: "Bills & Coin" },
-                  { id: "card", label: "💳 Credit / Debit", sub: "Chip / Swipe" },
-                  { id: "mobile", label: "📱 Tap / Wallet", sub: "Apple / Google Pay" }
+                  { id: "cash", label: "💵 Cash (PHP)", sub: "Peso Bills & Coins" },
+                  { id: "card", label: "💳 Credit / Debit", sub: "Visa / Mastercard" },
+                  { id: "mobile", label: "📱 GCash / Maya", sub: "QR Ph / E-Wallet" }
                 ].map((pm) => (
                   <button
                     key={pm.id}
@@ -242,7 +242,7 @@ export default function CheckoutModal({
               <div className="space-y-4">
                 {/* Quick Bills */}
                 <div>
-                  <span className="block text-xs text-stone-400 mb-1.5">Quick Cash Tender</span>
+                  <span className="block text-xs text-stone-400 mb-1.5">Quick Cash Tender (PHP)</span>
                   <div className="flex flex-wrap gap-2">
                     {quickCashAmounts.map((amt, idx) => (
                       <button
@@ -251,7 +251,7 @@ export default function CheckoutModal({
                         onClick={() => setCashTenderedStr(amt.toFixed(2))}
                         className="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-600 text-xs font-bold text-amber-300 transition"
                       >
-                        {idx === 0 ? `Exact ($${amt.toFixed(2)})` : `$${amt.toFixed(2)}`}
+                        {idx === 0 ? `Exact (₱${amt.toFixed(2)})` : `₱${amt.toFixed(2)}`}
                       </button>
                     ))}
                   </div>
@@ -262,7 +262,7 @@ export default function CheckoutModal({
                   <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-700">
                     <span className="text-xs text-stone-400 uppercase">Tendered Input</span>
                     <span className="text-xl font-mono font-bold text-amber-400">
-                      ${cashTenderedStr || finalTotal.toFixed(2)}
+                      ₱{cashTenderedStr || finalTotal.toFixed(2)}
                     </span>
                   </div>
                   <div className="grid grid-cols-4 gap-2">
@@ -293,11 +293,13 @@ export default function CheckoutModal({
                 <h3 className="text-base font-bold text-amber-100">
                   {isProcessingCard
                     ? "Authorizing Terminal..."
-                    : "Terminal Ready — Tap, Insert, or Swipe"}
+                    : paymentMethod === "card"
+                    ? "Terminal Ready — Tap, Insert, or Swipe"
+                    : "Scan QR Ph (GCash / Maya)"}
                 </h3>
                 <p className="text-xs text-stone-400 max-w-xs">
-                  Charging <span className="text-amber-300 font-bold">${finalTotal.toFixed(2)}</span>{" "}
-                  to customer reader #01. Click below to simulate instant approval.
+                  Charging <span className="text-amber-300 font-bold">₱{finalTotal.toFixed(2)}</span>{" "}
+                  to customer terminal #01. Click below to confirm payment.
                 </p>
               </div>
             )}
@@ -323,7 +325,7 @@ export default function CheckoutModal({
               >
                 {isProcessingCard
                   ? "Processing..."
-                  : `Charge $${finalTotal.toFixed(2)} & Print Ticket`}
+                  : `Charge ₱${finalTotal.toFixed(2)} & Print Ticket`}
               </button>
             </div>
           </div>

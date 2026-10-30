@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ROAST & RITUAL — Coffee Shop POS & Barista KDS</title>
+  <title>ROAST & RITUAL — Coffee Shop POS & Barista KDS (PHP)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -36,9 +36,9 @@
 const SHOP_CONFIG = {
   name: "ROAST & RITUAL",
   tagline: "Specialty Coffee & Artisan Bakery",
-  address: "742 Evergreen Terrace, Suite 101, Seattle, WA 98101",
-  phone: "(206) 555-0194",
-  taxRate: 0.085, // 8.5%
+  address: "Bonifacio High Street, BGC, Taguig City, Metro Manila",
+  phone: "(02) 8555-0194 â€¢ +63 917 555 0194",
+  taxRate: 0.12, // 12% PH VAT
   cashierName: "Alex Rivera",
   registerId: "REG-01"
 };
@@ -55,9 +55,9 @@ const CATEGORIES = [
 
 const MODIFIERS = {
   sizes: [
-    { id: "sm", name: "Small", oz: "12 oz", price: -0.50 },
+    { id: "sm", name: "Small", oz: "12 oz", price: -20.00 },
     { id: "md", name: "Medium", oz: "16 oz", price: 0.00 },
-    { id: "lg", name: "Large", oz: "20 oz", price: 0.75 }
+    { id: "lg", name: "Large", oz: "20 oz", price: 30.00 }
   ],
   temperatures: [
     { id: "hot", name: "Hot", price: 0 },
@@ -66,20 +66,20 @@ const MODIFIERS = {
   ],
   milks: [
     { id: "whole", name: "Whole Milk", price: 0.00 },
-    { id: "oat", name: "Barista Oat Milk", price: 0.80 },
-    { id: "almond", name: "Almond Milk", price: 0.75 },
+    { id: "oat", name: "Barista Oat Milk", price: 45.00 },
+    { id: "almond", name: "Almond Milk", price: 40.00 },
     { id: "2percent", name: "2% Reduced Fat", price: 0.00 },
     { id: "skim", name: "Nonfat Skim Milk", price: 0.00 },
-    { id: "soy", name: "Organic Soy Milk", price: 0.70 },
-    { id: "coconut", name: "Coconut Milk", price: 0.75 },
-    { id: "breve", name: "Breve (Half & Half)", price: 0.90 },
+    { id: "soy", name: "Organic Soy Milk", price: 35.00 },
+    { id: "coconut", name: "Coconut Milk", price: 40.00 },
+    { id: "breve", name: "Breve (Half & Half)", price: 45.00 },
     { id: "none", name: "No Milk / Black", price: 0.00 }
   ],
   shots: [
-    { id: "single", name: "Single Shot (1)", price: -0.50 },
+    { id: "single", name: "Single Shot (1)", price: -25.00 },
     { id: "standard", name: "Standard Double (2)", price: 0.00 },
-    { id: "triple", name: "Triple Shot (+1)", price: 1.25 },
-    { id: "quad", name: "Quad Shot (+2)", price: 2.50 },
+    { id: "triple", name: "Triple Shot (+1)", price: 50.00 },
+    { id: "quad", name: "Quad Shot (+2)", price: 95.00 },
     { id: "decaf", name: "Decaf Espresso (2)", price: 0.00 },
     { id: "halfcaf", name: "Half-Caf (1 Reg / 1 Decaf)", price: 0.00 }
   ],
@@ -98,20 +98,20 @@ const MODIFIERS = {
     { id: "no-ice", name: "No Ice" }
   ],
   syrups: [
-    { id: "vanilla", name: "Madagascar Vanilla", price: 0.60 },
-    { id: "caramel", name: "Salted Caramel", price: 0.60 },
-    { id: "brownsugar", name: "Brown Sugar Cinnamon", price: 0.65 },
-    { id: "hazelnut", name: "Roasted Hazelnut", price: 0.60 },
-    { id: "mocha", name: "Dark Chocolate Mocha", price: 0.75 },
-    { id: "whitemocha", name: "White Chocolate Sauce", price: 0.75 },
-    { id: "lavender", name: "Honey Lavender", price: 0.75 },
-    { id: "sf-vanilla", name: "Sugar-Free Vanilla", price: 0.60 }
+    { id: "vanilla", name: "Madagascar Vanilla", price: 30.00 },
+    { id: "caramel", name: "Salted Caramel", price: 30.00 },
+    { id: "brownsugar", name: "Brown Sugar Cinnamon", price: 35.00 },
+    { id: "hazelnut", name: "Roasted Hazelnut", price: 30.00 },
+    { id: "mocha", name: "Dark Chocolate Mocha", price: 35.00 },
+    { id: "whitemocha", name: "White Chocolate Sauce", price: 35.00 },
+    { id: "lavender", name: "Honey Lavender", price: 40.00 },
+    { id: "sf-vanilla", name: "Sugar-Free Vanilla", price: 30.00 }
   ],
   toppings: [
-    { id: "cold-foam", name: "Vanilla Sweet Cream Cold Foam", price: 1.25 },
-    { id: "whip", name: "House Whipped Cream", price: 0.50 },
-    { id: "caramel-drizzle", name: "Caramel Crosshatch Drizzle", price: 0.50 },
-    { id: "mocha-drizzle", name: "Mocha Drizzle", price: 0.50 },
+    { id: "cold-foam", name: "Vanilla Sweet Cream Cold Foam", price: 55.00 },
+    { id: "whip", name: "House Whipped Cream", price: 25.00 },
+    { id: "caramel-drizzle", name: "Caramel Crosshatch Drizzle", price: 25.00 },
+    { id: "mocha-drizzle", name: "Mocha Drizzle", price: 25.00 },
     { id: "cinnamon", name: "Ceylon Cinnamon Dust", price: 0.00 },
     { id: "cocoa", name: "Dutch Cocoa Powder", price: 0.00 }
   ],
@@ -121,10 +121,10 @@ const MODIFIERS = {
     { id: "toasted-dark", name: "Extra Toasted", price: 0.00 }
   ],
   bakerySpreads: [
-    { id: "butter", name: "Grass-Fed Butter", price: 0.50 },
-    { id: "cream-cheese", name: "Whipped Cream Cheese", price: 0.85 },
-    { id: "jam", name: "Strawberry Fig Preserve", price: 0.75 },
-    { id: "honey", name: "Wildflower Honey Packet", price: 0.50 }
+    { id: "butter", name: "Grass-Fed Butter", price: 25.00 },
+    { id: "cream-cheese", name: "Whipped Cream Cheese", price: 45.00 },
+    { id: "jam", name: "Strawberry Fig Preserve", price: 40.00 },
+    { id: "honey", name: "Wildflower Honey Packet", price: 25.00 }
   ]
 };
 
@@ -133,7 +133,7 @@ const MENU_ITEMS = [
     id: "esp-latte",
     name: "Signature CaffÃ¨ Latte",
     category: "espresso",
-    price: 4.95,
+    price: 165.00,
     calories: 190,
     sku: "ESP-101",
     popular: true,
@@ -150,7 +150,7 @@ const MENU_ITEMS = [
     id: "esp-cappuccino",
     name: "Classic Cappuccino",
     category: "espresso",
-    price: 4.75,
+    price: 155.00,
     calories: 140,
     sku: "ESP-102",
     popular: true,
@@ -167,7 +167,7 @@ const MENU_ITEMS = [
     id: "esp-caramel-macchiato",
     name: "Salted Caramel Macchiato",
     category: "espresso",
-    price: 5.65,
+    price: 185.00,
     calories: 250,
     sku: "ESP-103",
     popular: true,
@@ -186,7 +186,7 @@ const MENU_ITEMS = [
     id: "esp-flat-white",
     name: "Velvet Flat White",
     category: "espresso",
-    price: 5.15,
+    price: 175.00,
     calories: 170,
     sku: "ESP-104",
     popular: false,
@@ -203,7 +203,7 @@ const MENU_ITEMS = [
     id: "esp-mocha",
     name: "Belgian Dark CaffÃ¨ Mocha",
     category: "espresso",
-    price: 5.50,
+    price: 185.00,
     calories: 340,
     sku: "ESP-105",
     popular: false,
@@ -222,7 +222,7 @@ const MENU_ITEMS = [
     id: "esp-americano",
     name: "CaffÃ¨ Americano",
     category: "espresso",
-    price: 3.85,
+    price: 135.00,
     calories: 15,
     sku: "ESP-106",
     popular: false,
@@ -239,7 +239,7 @@ const MENU_ITEMS = [
     id: "esp-cortado",
     name: "Gibraltar Cortado",
     category: "espresso",
-    price: 4.35,
+    price: 150.00,
     calories: 90,
     sku: "ESP-107",
     popular: false,
@@ -256,7 +256,7 @@ const MENU_ITEMS = [
     id: "iced-brownsugar-shaken",
     name: "Brown Sugar Oat Shaken Espresso",
     category: "iced",
-    price: 5.95,
+    price: 195.00,
     calories: 160,
     sku: "ICD-201",
     popular: true,
@@ -275,7 +275,7 @@ const MENU_ITEMS = [
     id: "iced-cold-brew",
     name: "18-Hour Steeped Cold Brew",
     category: "iced",
-    price: 4.65,
+    price: 160.00,
     calories: 5,
     sku: "ICD-202",
     popular: true,
@@ -292,7 +292,7 @@ const MENU_ITEMS = [
     id: "iced-vanilla-cream-cb",
     name: "Vanilla Sweet Cream Cold Brew",
     category: "iced",
-    price: 5.45,
+    price: 185.00,
     calories: 190,
     sku: "ICD-203",
     popular: true,
@@ -311,7 +311,7 @@ const MENU_ITEMS = [
     id: "iced-honey-lavender",
     name: "Iced Honey Lavender Oat Latte",
     category: "iced",
-    price: 5.85,
+    price: 195.00,
     calories: 210,
     sku: "ICD-204",
     popular: false,
@@ -329,7 +329,7 @@ const MENU_ITEMS = [
     id: "tea-matcha-latte",
     name: "Ceremonial Uji Matcha Latte",
     category: "tea",
-    price: 5.75,
+    price: 190.00,
     calories: 180,
     sku: "TEA-301",
     popular: true,
@@ -346,7 +346,7 @@ const MENU_ITEMS = [
     id: "tea-chai-latte",
     name: "Masala Spiced Chai Latte",
     category: "tea",
-    price: 5.25,
+    price: 175.00,
     calories: 240,
     sku: "TEA-302",
     popular: false,
@@ -364,7 +364,7 @@ const MENU_ITEMS = [
     id: "tea-london-fog",
     name: "Earl Grey London Fog",
     category: "tea",
-    price: 4.95,
+    price: 165.00,
     calories: 160,
     sku: "TEA-303",
     popular: false,
@@ -382,7 +382,7 @@ const MENU_ITEMS = [
     id: "blended-mocha-frappe",
     name: "Java Chip Espresso Frappe",
     category: "blended",
-    price: 6.25,
+    price: 210.00,
     calories: 420,
     sku: "BLD-401",
     popular: true,
@@ -401,7 +401,7 @@ const MENU_ITEMS = [
     id: "blended-caramel-frappe",
     name: "Salted Caramel Crunch Frappe",
     category: "blended",
-    price: 6.25,
+    price: 210.00,
     calories: 410,
     sku: "BLD-402",
     popular: false,
@@ -420,7 +420,7 @@ const MENU_ITEMS = [
     id: "bak-croissant",
     name: "French Butter Croissant",
     category: "bakery",
-    price: 4.25,
+    price: 135.00,
     calories: 310,
     sku: "BAK-501",
     popular: true,
@@ -433,7 +433,7 @@ const MENU_ITEMS = [
     id: "bak-almond-croissant",
     name: "Twice-Baked Almond Croissant",
     category: "bakery",
-    price: 4.95,
+    price: 165.00,
     calories: 430,
     sku: "BAK-502",
     popular: true,
@@ -446,7 +446,7 @@ const MENU_ITEMS = [
     id: "bak-pain-chocolat",
     name: "Pain au Chocolat",
     category: "bakery",
-    price: 4.65,
+    price: 150.00,
     calories: 360,
     sku: "BAK-503",
     popular: false,
@@ -459,7 +459,7 @@ const MENU_ITEMS = [
     id: "bak-avocado-toast",
     name: "Sourdough Avocado & Everything Toast",
     category: "bakery",
-    price: 7.50,
+    price: 245.00,
     calories: 380,
     sku: "BAK-504",
     popular: true,
@@ -472,33 +472,33 @@ const MENU_ITEMS = [
     id: "bak-blueberry-muffin",
     name: "Lemon Wild Blueberry Streusel Muffin",
     category: "bakery",
-    price: 3.95,
+    price: 130.00,
     calories: 390,
     sku: "BAK-505",
     popular: false,
     type: "bakery",
     color: "#574B78",
     badge: null,
-    description: "Moist lemon-zest crumb bursting with Maine blueberries and cinnamon oat streusel."
+    description: "Moist lemon-zest crumb bursting with wild blueberries and cinnamon oat streusel."
   },
   {
     id: "bean-espresso-blend",
-    name: "Ritual House Espresso (12oz Bag)",
+    name: "Ritual House Espresso (250g Bag)",
     category: "beans",
-    price: 17.50,
+    price: 550.00,
     calories: 0,
     sku: "MER-601",
     popular: false,
     type: "merch",
     color: "#3B2820",
     badge: "Whole Bean",
-    description: "Medium-dark roast blend from Brazil & Ethiopia. Tasting notes of dark chocolate, toasted hazelnut, and dried cherry."
+    description: "Medium-dark roast blend from Brazil, Mt. Apo & Ethiopia. Notes of dark chocolate, roasted hazelnut, and cherry."
   },
   {
     id: "bean-ethiopia",
-    name: "Ethiopia Yirgacheffe Single Origin (12oz)",
+    name: "Ethiopia Yirgacheffe Single Origin (250g)",
     category: "beans",
-    price: 19.50,
+    price: 650.00,
     calories: 0,
     sku: "MER-602",
     popular: false,
@@ -511,18 +511,19 @@ const MENU_ITEMS = [
 
 const DISCOUNT_PRESETS = [
   { id: "none", label: "No Discount", type: "percent", value: 0 },
-  { id: "cup", label: "Own Tumbler (-$0.50)", type: "fixed", value: 0.50 },
-  { id: "student", label: "Student / Senior (10%)", type: "percent", value: 10 },
+  { id: "cup", label: "Own Tumbler (-â‚±20.00)", type: "fixed", value: 20.00 },
+  { id: "scpwd", label: "Senior Citizen / PWD (20%)", type: "percent", value: 20 },
+  { id: "student", label: "Student Discount (10%)", type: "percent", value: 10 },
   { id: "happyhour", label: "Afternoon Happy Hour (15%)", type: "percent", value: 15 },
   { id: "staff", label: "Partner / Staff (25%)", type: "percent", value: 25 },
-  { id: "comp", label: "Recovery / $2 Off", type: "fixed", value: 2.00 }
+  { id: "comp", label: "Recovery Voucher (-â‚±100)", type: "fixed", value: 100.00 }
 ];
 
 const INITIAL_ORDERS = [
   {
     id: "ORD-1042",
     orderNumber: "1042",
-    customerName: "Maya Lin",
+    customerName: "Maya Santos",
     orderType: "Dine-In",
     tableNumber: "T-04",
     status: "brewing", // queued | brewing | ready | completed
@@ -530,12 +531,12 @@ const INITIAL_ORDERS = [
     createdAt: Date.now() - 4 * 60 * 1000, // 4 mins ago
     cashier: "Alex Rivera",
     paymentMethod: "Card (â€¢â€¢â€¢â€¢ 4821)",
-    subtotal: 15.65,
+    subtotal: 525.00,
     discount: 0,
-    tax: 1.33,
-    tip: 2.50,
-    total: 19.48,
-    amountTendered: 19.48,
+    tax: 63.00,
+    tip: 50.00,
+    total: 638.00,
+    amountTendered: 638.00,
     changeDue: 0,
     items: [
       {
@@ -545,7 +546,7 @@ const INITIAL_ORDERS = [
         sku: "ICD-201",
         type: "drink",
         quantity: 1,
-        unitPrice: 6.70,
+        unitPrice: 225.00,
         completed: true,
         customization: {
           size: "lg",
@@ -574,7 +575,7 @@ const INITIAL_ORDERS = [
         sku: "ESP-101",
         type: "drink",
         quantity: 1,
-        unitPrice: 4.95,
+        unitPrice: 165.00,
         completed: false,
         customization: {
           size: "md",
@@ -603,7 +604,7 @@ const INITIAL_ORDERS = [
         sku: "BAK-501",
         type: "bakery",
         quantity: 1,
-        unitPrice: 4.00,
+        unitPrice: 135.00,
         completed: true,
         customization: {
           warming: "warmed",
@@ -618,7 +619,7 @@ const INITIAL_ORDERS = [
   {
     id: "ORD-1043",
     orderNumber: "1043",
-    customerName: "Marcus Vance",
+    customerName: "Marco Dela Cruz",
     orderType: "Takeout",
     tableNumber: "",
     status: "queued",
@@ -626,13 +627,13 @@ const INITIAL_ORDERS = [
     createdAt: Date.now() - 95 * 1000, // 1.5 mins ago
     cashier: "Alex Rivera",
     paymentMethod: "Cash",
-    subtotal: 11.20,
+    subtotal: 385.00,
     discount: 0,
-    tax: 0.95,
+    tax: 46.20,
     tip: 0,
-    total: 12.15,
-    amountTendered: 20.00,
-    changeDue: 7.85,
+    total: 431.20,
+    amountTendered: 500.00,
+    changeDue: 68.80,
     items: [
       {
         lineId: "L-4",
@@ -641,7 +642,7 @@ const INITIAL_ORDERS = [
         sku: "TEA-301",
         type: "drink",
         quantity: 1,
-        unitPrice: 6.35,
+        unitPrice: 220.00,
         completed: false,
         customization: {
           size: "md",
@@ -670,7 +671,7 @@ const INITIAL_ORDERS = [
         sku: "BAK-502",
         type: "bakery",
         quantity: 1,
-        unitPrice: 4.85,
+        unitPrice: 165.00,
         completed: false,
         customization: {
           warming: "warmed",
@@ -685,20 +686,20 @@ const INITIAL_ORDERS = [
   {
     id: "ORD-1041",
     orderNumber: "1041",
-    customerName: "Elena Rostova",
+    customerName: "Elena Reyes",
     orderType: "Pickup",
     tableNumber: "Mobile",
     status: "ready",
     priority: false,
     createdAt: Date.now() - 8 * 60 * 1000, // 8 mins ago
     cashier: "Alex Rivera",
-    paymentMethod: "Apple Pay",
-    subtotal: 5.45,
+    paymentMethod: "GCash / QR Ph",
+    subtotal: 185.00,
     discount: 0,
-    tax: 0.46,
-    tip: 1.00,
-    total: 6.91,
-    amountTendered: 6.91,
+    tax: 22.20,
+    tip: 20.00,
+    total: 227.20,
+    amountTendered: 227.20,
     changeDue: 0,
     items: [
       {
@@ -708,7 +709,7 @@ const INITIAL_ORDERS = [
         sku: "ICD-203",
         type: "drink",
         quantity: 1,
-        unitPrice: 5.45,
+        unitPrice: 185.00,
         completed: true,
         customization: {
           size: "md",
@@ -876,7 +877,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
               <h2 className="text-lg font-bold text-amber-50 flex items-center gap-2">
                 {item.name}
                 <span className="text-xs font-normal px-2 py-0.5 rounded bg-stone-700 text-stone-300">
-                  Base ${item.price.toFixed(2)}
+                  Base â‚±{item.price.toFixed(2)}
                 </span>
               </h2>
               <p className="text-xs text-stone-400">{item.description}</p>
@@ -918,8 +919,8 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                           {s.price === 0
                             ? "Base"
                             : s.price > 0
-                            ? `+$${s.price.toFixed(2)}`
-                            : `-$${Math.abs(s.price).toFixed(2)}`}
+                            ? `+â‚±${s.price.toFixed(2)}`
+                            : `-â‚±${Math.abs(s.price).toFixed(2)}`}
                         </div>
                       </button>
                     ))}
@@ -979,7 +980,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                       >
                         <span className="text-xs font-medium truncate">{m.name}</span>
                         <span className="text-[11px] text-amber-400 ml-1 shrink-0">
-                          {isDefault ? "Incl" : m.price > 0 ? `+$${m.price.toFixed(2)}` : ""}
+                          {isDefault ? "Incl" : m.price > 0 ? `+â‚±${m.price.toFixed(2)}` : ""}
                         </span>
                       </button>
                     );
@@ -1011,9 +1012,9 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                           {isDefault
                             ? "Incl"
                             : sh.price > 0
-                            ? `+$${sh.price.toFixed(2)}`
+                            ? `+â‚±${sh.price.toFixed(2)}`
                             : sh.price < 0
-                            ? `-$${Math.abs(sh.price).toFixed(2)}`
+                            ? `-â‚±${Math.abs(sh.price).toFixed(2)}`
                             : ""}
                         </span>
                       </button>
@@ -1044,7 +1045,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                       >
                         <div className="text-xs font-medium truncate">{s.name}</div>
                         <div className="text-[11px] text-amber-400">
-                          {isDefault ? "Included" : `+$${s.price.toFixed(2)}`}
+                          {isDefault ? "Included" : `+â‚±${s.price.toFixed(2)}`}
                         </div>
                       </button>
                     );
@@ -1123,7 +1124,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                       >
                         <div className="text-xs font-medium">{t.name}</div>
                         <div className="text-[11px] text-amber-400">
-                          {isDefault ? "Included" : t.price === 0 ? "Free" : `+$${t.price.toFixed(2)}`}
+                          {isDefault ? "Included" : t.price === 0 ? "Free" : `+â‚±${t.price.toFixed(2)}`}
                         </div>
                       </button>
                     );
@@ -1176,7 +1177,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
                         }`}
                       >
                         <div className="text-xs font-medium">{sp.name}</div>
-                        <div className="text-xs text-amber-400">+${sp.price.toFixed(2)}</div>
+                        <div className="text-xs text-amber-400">+â‚±{sp.price.toFixed(2)}</div>
                       </button>
                     );
                   })}
@@ -1236,7 +1237,7 @@ function CustomizationModal({ item, initialEditItem, onClose, onSave }) {
               onClick={handleConfirm}
               className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-lg shadow-amber-900/30 transition"
             >
-              {initialEditItem ? "Update Item" : "Add to Order"} â€¢ ${(unitPrice * quantity).toFixed(2)}
+              {initialEditItem ? "Update Item" : "Add to Order"} â€¢ â‚±{(unitPrice * quantity).toFixed(2)}
             </button>
           </div>
         </div>
@@ -1259,7 +1260,7 @@ function CheckoutModal({
   onCompleteOrder
 }) {
   const [paymentMethod, setPaymentMethod] = useState("cash"); // cash | card | mobile
-  const [tipMode, setTipMode] = useState("15"); // 0 | 10 | 15 | 18 | 20 | custom
+  const [tipMode, setTipMode] = useState("0"); // 0 | 5 | 10 | 15 | 20 | custom
   const [customTip, setCustomTip] = useState("");
   const [cashTenderedStr, setCashTenderedStr] = useState("");
   const [isProcessingCard, setIsProcessingCard] = useState(false);
@@ -1293,10 +1294,10 @@ function CheckoutModal({
 
   const quickCashAmounts = useMemo(() => {
     const exact = finalTotal;
-    const nextDollar = Math.ceil(finalTotal);
-    const bills = [5, 10, 20, 50, 100];
+    const nextFifty = Math.ceil(finalTotal / 50) * 50;
+    const bills = [100, 200, 500, 1000, 2000];
     const validBills = bills.filter((b) => b >= finalTotal);
-    const set = new Set([exact, nextDollar, ...validBills]);
+    const set = new Set([exact, nextFifty, ...validBills]);
     return Array.from(set).slice(0, 5);
   }, [finalTotal]);
 
@@ -1319,7 +1320,7 @@ function CheckoutModal({
     const methodLabels = {
       cash: "Cash",
       card: "Card (â€¢â€¢â€¢â€¢ 4829)",
-      mobile: "Apple Pay / NFC"
+      mobile: "GCash / Maya / QR Ph"
     };
 
     if (paymentMethod !== "cash") {
@@ -1372,26 +1373,26 @@ function CheckoutModal({
               <div className="p-4 rounded-xl bg-stone-800/80 border border-stone-700/80 space-y-2 text-sm">
                 <div className="flex justify-between text-stone-300">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>â‚±{subtotal.toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-emerald-400">
                     <span>Discount</span>
-                    <span>âˆ’${discountAmount.toFixed(2)}</span>
+                    <span>âˆ’â‚±{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-stone-300">
-                  <span>Estimated Tax (8.5%)</span>
-                  <span>${taxAmount.toFixed(2)}</span>
+                  <span>12% VAT</span>
+                  <span>â‚±{taxAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-amber-300">
                   <span>Barista Tip</span>
-                  <span>+${tipAmount.toFixed(2)}</span>
+                  <span>+â‚±{tipAmount.toFixed(2)}</span>
                 </div>
                 <div className="pt-2 border-t border-stone-700 flex justify-between items-baseline">
                   <span className="font-bold text-base text-white">Total Due</span>
                   <span className="text-2xl font-extrabold text-amber-400">
-                    ${finalTotal.toFixed(2)}
+                    â‚±{finalTotal.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -1404,11 +1405,11 @@ function CheckoutModal({
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { id: "0", label: "No Tip" },
+                    { id: "5", label: "5%" },
                     { id: "10", label: "10%" },
                     { id: "15", label: "15%" },
-                    { id: "18", label: "18%" },
                     { id: "20", label: "20%" },
-                    { id: "custom", label: "Custom" }
+                    { id: "custom", label: "Custom â‚±" }
                   ].map((t) => (
                     <button
                       key={t.id}
@@ -1428,11 +1429,11 @@ function CheckoutModal({
                   <div className="mt-2">
                     <input
                       type="number"
-                      step="0.25"
+                      step="10"
                       min="0"
                       value={customTip}
                       onChange={(e) => setCustomTip(e.target.value)}
-                      placeholder="Enter custom tip ($)"
+                      placeholder="Enter custom tip (â‚±)"
                       className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-sm text-white focus:outline-none focus:border-amber-500"
                     />
                   </div>
@@ -1444,12 +1445,12 @@ function CheckoutModal({
               <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-700/50">
                 <div className="flex justify-between items-center text-xs text-emerald-300 uppercase tracking-wider font-semibold">
                   <span>Cash Tendered</span>
-                  <span>${cashTendered.toFixed(2)}</span>
+                  <span>â‚±{cashTendered.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-baseline mt-1">
                   <span className="text-sm font-bold text-emerald-200">Change Due</span>
                   <span className="text-2xl font-extrabold text-emerald-400">
-                    ${changeDue.toFixed(2)}
+                    â‚±{changeDue.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -1464,9 +1465,9 @@ function CheckoutModal({
               </label>
               <div className="grid grid-cols-3 gap-2.5">
                 {[
-                  { id: "cash", label: "ðŸ’µ Cash Drawer", sub: "Bills & Coin" },
-                  { id: "card", label: "ðŸ’³ Credit / Debit", sub: "Chip / Swipe" },
-                  { id: "mobile", label: "ðŸ“± Tap / Wallet", sub: "Apple / Google Pay" }
+                  { id: "cash", label: "ðŸ’µ Cash (PHP)", sub: "Peso Bills & Coins" },
+                  { id: "card", label: "ðŸ’³ Credit / Debit", sub: "Visa / Mastercard" },
+                  { id: "mobile", label: "ðŸ“± GCash / Maya", sub: "QR Ph / E-Wallet" }
                 ].map((pm) => (
                   <button
                     key={pm.id}
@@ -1489,7 +1490,7 @@ function CheckoutModal({
               <div className="space-y-4">
                 {/* Quick Bills */}
                 <div>
-                  <span className="block text-xs text-stone-400 mb-1.5">Quick Cash Tender</span>
+                  <span className="block text-xs text-stone-400 mb-1.5">Quick Cash Tender (PHP)</span>
                   <div className="flex flex-wrap gap-2">
                     {quickCashAmounts.map((amt, idx) => (
                       <button
@@ -1498,7 +1499,7 @@ function CheckoutModal({
                         onClick={() => setCashTenderedStr(amt.toFixed(2))}
                         className="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-600 text-xs font-bold text-amber-300 transition"
                       >
-                        {idx === 0 ? `Exact ($${amt.toFixed(2)})` : `$${amt.toFixed(2)}`}
+                        {idx === 0 ? `Exact (â‚±${amt.toFixed(2)})` : `â‚±${amt.toFixed(2)}`}
                       </button>
                     ))}
                   </div>
@@ -1509,7 +1510,7 @@ function CheckoutModal({
                   <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-700">
                     <span className="text-xs text-stone-400 uppercase">Tendered Input</span>
                     <span className="text-xl font-mono font-bold text-amber-400">
-                      ${cashTenderedStr || finalTotal.toFixed(2)}
+                      â‚±{cashTenderedStr || finalTotal.toFixed(2)}
                     </span>
                   </div>
                   <div className="grid grid-cols-4 gap-2">
@@ -1540,11 +1541,13 @@ function CheckoutModal({
                 <h3 className="text-base font-bold text-amber-100">
                   {isProcessingCard
                     ? "Authorizing Terminal..."
-                    : "Terminal Ready â€” Tap, Insert, or Swipe"}
+                    : paymentMethod === "card"
+                    ? "Terminal Ready â€” Tap, Insert, or Swipe"
+                    : "Scan QR Ph (GCash / Maya)"}
                 </h3>
                 <p className="text-xs text-stone-400 max-w-xs">
-                  Charging <span className="text-amber-300 font-bold">${finalTotal.toFixed(2)}</span>{" "}
-                  to customer reader #01. Click below to simulate instant approval.
+                  Charging <span className="text-amber-300 font-bold">â‚±{finalTotal.toFixed(2)}</span>{" "}
+                  to customer terminal #01. Click below to confirm payment.
                 </p>
               </div>
             )}
@@ -1570,7 +1573,7 @@ function CheckoutModal({
               >
                 {isProcessingCard
                   ? "Processing..."
-                  : `Charge $${finalTotal.toFixed(2)} & Print Ticket`}
+                  : `Charge â‚±${finalTotal.toFixed(2)} & Print Ticket`}
               </button>
             </div>
           </div>
@@ -1699,7 +1702,7 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
                         <span>
                           {item.quantity}x {item.name}
                         </span>
-                        <span>${(item.unitPrice * item.quantity).toFixed(2)}</span>
+                        <span>â‚±{(item.unitPrice * item.quantity).toFixed(2)}</span>
                       </div>
                       {item.type === "drink" && (
                         <div className="pl-3 text-[11px] text-stone-600 space-y-0.5">
@@ -1742,27 +1745,27 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
               <div className="border-b border-dashed border-stone-400 pb-3 mb-3 space-y-1">
                 <div className="flex justify-between">
                   <span>SUBTOTAL</span>
-                  <span>${order.subtotal.toFixed(2)}</span>
+                  <span>â‚±{order.subtotal.toFixed(2)}</span>
                 </div>
                 {order.discount > 0 && (
                   <div className="flex justify-between text-emerald-700 font-semibold">
                     <span>DISCOUNT</span>
-                    <span>-${order.discount.toFixed(2)}</span>
+                    <span>-â‚±{order.discount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>SALES TAX (8.5%)</span>
-                  <span>${order.tax.toFixed(2)}</span>
+                  <span>VAT (12%)</span>
+                  <span>â‚±{order.tax.toFixed(2)}</span>
                 </div>
                 {order.tip > 0 && (
                   <div className="flex justify-between">
                     <span>BARISTA TIP</span>
-                    <span>${order.tip.toFixed(2)}</span>
+                    <span>â‚±{order.tip.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm font-extrabold pt-1 border-t border-stone-300">
                   <span>TOTAL</span>
-                  <span>${order.total.toFixed(2)}</span>
+                  <span>â‚±{order.total.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -1774,12 +1777,12 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
                 </div>
                 <div className="flex justify-between">
                   <span>AMOUNT TENDERED</span>
-                  <span>${(order.amountTendered || order.total).toFixed(2)}</span>
+                  <span>â‚±{(order.amountTendered || order.total).toFixed(2)}</span>
                 </div>
                 {order.changeDue > 0 && (
                   <div className="flex justify-between font-bold">
                     <span>CHANGE DUE</span>
-                    <span>${order.changeDue.toFixed(2)}</span>
+                    <span>â‚±{order.changeDue.toFixed(2)}</span>
                   </div>
                 )}
               </div>
@@ -2325,7 +2328,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Gross Shift Sales</div>
           <div className="text-2xl font-extrabold text-amber-400 mt-1">
-            ${stats.revenue.toFixed(2)}
+            â‚±{stats.revenue.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">{stats.count} Paid Orders</div>
         </div>
@@ -2333,7 +2336,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Average Ticket</div>
           <div className="text-2xl font-extrabold text-stone-100 mt-1">
-            ${stats.avgTicket.toFixed(2)}
+            â‚±{stats.avgTicket.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">Per transaction</div>
         </div>
@@ -2341,7 +2344,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Barista Tips</div>
           <div className="text-2xl font-extrabold text-emerald-400 mt-1">
-            ${stats.tips.toFixed(2)}
+            â‚±{stats.tips.toFixed(2)}
           </div>
           <div className="text-[11px] text-stone-500 mt-0.5">100% distributed to crew</div>
         </div>
@@ -2349,17 +2352,17 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
           <div className="text-xs text-stone-400 uppercase font-semibold">Cash Drawer Sales</div>
           <div className="text-2xl font-extrabold text-stone-200 mt-1">
-            ${stats.cashTotal.toFixed(2)}
+            â‚±{stats.cashTotal.toFixed(2)}
           </div>
-          <div className="text-[11px] text-stone-500 mt-0.5">Physical tender</div>
+          <div className="text-[11px] text-stone-500 mt-0.5">Physical PHP tender</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800">
-          <div className="text-xs text-stone-400 uppercase font-semibold">Card & NFC Sales</div>
+          <div className="text-xs text-stone-400 uppercase font-semibold">Card & E-Wallet Sales</div>
           <div className="text-2xl font-extrabold text-sky-400 mt-1">
-            ${stats.cardTotal.toFixed(2)}
+            â‚±{stats.cardTotal.toFixed(2)}
           </div>
-          <div className="text-[11px] text-stone-500 mt-0.5">Settled electronically</div>
+          <div className="text-[11px] text-stone-500 mt-0.5">Card / GCash / Maya</div>
         </div>
       </div>
 
@@ -2451,7 +2454,7 @@ function OrderHistory({ orders, onViewReceipt, onRefundOrder }) {
                     </span>
                   </td>
                   <td className="py-3.5 px-4 text-right font-bold text-amber-400">
-                    ${order.total.toFixed(2)}
+                    â‚±{order.total.toFixed(2)}
                   </td>
                   <td className="py-3.5 px-4 text-right space-x-2">
                     <button
@@ -2506,7 +2509,7 @@ function App() {
   // Orders Queue & History (persisted in localStorage)
   const [orders, setOrders] = useState(() => {
     try {
-      const saved = localStorage.getItem("roast_ritual_orders_v1");
+      const saved = localStorage.getItem("roast_ritual_orders_php_v1");
       if (saved) return JSON.parse(saved);
     } catch (e) {
       // ignore
@@ -2516,7 +2519,7 @@ function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("roast_ritual_orders_v1", JSON.stringify(orders));
+      localStorage.setItem("roast_ritual_orders_php_v1", JSON.stringify(orders));
     } catch (e) {
       // ignore
     }
@@ -2944,7 +2947,7 @@ function App() {
                       </div>
                       <div className="flex flex-col items-end">
                         <span className="text-base font-extrabold text-amber-400">
-                          ${item.price.toFixed(2)}
+                          â‚±{item.price.toFixed(2)}
                         </span>
                         <span className="text-[10px] text-stone-500 font-mono">
                           {item.calories > 0 ? `${item.calories} cal` : item.sku}
@@ -3097,7 +3100,7 @@ function App() {
 
                         <div className="flex flex-col items-end gap-2">
                           <span className="font-bold text-sm text-amber-400">
-                            ${(line.unitPrice * line.quantity).toFixed(2)}
+                            â‚±{(line.unitPrice * line.quantity).toFixed(2)}
                           </span>
                           <div className="flex items-center bg-stone-900 border border-stone-700 rounded-lg">
                             <button
@@ -3148,21 +3151,21 @@ function App() {
               <div className="space-y-1 text-xs border-t border-stone-800 pt-2.5">
                 <div className="flex justify-between text-stone-400">
                   <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>â‚±{subtotal.toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-emerald-400 font-semibold">
                     <span>Discount Applied</span>
-                    <span>âˆ’${discountAmount.toFixed(2)}</span>
+                    <span>âˆ’â‚±{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-stone-400">
-                  <span>Tax (8.5%)</span>
-                  <span>${taxAmount.toFixed(2)}</span>
+                  <span>12% VAT</span>
+                  <span>â‚±{taxAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-baseline text-base font-extrabold text-white pt-1">
                   <span>Total Due</span>
-                  <span className="text-xl text-amber-400">${baseTotal.toFixed(2)}</span>
+                  <span className="text-xl text-amber-400">â‚±{baseTotal.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -3190,7 +3193,7 @@ function App() {
                   onClick={() => setIsCheckoutOpen(true)}
                   className="col-span-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:bg-stone-800 disabled:text-stone-600 text-stone-950 font-extrabold text-sm shadow-lg shadow-amber-950/40 transition"
                 >
-                  Pay ${baseTotal.toFixed(2)} â†’
+                  Pay â‚±{baseTotal.toFixed(2)} â†’
                 </button>
               </div>
             </div>

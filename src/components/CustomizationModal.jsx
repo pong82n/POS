@@ -141,7 +141,7 @@ export default function CustomizationModal({ item, initialEditItem, onClose, onS
               <h2 className="text-lg font-bold text-amber-50 flex items-center gap-2">
                 {item.name}
                 <span className="text-xs font-normal px-2 py-0.5 rounded bg-stone-700 text-stone-300">
-                  Base ${item.price.toFixed(2)}
+                  Base ₱{item.price.toFixed(2)}
                 </span>
               </h2>
               <p className="text-xs text-stone-400">{item.description}</p>
@@ -183,8 +183,8 @@ export default function CustomizationModal({ item, initialEditItem, onClose, onS
                           {s.price === 0
                             ? "Base"
                             : s.price > 0
-                            ? `+$${s.price.toFixed(2)}`
-                            : `-$${Math.abs(s.price).toFixed(2)}`}
+                            ? `+₱${s.price.toFixed(2)}`
+                            : `-₱${Math.abs(s.price).toFixed(2)}`}
                         </div>
                       </button>
                     ))}
@@ -244,7 +244,7 @@ export default function CustomizationModal({ item, initialEditItem, onClose, onS
                       >
                         <span className="text-xs font-medium truncate">{m.name}</span>
                         <span className="text-[11px] text-amber-400 ml-1 shrink-0">
-                          {isDefault ? "Incl" : m.price > 0 ? `+$${m.price.toFixed(2)}` : ""}
+                          {isDefault ? "Incl" : m.price > 0 ? `+₱${m.price.toFixed(2)}` : ""}
                         </span>
                       </button>
                     );
@@ -276,9 +276,9 @@ export default function CustomizationModal({ item, initialEditItem, onClose, onS
                           {isDefault
                             ? "Incl"
                             : sh.price > 0
-                            ? `+$${sh.price.toFixed(2)}`
+                            ? `+₱${sh.price.toFixed(2)}`
                             : sh.price < 0
-                            ? `-$${Math.abs(sh.price).toFixed(2)}`
+                            ? `-₱${Math.abs(sh.price).toFixed(2)}`
                             : ""}
                         </span>
                       </button>
@@ -309,7 +309,7 @@ export default function CustomizationModal({ item, initialEditItem, onClose, onS
                       >
                         <div className="text-xs font-medium truncate">{s.name}</div>
                         <div className="text-[11px] text-amber-400">
-                          {isDefault ? "Included" : `+$${s.price.toFixed(2)}`}
+                          {isDefault ? "Included" : `+₱${s.price.toFixed(2)}`}
                         </div>
                       </button>
                     );
@@ -388,7 +388,7 @@ export default function CustomizationModal({ item, initialEditItem, onClose, onS
                       >
                         <div className="text-xs font-medium">{t.name}</div>
                         <div className="text-[11px] text-amber-400">
-                          {isDefault ? "Included" : t.price === 0 ? "Free" : `+$${t.price.toFixed(2)}`}
+                          {isDefault ? "Included" : t.price === 0 ? "Free" : `+₱${t.price.toFixed(2)}`}
                         </div>
                       </button>
                     );
@@ -441,7 +441,7 @@ export default function CustomizationModal({ item, initialEditItem, onClose, onS
                         }`}
                       >
                         <div className="text-xs font-medium">{sp.name}</div>
-                        <div className="text-xs text-amber-400">+${sp.price.toFixed(2)}</div>
+                        <div className="text-xs text-amber-400">+₱{sp.price.toFixed(2)}</div>
                       </button>
                     );
                   })}
@@ -501,7 +501,7 @@ export default function CustomizationModal({ item, initialEditItem, onClose, onS
               onClick={handleConfirm}
               className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-sm shadow-lg shadow-amber-900/30 transition"
             >
-              {initialEditItem ? "Update Item" : "Add to Order"} • ${(unitPrice * quantity).toFixed(2)}
+              {initialEditItem ? "Update Item" : "Add to Order"} • ₱{(unitPrice * quantity).toFixed(2)}
             </button>
           </div>
         </div>

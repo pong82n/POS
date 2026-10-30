@@ -1,9 +1,9 @@
 export const SHOP_CONFIG = {
   name: "ROAST & RITUAL",
   tagline: "Specialty Coffee & Artisan Bakery",
-  address: "742 Evergreen Terrace, Suite 101, Seattle, WA 98101",
-  phone: "(206) 555-0194",
-  taxRate: 0.085, // 8.5%
+  address: "Bonifacio High Street, BGC, Taguig City, Metro Manila",
+  phone: "(02) 8555-0194 • +63 917 555 0194",
+  taxRate: 0.12, // 12% PH VAT
   cashierName: "Alex Rivera",
   registerId: "REG-01"
 };
@@ -20,9 +20,9 @@ export const CATEGORIES = [
 
 export const MODIFIERS = {
   sizes: [
-    { id: "sm", name: "Small", oz: "12 oz", price: -0.50 },
+    { id: "sm", name: "Small", oz: "12 oz", price: -20.00 },
     { id: "md", name: "Medium", oz: "16 oz", price: 0.00 },
-    { id: "lg", name: "Large", oz: "20 oz", price: 0.75 }
+    { id: "lg", name: "Large", oz: "20 oz", price: 30.00 }
   ],
   temperatures: [
     { id: "hot", name: "Hot", price: 0 },
@@ -31,20 +31,20 @@ export const MODIFIERS = {
   ],
   milks: [
     { id: "whole", name: "Whole Milk", price: 0.00 },
-    { id: "oat", name: "Barista Oat Milk", price: 0.80 },
-    { id: "almond", name: "Almond Milk", price: 0.75 },
+    { id: "oat", name: "Barista Oat Milk", price: 45.00 },
+    { id: "almond", name: "Almond Milk", price: 40.00 },
     { id: "2percent", name: "2% Reduced Fat", price: 0.00 },
     { id: "skim", name: "Nonfat Skim Milk", price: 0.00 },
-    { id: "soy", name: "Organic Soy Milk", price: 0.70 },
-    { id: "coconut", name: "Coconut Milk", price: 0.75 },
-    { id: "breve", name: "Breve (Half & Half)", price: 0.90 },
+    { id: "soy", name: "Organic Soy Milk", price: 35.00 },
+    { id: "coconut", name: "Coconut Milk", price: 40.00 },
+    { id: "breve", name: "Breve (Half & Half)", price: 45.00 },
     { id: "none", name: "No Milk / Black", price: 0.00 }
   ],
   shots: [
-    { id: "single", name: "Single Shot (1)", price: -0.50 },
+    { id: "single", name: "Single Shot (1)", price: -25.00 },
     { id: "standard", name: "Standard Double (2)", price: 0.00 },
-    { id: "triple", name: "Triple Shot (+1)", price: 1.25 },
-    { id: "quad", name: "Quad Shot (+2)", price: 2.50 },
+    { id: "triple", name: "Triple Shot (+1)", price: 50.00 },
+    { id: "quad", name: "Quad Shot (+2)", price: 95.00 },
     { id: "decaf", name: "Decaf Espresso (2)", price: 0.00 },
     { id: "halfcaf", name: "Half-Caf (1 Reg / 1 Decaf)", price: 0.00 }
   ],
@@ -63,20 +63,20 @@ export const MODIFIERS = {
     { id: "no-ice", name: "No Ice" }
   ],
   syrups: [
-    { id: "vanilla", name: "Madagascar Vanilla", price: 0.60 },
-    { id: "caramel", name: "Salted Caramel", price: 0.60 },
-    { id: "brownsugar", name: "Brown Sugar Cinnamon", price: 0.65 },
-    { id: "hazelnut", name: "Roasted Hazelnut", price: 0.60 },
-    { id: "mocha", name: "Dark Chocolate Mocha", price: 0.75 },
-    { id: "whitemocha", name: "White Chocolate Sauce", price: 0.75 },
-    { id: "lavender", name: "Honey Lavender", price: 0.75 },
-    { id: "sf-vanilla", name: "Sugar-Free Vanilla", price: 0.60 }
+    { id: "vanilla", name: "Madagascar Vanilla", price: 30.00 },
+    { id: "caramel", name: "Salted Caramel", price: 30.00 },
+    { id: "brownsugar", name: "Brown Sugar Cinnamon", price: 35.00 },
+    { id: "hazelnut", name: "Roasted Hazelnut", price: 30.00 },
+    { id: "mocha", name: "Dark Chocolate Mocha", price: 35.00 },
+    { id: "whitemocha", name: "White Chocolate Sauce", price: 35.00 },
+    { id: "lavender", name: "Honey Lavender", price: 40.00 },
+    { id: "sf-vanilla", name: "Sugar-Free Vanilla", price: 30.00 }
   ],
   toppings: [
-    { id: "cold-foam", name: "Vanilla Sweet Cream Cold Foam", price: 1.25 },
-    { id: "whip", name: "House Whipped Cream", price: 0.50 },
-    { id: "caramel-drizzle", name: "Caramel Crosshatch Drizzle", price: 0.50 },
-    { id: "mocha-drizzle", name: "Mocha Drizzle", price: 0.50 },
+    { id: "cold-foam", name: "Vanilla Sweet Cream Cold Foam", price: 55.00 },
+    { id: "whip", name: "House Whipped Cream", price: 25.00 },
+    { id: "caramel-drizzle", name: "Caramel Crosshatch Drizzle", price: 25.00 },
+    { id: "mocha-drizzle", name: "Mocha Drizzle", price: 25.00 },
     { id: "cinnamon", name: "Ceylon Cinnamon Dust", price: 0.00 },
     { id: "cocoa", name: "Dutch Cocoa Powder", price: 0.00 }
   ],
@@ -86,10 +86,10 @@ export const MODIFIERS = {
     { id: "toasted-dark", name: "Extra Toasted", price: 0.00 }
   ],
   bakerySpreads: [
-    { id: "butter", name: "Grass-Fed Butter", price: 0.50 },
-    { id: "cream-cheese", name: "Whipped Cream Cheese", price: 0.85 },
-    { id: "jam", name: "Strawberry Fig Preserve", price: 0.75 },
-    { id: "honey", name: "Wildflower Honey Packet", price: 0.50 }
+    { id: "butter", name: "Grass-Fed Butter", price: 25.00 },
+    { id: "cream-cheese", name: "Whipped Cream Cheese", price: 45.00 },
+    { id: "jam", name: "Strawberry Fig Preserve", price: 40.00 },
+    { id: "honey", name: "Wildflower Honey Packet", price: 25.00 }
   ]
 };
 
@@ -98,7 +98,7 @@ export const MENU_ITEMS = [
     id: "esp-latte",
     name: "Signature Caffè Latte",
     category: "espresso",
-    price: 4.95,
+    price: 165.00,
     calories: 190,
     sku: "ESP-101",
     popular: true,
@@ -115,7 +115,7 @@ export const MENU_ITEMS = [
     id: "esp-cappuccino",
     name: "Classic Cappuccino",
     category: "espresso",
-    price: 4.75,
+    price: 155.00,
     calories: 140,
     sku: "ESP-102",
     popular: true,
@@ -132,7 +132,7 @@ export const MENU_ITEMS = [
     id: "esp-caramel-macchiato",
     name: "Salted Caramel Macchiato",
     category: "espresso",
-    price: 5.65,
+    price: 185.00,
     calories: 250,
     sku: "ESP-103",
     popular: true,
@@ -151,7 +151,7 @@ export const MENU_ITEMS = [
     id: "esp-flat-white",
     name: "Velvet Flat White",
     category: "espresso",
-    price: 5.15,
+    price: 175.00,
     calories: 170,
     sku: "ESP-104",
     popular: false,
@@ -168,7 +168,7 @@ export const MENU_ITEMS = [
     id: "esp-mocha",
     name: "Belgian Dark Caffè Mocha",
     category: "espresso",
-    price: 5.50,
+    price: 185.00,
     calories: 340,
     sku: "ESP-105",
     popular: false,
@@ -187,7 +187,7 @@ export const MENU_ITEMS = [
     id: "esp-americano",
     name: "Caffè Americano",
     category: "espresso",
-    price: 3.85,
+    price: 135.00,
     calories: 15,
     sku: "ESP-106",
     popular: false,
@@ -204,7 +204,7 @@ export const MENU_ITEMS = [
     id: "esp-cortado",
     name: "Gibraltar Cortado",
     category: "espresso",
-    price: 4.35,
+    price: 150.00,
     calories: 90,
     sku: "ESP-107",
     popular: false,
@@ -221,7 +221,7 @@ export const MENU_ITEMS = [
     id: "iced-brownsugar-shaken",
     name: "Brown Sugar Oat Shaken Espresso",
     category: "iced",
-    price: 5.95,
+    price: 195.00,
     calories: 160,
     sku: "ICD-201",
     popular: true,
@@ -240,7 +240,7 @@ export const MENU_ITEMS = [
     id: "iced-cold-brew",
     name: "18-Hour Steeped Cold Brew",
     category: "iced",
-    price: 4.65,
+    price: 160.00,
     calories: 5,
     sku: "ICD-202",
     popular: true,
@@ -257,7 +257,7 @@ export const MENU_ITEMS = [
     id: "iced-vanilla-cream-cb",
     name: "Vanilla Sweet Cream Cold Brew",
     category: "iced",
-    price: 5.45,
+    price: 185.00,
     calories: 190,
     sku: "ICD-203",
     popular: true,
@@ -276,7 +276,7 @@ export const MENU_ITEMS = [
     id: "iced-honey-lavender",
     name: "Iced Honey Lavender Oat Latte",
     category: "iced",
-    price: 5.85,
+    price: 195.00,
     calories: 210,
     sku: "ICD-204",
     popular: false,
@@ -294,7 +294,7 @@ export const MENU_ITEMS = [
     id: "tea-matcha-latte",
     name: "Ceremonial Uji Matcha Latte",
     category: "tea",
-    price: 5.75,
+    price: 190.00,
     calories: 180,
     sku: "TEA-301",
     popular: true,
@@ -311,7 +311,7 @@ export const MENU_ITEMS = [
     id: "tea-chai-latte",
     name: "Masala Spiced Chai Latte",
     category: "tea",
-    price: 5.25,
+    price: 175.00,
     calories: 240,
     sku: "TEA-302",
     popular: false,
@@ -329,7 +329,7 @@ export const MENU_ITEMS = [
     id: "tea-london-fog",
     name: "Earl Grey London Fog",
     category: "tea",
-    price: 4.95,
+    price: 165.00,
     calories: 160,
     sku: "TEA-303",
     popular: false,
@@ -347,7 +347,7 @@ export const MENU_ITEMS = [
     id: "blended-mocha-frappe",
     name: "Java Chip Espresso Frappe",
     category: "blended",
-    price: 6.25,
+    price: 210.00,
     calories: 420,
     sku: "BLD-401",
     popular: true,
@@ -366,7 +366,7 @@ export const MENU_ITEMS = [
     id: "blended-caramel-frappe",
     name: "Salted Caramel Crunch Frappe",
     category: "blended",
-    price: 6.25,
+    price: 210.00,
     calories: 410,
     sku: "BLD-402",
     popular: false,
@@ -385,7 +385,7 @@ export const MENU_ITEMS = [
     id: "bak-croissant",
     name: "French Butter Croissant",
     category: "bakery",
-    price: 4.25,
+    price: 135.00,
     calories: 310,
     sku: "BAK-501",
     popular: true,
@@ -398,7 +398,7 @@ export const MENU_ITEMS = [
     id: "bak-almond-croissant",
     name: "Twice-Baked Almond Croissant",
     category: "bakery",
-    price: 4.95,
+    price: 165.00,
     calories: 430,
     sku: "BAK-502",
     popular: true,
@@ -411,7 +411,7 @@ export const MENU_ITEMS = [
     id: "bak-pain-chocolat",
     name: "Pain au Chocolat",
     category: "bakery",
-    price: 4.65,
+    price: 150.00,
     calories: 360,
     sku: "BAK-503",
     popular: false,
@@ -424,7 +424,7 @@ export const MENU_ITEMS = [
     id: "bak-avocado-toast",
     name: "Sourdough Avocado & Everything Toast",
     category: "bakery",
-    price: 7.50,
+    price: 245.00,
     calories: 380,
     sku: "BAK-504",
     popular: true,
@@ -437,33 +437,33 @@ export const MENU_ITEMS = [
     id: "bak-blueberry-muffin",
     name: "Lemon Wild Blueberry Streusel Muffin",
     category: "bakery",
-    price: 3.95,
+    price: 130.00,
     calories: 390,
     sku: "BAK-505",
     popular: false,
     type: "bakery",
     color: "#574B78",
     badge: null,
-    description: "Moist lemon-zest crumb bursting with Maine blueberries and cinnamon oat streusel."
+    description: "Moist lemon-zest crumb bursting with wild blueberries and cinnamon oat streusel."
   },
   {
     id: "bean-espresso-blend",
-    name: "Ritual House Espresso (12oz Bag)",
+    name: "Ritual House Espresso (250g Bag)",
     category: "beans",
-    price: 17.50,
+    price: 550.00,
     calories: 0,
     sku: "MER-601",
     popular: false,
     type: "merch",
     color: "#3B2820",
     badge: "Whole Bean",
-    description: "Medium-dark roast blend from Brazil & Ethiopia. Tasting notes of dark chocolate, toasted hazelnut, and dried cherry."
+    description: "Medium-dark roast blend from Brazil, Mt. Apo & Ethiopia. Notes of dark chocolate, roasted hazelnut, and cherry."
   },
   {
     id: "bean-ethiopia",
-    name: "Ethiopia Yirgacheffe Single Origin (12oz)",
+    name: "Ethiopia Yirgacheffe Single Origin (250g)",
     category: "beans",
-    price: 19.50,
+    price: 650.00,
     calories: 0,
     sku: "MER-602",
     popular: false,
@@ -476,18 +476,19 @@ export const MENU_ITEMS = [
 
 export const DISCOUNT_PRESETS = [
   { id: "none", label: "No Discount", type: "percent", value: 0 },
-  { id: "cup", label: "Own Tumbler (-$0.50)", type: "fixed", value: 0.50 },
-  { id: "student", label: "Student / Senior (10%)", type: "percent", value: 10 },
+  { id: "cup", label: "Own Tumbler (-₱20.00)", type: "fixed", value: 20.00 },
+  { id: "scpwd", label: "Senior Citizen / PWD (20%)", type: "percent", value: 20 },
+  { id: "student", label: "Student Discount (10%)", type: "percent", value: 10 },
   { id: "happyhour", label: "Afternoon Happy Hour (15%)", type: "percent", value: 15 },
   { id: "staff", label: "Partner / Staff (25%)", type: "percent", value: 25 },
-  { id: "comp", label: "Recovery / $2 Off", type: "fixed", value: 2.00 }
+  { id: "comp", label: "Recovery Voucher (-₱100)", type: "fixed", value: 100.00 }
 ];
 
 export const INITIAL_ORDERS = [
   {
     id: "ORD-1042",
     orderNumber: "1042",
-    customerName: "Maya Lin",
+    customerName: "Maya Santos",
     orderType: "Dine-In",
     tableNumber: "T-04",
     status: "brewing", // queued | brewing | ready | completed
@@ -495,12 +496,12 @@ export const INITIAL_ORDERS = [
     createdAt: Date.now() - 4 * 60 * 1000, // 4 mins ago
     cashier: "Alex Rivera",
     paymentMethod: "Card (•••• 4821)",
-    subtotal: 15.65,
+    subtotal: 525.00,
     discount: 0,
-    tax: 1.33,
-    tip: 2.50,
-    total: 19.48,
-    amountTendered: 19.48,
+    tax: 63.00,
+    tip: 50.00,
+    total: 638.00,
+    amountTendered: 638.00,
     changeDue: 0,
     items: [
       {
@@ -510,7 +511,7 @@ export const INITIAL_ORDERS = [
         sku: "ICD-201",
         type: "drink",
         quantity: 1,
-        unitPrice: 6.70,
+        unitPrice: 225.00,
         completed: true,
         customization: {
           size: "lg",
@@ -539,7 +540,7 @@ export const INITIAL_ORDERS = [
         sku: "ESP-101",
         type: "drink",
         quantity: 1,
-        unitPrice: 4.95,
+        unitPrice: 165.00,
         completed: false,
         customization: {
           size: "md",
@@ -568,7 +569,7 @@ export const INITIAL_ORDERS = [
         sku: "BAK-501",
         type: "bakery",
         quantity: 1,
-        unitPrice: 4.00,
+        unitPrice: 135.00,
         completed: true,
         customization: {
           warming: "warmed",
@@ -583,7 +584,7 @@ export const INITIAL_ORDERS = [
   {
     id: "ORD-1043",
     orderNumber: "1043",
-    customerName: "Marcus Vance",
+    customerName: "Marco Dela Cruz",
     orderType: "Takeout",
     tableNumber: "",
     status: "queued",
@@ -591,13 +592,13 @@ export const INITIAL_ORDERS = [
     createdAt: Date.now() - 95 * 1000, // 1.5 mins ago
     cashier: "Alex Rivera",
     paymentMethod: "Cash",
-    subtotal: 11.20,
+    subtotal: 385.00,
     discount: 0,
-    tax: 0.95,
+    tax: 46.20,
     tip: 0,
-    total: 12.15,
-    amountTendered: 20.00,
-    changeDue: 7.85,
+    total: 431.20,
+    amountTendered: 500.00,
+    changeDue: 68.80,
     items: [
       {
         lineId: "L-4",
@@ -606,7 +607,7 @@ export const INITIAL_ORDERS = [
         sku: "TEA-301",
         type: "drink",
         quantity: 1,
-        unitPrice: 6.35,
+        unitPrice: 220.00,
         completed: false,
         customization: {
           size: "md",
@@ -635,7 +636,7 @@ export const INITIAL_ORDERS = [
         sku: "BAK-502",
         type: "bakery",
         quantity: 1,
-        unitPrice: 4.85,
+        unitPrice: 165.00,
         completed: false,
         customization: {
           warming: "warmed",
@@ -650,20 +651,20 @@ export const INITIAL_ORDERS = [
   {
     id: "ORD-1041",
     orderNumber: "1041",
-    customerName: "Elena Rostova",
+    customerName: "Elena Reyes",
     orderType: "Pickup",
     tableNumber: "Mobile",
     status: "ready",
     priority: false,
     createdAt: Date.now() - 8 * 60 * 1000, // 8 mins ago
     cashier: "Alex Rivera",
-    paymentMethod: "Apple Pay",
-    subtotal: 5.45,
+    paymentMethod: "GCash / QR Ph",
+    subtotal: 185.00,
     discount: 0,
-    tax: 0.46,
-    tip: 1.00,
-    total: 6.91,
-    amountTendered: 6.91,
+    tax: 22.20,
+    tip: 20.00,
+    total: 227.20,
+    amountTendered: 227.20,
     changeDue: 0,
     items: [
       {
@@ -673,7 +674,7 @@ export const INITIAL_ORDERS = [
         sku: "ICD-203",
         type: "drink",
         quantity: 1,
-        unitPrice: 5.45,
+        unitPrice: 185.00,
         completed: true,
         customization: {
           size: "md",

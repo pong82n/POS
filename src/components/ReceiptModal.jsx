@@ -118,7 +118,7 @@ export default function ReceiptModal({ order, onClose, onNewOrder }) {
                         <span>
                           {item.quantity}x {item.name}
                         </span>
-                        <span>${(item.unitPrice * item.quantity).toFixed(2)}</span>
+                        <span>₱{(item.unitPrice * item.quantity).toFixed(2)}</span>
                       </div>
                       {item.type === "drink" && (
                         <div className="pl-3 text-[11px] text-stone-600 space-y-0.5">
@@ -161,27 +161,27 @@ export default function ReceiptModal({ order, onClose, onNewOrder }) {
               <div className="border-b border-dashed border-stone-400 pb-3 mb-3 space-y-1">
                 <div className="flex justify-between">
                   <span>SUBTOTAL</span>
-                  <span>${order.subtotal.toFixed(2)}</span>
+                  <span>₱{order.subtotal.toFixed(2)}</span>
                 </div>
                 {order.discount > 0 && (
                   <div className="flex justify-between text-emerald-700 font-semibold">
                     <span>DISCOUNT</span>
-                    <span>-${order.discount.toFixed(2)}</span>
+                    <span>-₱{order.discount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>SALES TAX (8.5%)</span>
-                  <span>${order.tax.toFixed(2)}</span>
+                  <span>VAT (12%)</span>
+                  <span>₱{order.tax.toFixed(2)}</span>
                 </div>
                 {order.tip > 0 && (
                   <div className="flex justify-between">
                     <span>BARISTA TIP</span>
-                    <span>${order.tip.toFixed(2)}</span>
+                    <span>₱{order.tip.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm font-extrabold pt-1 border-t border-stone-300">
                   <span>TOTAL</span>
-                  <span>${order.total.toFixed(2)}</span>
+                  <span>₱{order.total.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -193,12 +193,12 @@ export default function ReceiptModal({ order, onClose, onNewOrder }) {
                 </div>
                 <div className="flex justify-between">
                   <span>AMOUNT TENDERED</span>
-                  <span>${(order.amountTendered || order.total).toFixed(2)}</span>
+                  <span>₱{(order.amountTendered || order.total).toFixed(2)}</span>
                 </div>
                 {order.changeDue > 0 && (
                   <div className="flex justify-between font-bold">
                     <span>CHANGE DUE</span>
-                    <span>${order.changeDue.toFixed(2)}</span>
+                    <span>₱{order.changeDue.toFixed(2)}</span>
                   </div>
                 )}
               </div>
