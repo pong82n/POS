@@ -151,6 +151,59 @@ export default function App() {
   });
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isAppInstalled, setIsAppInstalled] = useState(false);
+  const [updateInfo, setUpdateInfo] = useState(null);
+  const [autoUpdateCountdown, setAutoUpdateCountdown] = useState(null);
+
+  useEffect(() => {
+    const handleUpdate = (e) => {
+      const detail = e?.detail || { source: "service-worker" };
+      setUpdateInfo(detail);
+    };
+    const handleRefreshed = () => {
+      if (cart.length === 0) {
+        if (window.triggerAppAutoUpdate) {
+          window.triggerAppAutoUpdate("controllerchange-idle");
+        } else {
+          window.location.reload();
+        }
+      } else {
+        setUpdateInfo({ source: "service-worker" });
+      }
+    };
+    window.addEventListener("posAppUpdateDetected", handleUpdate);
+    window.addEventListener("swUpdateAvailable", handleUpdate);
+    window.addEventListener("swRefreshed", handleRefreshed);
+    return () => {
+      window.removeEventListener("posAppUpdateDetected", handleUpdate);
+      window.removeEventListener("swUpdateAvailable", handleUpdate);
+      window.removeEventListener("swRefreshed", handleRefreshed);
+    };
+  }, [cart.length]);
+
+  // Seamless auto-update countdown when idle (cart is empty)
+  useEffect(() => {
+    if (!updateInfo) return;
+    if (cart.length === 0) {
+      setAutoUpdateCountdown(3);
+      const timer = setInterval(() => {
+        setAutoUpdateCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            if (window.triggerAppAutoUpdate) {
+              window.triggerAppAutoUpdate("countdown-complete");
+            } else {
+              window.location.reload();
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    } else {
+      setAutoUpdateCountdown(null);
+    }
+  }, [updateInfo, cart.length]);
 
   useEffect(() => {
     const onBeforeInstallPrompt = (e) => {
@@ -433,6 +486,51 @@ export default function App() {
 
   return (
     <div className="h-[100dvh] w-screen overflow-hidden flex flex-col bg-stone-950 text-stone-100 select-none">
+      {/* Real-time Update Banner when Changes are Detected on GitHub or Webpage */}
+      {updateInfo && (
+        <div className="no-print fixed top-2 left-2 right-2 sm:left-auto sm:right-4 sm:top-4 z-50 animate-bounce">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500 text-stone-950 shadow-2xl flex items-center justify-between gap-3 border-2 border-stone-950 font-bold max-w-md">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl animate-spin">⚡</span>
+              <div className="text-left">
+                <div className="text-xs uppercase font-black text-stone-950 tracking-wider flex items-center gap-1.5">
+                  <span>{updateInfo.source === "github" ? "GitHub Update Pushed!" : "Webpage Updated!"}</span>
+                  {updateInfo.sha && (
+                    <span className="font-mono text-[10px] bg-stone-950 text-amber-300 px-1.5 py-0.5 rounded">
+                      {updateInfo.sha}
+                    </span>
+                  )}
+                </div>
+                <div className="text-[11px] font-semibold text-stone-900 leading-tight">
+                  {cart.length === 0 ? (
+                    autoUpdateCountdown !== null ? (
+                      <span>Auto-applying update in <span className="font-mono font-black text-xs text-stone-950 underline">{autoUpdateCountdown}s</span>...</span>
+                    ) : (
+                      "Newest improvements are applying..."
+                    )
+                  ) : (
+                    "Order in progress: auto-updates right after checkout."
+                  )}
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (window.triggerAppAutoUpdate) {
+                  window.triggerAppAutoUpdate("user-clicked-banner");
+                } else {
+                  window.location.reload();
+                }
+              }}
+              className="px-3.5 py-1.5 rounded-xl bg-stone-950 hover:bg-stone-850 active:scale-95 text-amber-300 text-xs font-black shrink-0 shadow transition flex items-center gap-1"
+            >
+              <span>Update Now</span>
+              <span>↻</span>
+            </button>
+          </div>
+        </div>
+      )}
       {/* Top POS Navigation Header */}
       <header className="no-print h-14 sm:h-16 px-3 sm:px-5 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
         <div

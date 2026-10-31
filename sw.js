@@ -46,7 +46,7 @@ self.addEventListener("fetch", (event) => {
   // For HTML document navigation, always fetch fresh from network to get newest app code
   if (event.request.mode === "navigate" || event.request.destination === "document") {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: "no-store" })
         .then((response) => {
           if (response && response.status === 200) {
             const clone = response.clone();
@@ -73,10 +73,15 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// Message listener for manual check or forced skipWaiting
+// Message listener for manual check, cache purge, or forced skipWaiting
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
+  }
+  if (event.data && (event.data.type === "PURGE_CACHE" || event.data.type === "PURGE_AND_UPDATE")) {
+    caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).then(() => {
+      self.skipWaiting();
+    });
   }
   if (event.data && event.data.type === "GET_VERSION") {
     event.ports[0]?.postMessage({ version: CACHE_NAME });

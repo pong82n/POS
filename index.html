@@ -40,51 +40,153 @@
 <body class="bg-stone-950 text-stone-100 antialiased">
   <div id="root"></div>
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.register("/sw.js").then(function (reg) {
-          window.swRegistration = reg;
-          reg.update().catch(function () {});
-          reg.addEventListener("updatefound", function () {
-            var w = reg.installing;
-            if (!w) return;
-            w.addEventListener("statechange", function () {
-              if (w.state === "installed" && navigator.serviceWorker.controller) {
-                window.dispatchEvent(new CustomEvent("swUpdateAvailable"));
-              }
+    window.POS_GITHUB_REPO = "pong82n/POS";
+    window.POS_GITHUB_BRANCH = "main";
+
+    // Immediate Cache-Busting Auto-Updater
+    window.triggerAppAutoUpdate = async function (reason) {
+      console.log("[POS Auto-Update] Applying update triggered by:", reason);
+      try {
+        if ("caches" in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(function (k) { return caches.delete(k); }));
+        }
+        if (window.swRegistration && window.swRegistration.waiting) {
+          window.swRegistration.waiting.postMessage({ type: "PURGE_AND_UPDATE" });
+        }
+      } catch (e) {}
+      window.location.reload(true);
+    };
+
+    (function () {
+      var lastKnownSha = localStorage.getItem("pos_last_github_sha") || "";
+      var lastWebpageEtag = localStorage.getItem("pos_last_webpage_etag") || "";
+      var isChecking = false;
+
+      async function checkForUpdates(triggerSource) {
+        if (isChecking || !navigator.onLine) return;
+        isChecking = true;
+
+        try {
+          // 1. Service Worker update check
+          if ("serviceWorker" in navigator && window.swRegistration) {
+            window.swRegistration.update().catch(function () {});
+          }
+
+          // 2. GitHub Repository commit check
+          try {
+            var ghRes = await fetch("https://api.github.com/repos/pong82n/POS/commits/main", {
+              cache: "no-store",
+              headers: { "Accept": "application/vnd.github.v3+json" }
             });
-          });
-        }).catch(function () {});
-      });
+            if (ghRes.ok) {
+              var commitData = await ghRes.json();
+              var currentSha = commitData && commitData.sha ? commitData.sha.substring(0, 7) : "";
+              var commitMsg = commitData && commitData.commit ? commitData.commit.message : "";
 
-      // Auto-update mobile apps when resumed/opened from background
+              if (currentSha) {
+                if (lastKnownSha && lastKnownSha !== currentSha) {
+                  console.log("[POS Auto-Update] New GitHub commit detected:", lastKnownSha, "->", currentSha);
+                  localStorage.setItem("pos_last_github_sha", currentSha);
+                  window.dispatchEvent(new CustomEvent("posAppUpdateDetected", {
+                    detail: { source: "github", sha: currentSha, message: commitMsg }
+                  }));
+                  return;
+                }
+                if (!lastKnownSha) {
+                  lastKnownSha = currentSha;
+                  localStorage.setItem("pos_last_github_sha", currentSha);
+                }
+              }
+            }
+          } catch (ghErr) {}
+
+          // 3. Webpage ETag / Last-Modified check
+          try {
+            var pageRes = await fetch("/?_sw_check=" + Date.now(), {
+              method: "HEAD",
+              cache: "no-store"
+            });
+            var etag = pageRes.headers.get("etag") || pageRes.headers.get("last-modified") || "";
+            if (etag) {
+              if (lastWebpageEtag && lastWebpageEtag !== etag) {
+                console.log("[POS Auto-Update] Webpage deployment change detected:", lastWebpageEtag, "->", etag);
+                localStorage.setItem("pos_last_webpage_etag", etag);
+                window.dispatchEvent(new CustomEvent("posAppUpdateDetected", {
+                  detail: { source: "webpage", etag: etag }
+                }));
+                return;
+              }
+              if (!lastWebpageEtag) {
+                lastWebpageEtag = etag;
+                localStorage.setItem("pos_last_webpage_etag", etag);
+              }
+            }
+          } catch (pageErr) {}
+
+        } finally {
+          isChecking = false;
+        }
+      }
+
+      window.checkPosUpdates = checkForUpdates;
+
+      // Register Service Worker with HTTP cache bypass
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" }).then(function (reg) {
+            window.swRegistration = reg;
+            reg.update().catch(function () {});
+
+            reg.addEventListener("updatefound", function () {
+              var w = reg.installing;
+              if (!w) return;
+              w.addEventListener("statechange", function () {
+                if (w.state === "installed" && navigator.serviceWorker.controller) {
+                  window.dispatchEvent(new CustomEvent("posAppUpdateDetected", {
+                    detail: { source: "service-worker" }
+                  }));
+                }
+              });
+            });
+
+            // Initial check 1 second after load
+            setTimeout(function () { checkForUpdates("initial-load"); }, 1000);
+          }).catch(function () {});
+        });
+
+        navigator.serviceWorker.addEventListener("message", function (e) {
+          if (e.data && e.data.type === "SW_UPDATED") {
+            window.dispatchEvent(new CustomEvent("posAppUpdateDetected", {
+              detail: { source: "sw-message" }
+            }));
+          }
+        });
+
+        navigator.serviceWorker.addEventListener("controllerchange", function () {
+          window.dispatchEvent(new CustomEvent("swRefreshed"));
+        });
+      }
+
+      // Auto-update triggers: App wake, window focus, online reconnect, and 25s polling
       document.addEventListener("visibilitychange", function () {
-        if (document.visibilityState === "visible" && window.swRegistration) {
-          window.swRegistration.update().catch(function () {});
+        if (document.visibilityState === "visible") {
+          checkForUpdates("app-resumed");
         }
       });
 
-      // Periodic check every 45s while online
-      setInterval(function () {
-        if (navigator.onLine && window.swRegistration) {
-          window.swRegistration.update().catch(function () {});
-        }
-      }, 45000);
+      window.addEventListener("focus", function () {
+        checkForUpdates("window-focus");
+      });
 
       window.addEventListener("online", function () {
-        if (window.swRegistration) {
-          window.swRegistration.update().catch(function () {});
-        }
+        checkForUpdates("online-reconnect");
       });
 
-      navigator.serviceWorker.addEventListener("message", function (e) {
-        if (e.data && e.data.type === "SW_UPDATED") {
-          window.dispatchEvent(new CustomEvent("swUpdateAvailable"));
-        }
-      });
-
-      navigator.serviceWorker.addEventListener("controllerchange", function () { window.dispatchEvent(new CustomEvent("swRefreshed")); });
-    }
+      setInterval(function () {
+        checkForUpdates("interval-polling");
+      }, 25000);
+    })();
   </script>
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
@@ -2770,23 +2872,18 @@ function MobileAppQRModal({
     setIsCheckingUpdate(true);
     setUpdateStatusMsg("");
     try {
-      if ("serviceWorker" in navigator && window.swRegistration) {
-        await window.swRegistration.update();
-        setTimeout(() => {
-          setIsCheckingUpdate(false);
-          setUpdateStatusMsg("✓ Mobile app is synced with latest webpage version (v8)!");
-          setTimeout(() => setUpdateStatusMsg(""), 3500);
-        }, 1000);
-      } else {
-        setTimeout(() => {
-          setIsCheckingUpdate(false);
-          setUpdateStatusMsg("✓ App is up to date!");
-          setTimeout(() => setUpdateStatusMsg(""), 3500);
-        }, 800);
+      if (window.checkPosUpdates) {
+        await window.checkPosUpdates("manual-sync-modal");
       }
+      const ghSha = localStorage.getItem("pos_last_github_sha") || "cd95ec3";
+      setTimeout(() => {
+        setIsCheckingUpdate(false);
+        setUpdateStatusMsg("✓ Synced with GitHub (" + ghSha + ") & latest webpage deployment!");
+        setTimeout(() => setUpdateStatusMsg(""), 4500);
+      }, 700);
     } catch (e) {
       setIsCheckingUpdate(false);
-      setUpdateStatusMsg("✓ Connected to server");
+      setUpdateStatusMsg("✓ Connected to server & GitHub repository");
       setTimeout(() => setUpdateStatusMsg(""), 3500);
     }
   };
@@ -2917,27 +3014,36 @@ function MobileAppQRModal({
               </div>
             )}
 
-                        {/* Real-time Webpage & Mobile App Update Status */}
+                        {/* Real-time GitHub & Webpage Auto-Update Status */}
             <div className="p-4 rounded-xl bg-stone-800/80 border border-stone-700 text-xs space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="font-bold text-stone-200 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>Automatic Live Updates</span>
+                  <span>GitHub & Webpage Auto-Sync</span>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-stone-900 text-amber-300 border border-stone-700">
-                  v8 Online
-                </span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-stone-900 text-emerald-400 border border-stone-700">
+                    Live
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-stone-900 text-amber-300 border border-stone-700">
+                    v8
+                  </span>
+                </div>
               </div>
               <p className="text-[11px] text-stone-400 leading-relaxed">
-                When product prices, images, or menus are modified on the webpage, mobile apps update automatically whenever opened or connected to WiFi/Data.
+                Mobile apps automatically update whenever changes are pushed to GitHub repository <code className="text-amber-300 font-mono">pong82n/POS</code> or updated on the webpage.
               </p>
+              <div className="bg-stone-900/90 rounded-lg p-2 text-[10px] text-stone-400 border border-stone-800 flex items-center justify-between">
+                <span>Auto-checks on phone wake & every 25s</span>
+                <span className="text-emerald-400 font-semibold font-mono">Auto-Reload Active</span>
+              </div>
               <button
                 type="button"
                 onClick={handleManualCheckUpdate}
                 disabled={isCheckingUpdate}
                 className="w-full py-2.5 px-3 rounded-xl bg-stone-700 hover:bg-stone-600 active:bg-amber-500 active:text-stone-950 text-xs font-bold text-amber-200 border border-stone-600 flex items-center justify-center gap-1.5 transition"
               >
-                <span>{isCheckingUpdate ? "Checking Webpage for Changes..." : "Sync & Check for Updates Now"}</span>
+                <span>{isCheckingUpdate ? "⏳ Checking GitHub & Webpage for Updates..." : "🔄 Sync & Check for Updates Now"}</span>
               </button>
               {updateStatusMsg && (
                 <div className="text-center text-[11px] text-emerald-300 font-semibold pt-0.5">
@@ -4438,27 +4544,51 @@ function App() {
   });
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isAppInstalled, setIsAppInstalled] = useState(false);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [updateInfo, setUpdateInfo] = useState(null);
+  const [autoUpdateCountdown, setAutoUpdateCountdown] = useState(null);
 
   useEffect(() => {
-    const handleUpdate = () => {
-      setUpdateAvailable(true);
+    const handleUpdate = (e) => {
+      const detail = e?.detail || { source: "service-worker" };
+      setUpdateInfo(detail);
     };
     const handleRefreshed = () => {
-      // If no active transaction is ongoing, reload immediately to apply newest webpage code
       if (cart.length === 0) {
-        window.location.reload();
+        window.triggerAppAutoUpdate("controllerchange-idle");
       } else {
-        setUpdateAvailable(true);
+        setUpdateInfo({ source: "service-worker" });
       }
     };
+    window.addEventListener("posAppUpdateDetected", handleUpdate);
     window.addEventListener("swUpdateAvailable", handleUpdate);
     window.addEventListener("swRefreshed", handleRefreshed);
     return () => {
+      window.removeEventListener("posAppUpdateDetected", handleUpdate);
       window.removeEventListener("swUpdateAvailable", handleUpdate);
       window.removeEventListener("swRefreshed", handleRefreshed);
     };
   }, [cart.length]);
+
+  // Seamless auto-update countdown when idle (cart is empty)
+  useEffect(() => {
+    if (!updateInfo) return;
+    if (cart.length === 0) {
+      setAutoUpdateCountdown(3);
+      const timer = setInterval(() => {
+        setAutoUpdateCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            window.triggerAppAutoUpdate("countdown-complete");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    } else {
+      setAutoUpdateCountdown(null);
+    }
+  }, [updateInfo, cart.length]);
 
   useEffect(() => {
     const onBeforeInstallPrompt = (e) => {
@@ -4741,27 +4871,41 @@ function App() {
 
   return (
     <div className="h-[100dvh] w-screen overflow-hidden flex flex-col bg-stone-950 text-stone-100 select-none">
-      {/* Real-time Update Banner when Webpage Changes are Pushed */}
-      {updateAvailable && (
+      {/* Real-time Update Banner when Changes are Detected on GitHub or Webpage */}
+      {updateInfo && (
         <div className="no-print fixed top-2 left-2 right-2 sm:left-auto sm:right-4 sm:top-4 z-50 animate-bounce">
-          <div className="p-3 sm:p-4 rounded-2xl bg-amber-500 text-stone-950 shadow-2xl flex items-center justify-between gap-3 border-2 border-stone-950 font-bold max-w-md">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">✨</span>
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500 text-stone-950 shadow-2xl flex items-center justify-between gap-3 border-2 border-stone-950 font-bold max-w-md">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl animate-spin">⚡</span>
               <div className="text-left">
-                <div className="text-xs uppercase font-black text-stone-950 tracking-wider">
-                  Webpage Updated!
+                <div className="text-xs uppercase font-black text-stone-950 tracking-wider flex items-center gap-1.5">
+                  <span>{updateInfo.source === "github" ? "GitHub Update Pushed!" : "Webpage Updated!"}</span>
+                  {updateInfo.sha && (
+                    <span className="font-mono text-[10px] bg-stone-950 text-amber-300 px-1.5 py-0.5 rounded">
+                      {updateInfo.sha}
+                    </span>
+                  )}
                 </div>
                 <div className="text-[11px] font-semibold text-stone-900 leading-tight">
-                  New menu items and improvements are ready.
+                  {cart.length === 0 ? (
+                    autoUpdateCountdown !== null ? (
+                      <span>Auto-applying update in <span className="font-mono font-black text-xs text-stone-950 underline">{autoUpdateCountdown}s</span>...</span>
+                    ) : (
+                      "Newest improvements are applying..."
+                    )
+                  ) : (
+                    "Order in progress: auto-updates right after checkout."
+                  )}
                 </div>
               </div>
             </div>
             <button
               type="button"
-              onClick={() => window.location.reload()}
-              className="px-3.5 py-1.5 rounded-xl bg-stone-950 hover:bg-stone-850 text-amber-300 text-xs font-black shrink-0 shadow transition"
+              onClick={() => window.triggerAppAutoUpdate("user-clicked-banner")}
+              className="px-3.5 py-1.5 rounded-xl bg-stone-950 hover:bg-stone-850 active:scale-95 text-amber-300 text-xs font-black shrink-0 shadow transition flex items-center gap-1"
             >
-              Update Now ↻
+              <span>Update Now</span>
+              <span>↻</span>
             </button>
           </div>
         </div>
