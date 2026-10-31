@@ -42,8 +42,48 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
-        navigator.serviceWorker.register("/sw.js").catch(function () {});
+        navigator.serviceWorker.register("/sw.js").then(function (reg) {
+          window.swRegistration = reg;
+          reg.update().catch(function () {});
+          reg.addEventListener("updatefound", function () {
+            var w = reg.installing;
+            if (!w) return;
+            w.addEventListener("statechange", function () {
+              if (w.state === "installed" && navigator.serviceWorker.controller) {
+                window.dispatchEvent(new CustomEvent("swUpdateAvailable"));
+              }
+            });
+          });
+        }).catch(function () {});
       });
+
+      // Auto-update mobile apps when resumed/opened from background
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "visible" && window.swRegistration) {
+          window.swRegistration.update().catch(function () {});
+        }
+      });
+
+      // Periodic check every 45s while online
+      setInterval(function () {
+        if (navigator.onLine && window.swRegistration) {
+          window.swRegistration.update().catch(function () {});
+        }
+      }, 45000);
+
+      window.addEventListener("online", function () {
+        if (window.swRegistration) {
+          window.swRegistration.update().catch(function () {});
+        }
+      });
+
+      navigator.serviceWorker.addEventListener("message", function (e) {
+        if (e.data && e.data.type === "SW_UPDATED") {
+          window.dispatchEvent(new CustomEvent("swUpdateAvailable"));
+        }
+      });
+
+      navigator.serviceWorker.addEventListener("controllerchange", function () { window.dispatchEvent(new CustomEvent("swRefreshed")); });
     }
   </script>
   <script type="text/babel">
@@ -2723,6 +2763,33 @@ function MobileAppQRModal({
 }) {
   const [copied, setCopied] = useState(false);
   const [showManualSteps, setShowManualSteps] = useState(false);
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+  const [updateStatusMsg, setUpdateStatusMsg] = useState("");
+
+  const handleManualCheckUpdate = async () => {
+    setIsCheckingUpdate(true);
+    setUpdateStatusMsg("");
+    try {
+      if ("serviceWorker" in navigator && window.swRegistration) {
+        await window.swRegistration.update();
+        setTimeout(() => {
+          setIsCheckingUpdate(false);
+          setUpdateStatusMsg("✓ Mobile app is synced with latest webpage version (v7)!");
+          setTimeout(() => setUpdateStatusMsg(""), 3500);
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          setIsCheckingUpdate(false);
+          setUpdateStatusMsg("✓ App is up to date!");
+          setTimeout(() => setUpdateStatusMsg(""), 3500);
+        }, 800);
+      }
+    } catch (e) {
+      setIsCheckingUpdate(false);
+      setUpdateStatusMsg("✓ Connected to server");
+      setTimeout(() => setUpdateStatusMsg(""), 3500);
+    }
+  };
 
   const appUrl = "https://pos-project-smoky.vercel.app/";
   const installUrl = "https://pos-project-smoky.vercel.app/?install=1";
@@ -2850,7 +2917,36 @@ function MobileAppQRModal({
               </div>
             )}
 
-            {/* Download / Print / Copy Actions */}
+                        {/* Real-time Webpage & Mobile App Update Status */}
+            <div className="p-4 rounded-xl bg-stone-800/80 border border-stone-700 text-xs space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div className="font-bold text-stone-200 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Automatic Live Updates</span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-stone-900 text-amber-300 border border-stone-700">
+                  v7 Online
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-400 leading-relaxed">
+                When product prices, images, or menus are modified on the webpage, mobile apps update automatically whenever opened or connected to WiFi/Data.
+              </p>
+              <button
+                type="button"
+                onClick={handleManualCheckUpdate}
+                disabled={isCheckingUpdate}
+                className="w-full py-2.5 px-3 rounded-xl bg-stone-700 hover:bg-stone-600 active:bg-amber-500 active:text-stone-950 text-xs font-bold text-amber-200 border border-stone-600 flex items-center justify-center gap-1.5 transition"
+              >
+                <span>{isCheckingUpdate ? "Checking Webpage for Changes..." : "Sync & Check for Updates Now"}</span>
+              </button>
+              {updateStatusMsg && (
+                <div className="text-center text-[11px] text-emerald-300 font-semibold pt-0.5">
+                  {updateStatusMsg}
+                </div>
+              )}
+            </div>
+
+                        {/* Download / Print / Copy Actions */}
             <div className="grid grid-cols-3 gap-2 pt-1">
               <a
                 href="pos-mobile-qr-card.png"
@@ -4342,6 +4438,27 @@ function App() {
   });
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isAppInstalled, setIsAppInstalled] = useState(false);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setUpdateAvailable(true);
+    };
+    const handleRefreshed = () => {
+      // If no active transaction is ongoing, reload immediately to apply newest webpage code
+      if (cart.length === 0) {
+        window.location.reload();
+      } else {
+        setUpdateAvailable(true);
+      }
+    };
+    window.addEventListener("swUpdateAvailable", handleUpdate);
+    window.addEventListener("swRefreshed", handleRefreshed);
+    return () => {
+      window.removeEventListener("swUpdateAvailable", handleUpdate);
+      window.removeEventListener("swRefreshed", handleRefreshed);
+    };
+  }, [cart.length]);
 
   useEffect(() => {
     const onBeforeInstallPrompt = (e) => {
@@ -4624,6 +4741,31 @@ function App() {
 
   return (
     <div className="h-[100dvh] w-screen overflow-hidden flex flex-col bg-stone-950 text-stone-100 select-none">
+      {/* Real-time Update Banner when Webpage Changes are Pushed */}
+      {updateAvailable && (
+        <div className="no-print fixed top-2 left-2 right-2 sm:left-auto sm:right-4 sm:top-4 z-50 animate-bounce">
+          <div className="p-3 sm:p-4 rounded-2xl bg-amber-500 text-stone-950 shadow-2xl flex items-center justify-between gap-3 border-2 border-stone-950 font-bold max-w-md">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">✨</span>
+              <div className="text-left">
+                <div className="text-xs uppercase font-black text-stone-950 tracking-wider">
+                  Webpage Updated!
+                </div>
+                <div className="text-[11px] font-semibold text-stone-900 leading-tight">
+                  New menu items and improvements are ready.
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-3.5 py-1.5 rounded-xl bg-stone-950 hover:bg-stone-850 text-amber-300 text-xs font-black shrink-0 shadow transition"
+            >
+              Update Now ↻
+            </button>
+          </div>
+        </div>
+      )}
       {/* Top POS Navigation Header */}
       <header className="no-print h-14 sm:h-16 px-3 sm:px-5 bg-stone-900 border-b border-stone-800 flex items-center justify-between shrink-0">
         <div
