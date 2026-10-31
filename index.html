@@ -4889,22 +4889,6 @@ function App() {
                         </div>
                       </div>
                     )}
-                    {false && <div className="flex items-start justify-between gap-1.5 mb-2">
-                      <div
-                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-[10px] sm:text-xs font-extrabold text-white shadow-inner shrink-0"
-                        style={{ backgroundColor: item.color }}
-                      >
-                        {item.sku.split("-")[0]}
-                      </div>
-                      <div className="flex flex-col items-end">
-                        <span className="text-sm sm:text-base font-extrabold text-amber-400">
-                          ₱{item.price.toFixed(2)}
-                        </span>
-                        <span className="text-[9px] sm:text-[10px] text-stone-500 font-mono">
-                          {item.calories > 0 ? `${item.calories} cal` : item.sku}
-                        </span>
-                      </div>
-                    </div>
 
                     {item.badge && (
                       <span className="inline-block mb-1 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
@@ -5223,9 +5207,6 @@ function App() {
           onResetMenu={handleResetMenu}
         />
       )}
-      {false && <OrderHistory onRefundOrder={handleRefundOrder}
-        />
-      )}
 
       {/* Mobile Bottom Navigation Bar (< lg) */}
       <nav className="no-print lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 grid grid-cols-5 z-40 px-1">
@@ -5350,9 +5331,6 @@ function App() {
         onLogout={handleStaffLogout}
         onAddStaff={handleAddStaff}
       />
-      {false && <MobileAppQRModal isInstalled={isAppInstalled}
-        />
-      )}
     </div>
   );
 }

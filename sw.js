@@ -1,4 +1,4 @@
-const CACHE_NAME = "roast-ritual-pos-v3";
+const CACHE_NAME = "roast-ritual-pos-v5";
 const ASSETS = [
   "/",
   "/index.html",
