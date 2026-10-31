@@ -442,7 +442,7 @@ export default function App() {
           <BrandLogo className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 drop-shadow-md" />
           <div>
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="font-extrabold tracking-wider text-amber-50 text-sm sm:text-base">
+              <span className="font-black tracking-wider text-amber-50 text-base sm:text-lg md:text-xl lg:text-2xl leading-none">
                 {SHOP_CONFIG.name}
               </span>
               <span className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded bg-stone-800 text-amber-400 border border-stone-700 font-mono">

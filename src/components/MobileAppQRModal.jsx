@@ -61,7 +61,7 @@ export default function MobileAppQRModal({
             id="printable-area"
             className="bg-stone-950 border-2 border-amber-500/70 rounded-2xl p-5 flex flex-col items-center text-center shadow-xl"
           >
-            <div className="text-xs font-extrabold uppercase tracking-widest text-amber-400">
+            <div className="text-base sm:text-lg font-black uppercase tracking-widest text-amber-400">
               {SHOP_CONFIG.name}
             </div>
             <div className="text-sm font-bold text-stone-100 mt-0.5">

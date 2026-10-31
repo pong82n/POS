@@ -98,7 +98,7 @@ export default function ReceiptModal({ order, onClose, onNewOrder }) {
                     <path d="M32 94 H88" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
                   </svg>
                 </div>
-                <div className="text-base font-extrabold tracking-widest uppercase">
+                <div className="text-xl sm:text-2xl font-black tracking-widest uppercase">
                   {SHOP_CONFIG.name}
                 </div>
                 <div className="text-[11px] text-stone-600">{SHOP_CONFIG.tagline}</div>
