@@ -67,13 +67,21 @@ const DEFAULT_STAFF = [
 ];
 
 const PRESET_SAMPLE_IMAGES = [
-  { label: "Hot Latte", url: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400&auto=format&fit=crop&q=80" },
-  { label: "Classic Cappuccino", url: "https://images.unsplash.com/photo-1572442388796-11668ba67e53?w=400&auto=format&fit=crop&q=80" },
-  { label: "Slow Cold Brew", url: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=400&auto=format&fit=crop&q=80" },
-  { label: "Caramel Macchiato", url: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=400&auto=format&fit=crop&q=80" },
-  { label: "Matcha Latte", url: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&auto=format&fit=crop&q=80" },
-  { label: "Butter Croissant", url: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&auto=format&fit=crop&q=80" },
-  { label: "Whole Coffee Beans", url: "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=400&auto=format&fit=crop&q=80" }
+  { label: "Hot Latte", url: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&auto=format&fit=crop&q=80" },
+  { label: "Classic Cappuccino", url: "Images/classic cappuccino.webp" },
+  { label: "Caramel Macchiato", url: "Images/Salted Caramel Macchiato.jpg" },
+  { label: "Flat White", url: "Images/Velvet Flat White.jpg" },
+  { label: "Cafe Mocha", url: "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=500&auto=format&fit=crop&q=80" },
+  { label: "Americano", url: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=80" },
+  { label: "Slow Cold Brew", url: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=500&auto=format&fit=crop&q=80" },
+  { label: "Matcha Latte", url: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=500&auto=format&fit=crop&q=80" },
+  { label: "Chai Tea Latte", url: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=80" },
+  { label: "Mocha Frappe", url: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=80" },
+  { label: "Butter Croissant", url: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&auto=format&fit=crop&q=80" },
+  { label: "Almond Croissant", url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=80" },
+  { label: "Avocado Toast", url: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=80" },
+  { label: "Blueberry Muffin", url: "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=500&auto=format&fit=crop&q=80" },
+  { label: "Whole Coffee Beans", url: "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=500&auto=format&fit=crop&q=80" }
 ];
 
 
@@ -178,7 +186,7 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#8C583A",
     badge: "Best Seller",
-    imageUrl: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400&auto=format&fit=crop&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&auto=format&fit=crop&q=80",
     description: "Smooth steamed milk poured over our rich double-shot house espresso blend."
   },
   {
@@ -196,6 +204,7 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#6E4228",
     badge: null,
+    imageUrl: "Images/classic cappuccino.webp",
     description: "Equal parts bold espresso, steamed milk, and thick velvety milk foam."
   },
   {
@@ -215,6 +224,7 @@ const MENU_ITEMS = [
     defaultToppings: ["caramel-drizzle"],
     color: "#B46E35",
     badge: "Popular",
+    imageUrl: "Images/Salted Caramel Macchiato.jpg",
     description: "Freshly steamed vanilla milk marked with espresso and topped with salted caramel drizzle."
   },
   {
@@ -232,6 +242,7 @@ const MENU_ITEMS = [
     defaultShots: "triple",
     color: "#7D4E32",
     badge: "Strong",
+    imageUrl: "Images/Velvet Flat White.jpg",
     description: "Three concentrated espresso shots topped with a thin, glossy layer of steamed whole milk."
   },
   {
@@ -251,6 +262,7 @@ const MENU_ITEMS = [
     defaultToppings: ["whip", "cocoa"],
     color: "#4A2C1D",
     badge: null,
+    imageUrl: "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=500&auto=format&fit=crop&q=80",
     description: "Rich dark chocolate melted into double espresso, steamed milk, and topped with whipped cream."
   },
   {
@@ -268,6 +280,7 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#3A2218",
     badge: null,
+    imageUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=80",
     description: "Double espresso shots poured over hot filtered water for a bold, clean coffee flavor."
   },
   {
@@ -285,6 +298,7 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#7A482E",
     badge: "Customer Favorite",
+    imageUrl: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=500&auto=format&fit=crop&q=80",
     description: "Double espresso blended with textured milk and sweet condensed milk, served hot or over ice."
   },
   {
@@ -304,6 +318,7 @@ const MENU_ITEMS = [
     defaultToppings: ["cinnamon"],
     color: "#9A6238",
     badge: "Trending",
+    imageUrl: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=500&auto=format&fit=crop&q=80",
     description: "Triple espresso shaken with brown sugar and cinnamon, finished with creamy oat milk over ice."
   },
   {
@@ -321,6 +336,7 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#2F1B12",
     badge: null,
+    imageUrl: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=500&auto=format&fit=crop&q=80",
     description: "Small-batch roast coffee steeped cold for 18 hours for an ultra-smooth, low-acidity taste."
   },
   {
@@ -340,7 +356,7 @@ const MENU_ITEMS = [
     defaultToppings: ["cold-foam"],
     color: "#7E5134",
     badge: "Best Seller",
-    imageUrl: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400&auto=format&fit=crop&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1577968897966-3d4325b36b61?w=500&auto=format&fit=crop&q=80",
     description: "Slow-steeped cold brew topped with house-made vanilla sweet cream cold foam."
   },
   {
@@ -359,6 +375,7 @@ const MENU_ITEMS = [
     defaultSyrups: ["lavender"],
     color: "#83658C",
     badge: "Seasonal",
+    imageUrl: "https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&auto=format&fit=crop&q=80",
     description: "Wildflower honey and vanilla bean paired with double espresso and creamy oat milk over ice."
   },
   {
@@ -376,7 +393,7 @@ const MENU_ITEMS = [
     defaultShots: "standard",
     color: "#4B7A47",
     badge: "Best Seller",
-    imageUrl: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400&auto=format&fit=crop&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=500&auto=format&fit=crop&q=80",
     description: "Stone-ground premium green tea whisked to order with creamy milk, served hot or iced."
   },
   {
@@ -395,6 +412,7 @@ const MENU_ITEMS = [
     defaultToppings: ["cinnamon"],
     color: "#A36336",
     badge: null,
+    imageUrl: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=80",
     description: "Black tea infused with cinnamon, cardamom, ginger, and cloves, steamed with creamy milk."
   },
   {
@@ -413,6 +431,7 @@ const MENU_ITEMS = [
     defaultSyrups: ["vanilla"],
     color: "#73695E",
     badge: "Light Caffeine",
+    imageUrl: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=500&auto=format&fit=crop&q=80",
     description: "Fragrant Earl Grey black tea steeped with sweet vanilla syrup and topped with steamed milk foam."
   },
   {
@@ -432,6 +451,7 @@ const MENU_ITEMS = [
     defaultToppings: ["whip", "mocha-drizzle"],
     color: "#523426",
     badge: null,
+    imageUrl: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=80",
     description: "Ice-blended coffee with dark chocolate chips, milk, whipped cream, and chocolate drizzle."
   },
   {
@@ -451,6 +471,7 @@ const MENU_ITEMS = [
     defaultToppings: ["whip", "caramel-drizzle"],
     color: "#C27D3B",
     badge: null,
+    imageUrl: "https://images.unsplash.com/photo-1579888944880-d98341245702?w=500&auto=format&fit=crop&q=80",
     description: "Blended iced coffee with buttery caramel sauce, whipped cream, and crunchy caramel topping."
   },
   {
@@ -464,6 +485,7 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#D18E3E",
     badge: "Fresh Baked",
+    imageUrl: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&auto=format&fit=crop&q=80",
     description: "Flaky, golden-baked all-butter pastry with a crisp crust and soft, airy layers inside."
   },
   {
@@ -477,7 +499,7 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#B87532",
     badge: "Best Seller",
-    imageUrl: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400&auto=format&fit=crop&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=80",
     description: "Baked with sweet almond cream filling and topped with toasted sliced almonds and powdered sugar."
   },
   {
@@ -491,6 +513,7 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#8E5128",
     badge: null,
+    imageUrl: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=500&auto=format&fit=crop&q=80",
     description: "Crisp flaky butter pastry filled with two rich bars of dark Belgian chocolate."
   },
   {
@@ -504,6 +527,7 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#5E7B42",
     badge: "Savory",
+    imageUrl: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=80",
     description: "Thick-cut toasted country sourdough topped with smashed ripe avocado, herbs, and sea salt."
   },
   {
@@ -517,6 +541,7 @@ const MENU_ITEMS = [
     type: "bakery",
     color: "#574B78",
     badge: null,
+    imageUrl: "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=500&auto=format&fit=crop&q=80",
     description: "Soft lemon-zest bakery muffin packed with sweet blueberries and cinnamon oat streusel."
   },
   {
@@ -530,6 +555,7 @@ const MENU_ITEMS = [
     type: "merch",
     color: "#3B2820",
     badge: "Whole Bean",
+    imageUrl: "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=500&auto=format&fit=crop&q=80",
     description: "Medium-dark roast whole bean coffee with tasting notes of dark chocolate and roasted nuts."
   },
   {
@@ -543,6 +569,7 @@ const MENU_ITEMS = [
     type: "merch",
     color: "#94523A",
     badge: "Light Roast",
+    imageUrl: "https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?w=500&auto=format&fit=crop&q=80",
     description: "100% highland Arabica whole beans with bright citrus, sweet honey, and floral notes."
   }
 ];
@@ -4195,7 +4222,7 @@ function App() {
   // Product Catalog State (persisted)
   const [menuItems, setMenuItems] = useState(() => {
     try {
-      const saved = localStorage.getItem("roast_ritual_menu_items_v2");
+      const saved = localStorage.getItem("roast_ritual_menu_items_v3");
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return MENU_ITEMS;
@@ -4203,7 +4230,7 @@ function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("roast_ritual_menu_items_v2", JSON.stringify(menuItems));
+      localStorage.setItem("roast_ritual_menu_items_v3", JSON.stringify(menuItems));
     } catch (e) {}
   }, [menuItems]);
 
@@ -4286,7 +4313,7 @@ function App() {
 
   const handleResetMenu = () => {
     setMenuItems(MENU_ITEMS);
-    localStorage.removeItem("roast_ritual_menu_items_v2");
+    localStorage.removeItem("roast_ritual_menu_items_v3");
   };
   const [activeTab, setActiveTab] = useState("pos");
   const [selectedCategory, setSelectedCategory] = useState("all");
