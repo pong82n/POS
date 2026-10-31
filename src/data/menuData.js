@@ -8,6 +8,13 @@ export const SHOP_CONFIG = {
   registerId: "REG-01"
 };
 
+export const DEFAULT_STAFF = [
+  { id: "staff-1", name: "Alex Rivera", role: "Lead Barista", pin: "1234", avatar: "☕", color: "#F59E0B" },
+  { id: "staff-2", name: "Chloe Diaz", role: "Barista", pin: "2345", avatar: "✨", color: "#10B981" },
+  { id: "staff-3", name: "Marco Chen", role: "Shift Supervisor", pin: "3456", avatar: "🎯", color: "#6366F1" },
+  { id: "staff-4", name: "Sarah Jenkins", role: "Senior Barista", pin: "4567", avatar: "🥐", color: "#EC4899" }
+];
+
 export const CATEGORIES = [
   { id: "all", name: "All Items", icon: "LayoutGrid" },
   { id: "espresso", name: "Espresso & Hot Coffee", icon: "Coffee" },
