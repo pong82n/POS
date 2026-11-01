@@ -13,6 +13,8 @@ import ReceiptModal from "./components/ReceiptModal";
 import BaristaKDS from "./components/BaristaKDS";
 import OrderHistory from "./components/OrderHistory";
 import MobileAppQRModal from "./components/MobileAppQRModal";
+import BluetoothPrinterModal from "./components/BluetoothPrinterModal";
+import { bluetoothPrinter } from "./utils/bluetoothPrinter";
 
 function BrandLogo({ className = "w-11 h-11" }) {
   return (
@@ -153,6 +155,14 @@ export default function App() {
   const [isAppInstalled, setIsAppInstalled] = useState(false);
   const [updateInfo, setUpdateInfo] = useState(null);
   const [autoUpdateCountdown, setAutoUpdateCountdown] = useState(null);
+  const [isBtPrinterModalOpen, setIsBtPrinterModalOpen] = useState(false);
+  const [btPrinterStatus, setBtPrinterStatus] = useState(bluetoothPrinter.getStatus());
+
+  useEffect(() => {
+    return bluetoothPrinter.subscribe((status) => {
+      setBtPrinterStatus(status);
+    });
+  }, []);
 
   useEffect(() => {
     const handleUpdate = (e) => {
@@ -628,6 +638,28 @@ export default function App() {
               ))}
             </div>
           )}
+
+          {/* Bluetooth Thermal Printer (Officom OC-58H / POS-58) Indicator & Setup */}
+          <button
+            type="button"
+            onClick={() => setIsBtPrinterModalOpen(true)}
+            className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border text-[11px] sm:text-xs font-bold flex items-center gap-1.5 transition shadow-sm ${
+              btPrinterStatus.isConnected
+                ? "bg-emerald-950/40 border-emerald-500/60 text-emerald-300 hover:bg-emerald-950/70"
+                : "bg-stone-850 hover:bg-stone-800 border-stone-700 text-stone-300"
+            }`}
+            title="Bluetooth 58mm Thermal Printer (Officom OC-58H / POS-58)"
+          >
+            <span>🖨️</span>
+            {btPrinterStatus.isConnected ? (
+              <span className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="hidden sm:inline truncate max-w-[85px]">{btPrinterStatus.printerName || "OC-58H"}</span>
+              </span>
+            ) : (
+              <span className="hidden sm:inline">BT 58mm</span>
+            )}
+          </button>
 
           <button
             type="button"
@@ -1157,6 +1189,12 @@ export default function App() {
           isInstalled={isAppInstalled}
         />
       )}
+
+      {/* Bluetooth 58mm Printer Modal */}
+      <BluetoothPrinterModal
+        isOpen={isBtPrinterModalOpen}
+        onClose={() => setIsBtPrinterModalOpen(false)}
+      />
     </div>
   );
 }

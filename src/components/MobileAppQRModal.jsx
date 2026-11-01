@@ -170,7 +170,7 @@ export default function MobileAppQRModal({
                     Live
                   </span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-stone-900 text-amber-300 border border-stone-700">
-                    v8
+                    v9
                   </span>
                 </div>
               </div>
