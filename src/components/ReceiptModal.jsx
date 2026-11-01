@@ -64,7 +64,7 @@ export default function ReceiptModal({ order, onClose, onNewOrder }) {
       } else {
         const receiptData = bluetoothPrinter.buildReceipt58mm(order, SHOP_CONFIG);
         await bluetoothPrinter.sendRaw(receiptData);
-        setBtMsg(`✓ 58mm receipt printed to ${printerStatus.printerName || "Officom OC-58H"}!`);
+        setBtMsg(`✓ 58mm receipt printed to ${printerStatus.printerName || "JP58H-BT71 / OC-58H"}!`);
       }
       setTimeout(() => setBtMsg(""), 4500);
     } catch (err) {
@@ -91,7 +91,7 @@ export default function ReceiptModal({ order, onClose, onNewOrder }) {
                 <span>{order.orderType.toUpperCase()}</span>
                 <span>•</span>
                 <span className={printerStatus.isConnected ? "text-emerald-400 font-semibold" : "text-amber-400"}>
-                  {printerStatus.isConnected ? `🖨️ ${printerStatus.printerName || "OC-58H"}` : "🖨️ 58mm BT Printer Ready"}
+                  {printerStatus.isConnected ? `🖨️ ${printerStatus.printerName || "JP58H / OC-58H"}` : "🖨️ 58mm BT Printer Ready"}
                 </span>
               </div>
             </div>
@@ -107,7 +107,7 @@ export default function ReceiptModal({ order, onClose, onNewOrder }) {
                     ? "bg-amber-500 text-stone-950 shadow"
                     : "text-stone-400 hover:text-white"
                 }`}
-                title="58mm Paper Roll (Officom OC-58H / POS-58)"
+                title="58mm Paper Roll (JP58H-BT71 / Officom OC-58H / POS-58)"
               >
                 🧾 58mm Thermal
               </button>
@@ -375,7 +375,7 @@ export default function ReceiptModal({ order, onClose, onNewOrder }) {
               <div className="text-center space-y-0.5 text-[9px] text-stone-600">
                 <div className="font-bold">WIFI: RoastAndRitual_Guest / PASS: espresso2026</div>
                 <div>Thank you for visiting ROAST & RITUAL!</div>
-                <div className="text-[8px] text-stone-500">58mm ESC/POS Thermal Receipt</div>
+                <div className="text-[8px] text-stone-500">JP58H-BT71 / OC-58H 58mm ESC/POS Thermal Receipt</div>
               </div>
             </div>
           )}

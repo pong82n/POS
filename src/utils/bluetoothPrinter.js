@@ -1,14 +1,24 @@
 // bluetoothPrinter.js - Web Bluetooth ESC/POS engine for 58mm thermal printers
-// Fully compatible with Officom OC-58H, POS-58, GOOJPRT PT-210, MPT-II, and standard ESC/POS Bluetooth printers.
+// Fully compatible with JP58H-BT71, Officom OC-58H, POS-58, GOOJPRT PT-210, MPT-II, and standard ESC/POS Bluetooth printers.
 
 export const BT_PRINTER_SERVICES = [
   "000018f0-0000-1000-8000-00805f9b34fb", // Standard ESC/POS Printer Service
   "0000ffe0-0000-1000-8000-00805f9b34fb", // HM-10 / CC2540 / Serial UART
+  "0000ff00-0000-1000-8000-00805f9b34fb", // JP58H-BT71 / Jiebao Custom UART
+  "0000ae00-0000-1000-8000-00805f9b34fb", // JP58 / Telink BLE UART
+  "0000ae30-0000-1000-8000-00805f9b34fb", // JP-58H Extended BLE
+  "0000fee7-0000-1000-8000-00805f9b34fb", // Telink / JP58H Profile
+  "0000fef5-0000-1000-8000-00805f9b34fb", // Dialog / Telink BLE UART
   "49535343-fe7d-4ae5-8fa9-9fafd205e455", // ISSC Transparent UART
   "6e400001-b5a3-f393-e0a9-e50e24dcca9e", // Nordic UART
   "e7810a71-73ae-499d-8c15-faa9aef0c3f2", // Generic Thermal Printer Service
   0x18f0,
-  0xffe0
+  0xffe0,
+  0xff00,
+  0xae00,
+  0xae30,
+  0xfee7,
+  0xfef5
 ];
 
 class BluetoothThermalPrinter {
@@ -301,7 +311,7 @@ class BluetoothThermalPrinter {
     addLine("Thank you for your visit!");
     addLine("WIFI: RoastAndRitual_Guest");
     addLine("PASS: espresso2026");
-    addLine("--- Officom OC-58H / POS-58 ---");
+    addLine("--- JP58H-BT71 / OC-58H / POS-58 ---");
 
     // Feed lines & cut
     addBytes(0x1b, 0x64, 0x05); // Feed 5 lines
@@ -414,7 +424,7 @@ class BluetoothThermalPrinter {
     addLine("================================");
     addLine(shopConfig?.name || "ROAST & RITUAL");
     addLine("58mm Thermal Printer Connected");
-    addLine("Model: " + (this.printerName || "Officom OC-58H / POS-58"));
+    addLine("Model: " + (this.printerName || "JP58H-BT71 / OC-58H / POS-58"));
     addLine("Date: " + new Date().toLocaleString());
     addLine("--------------------------------");
     addLine("✓ 32 Columns ESC/POS OK");

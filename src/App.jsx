@@ -648,7 +648,7 @@ export default function App() {
                 ? "bg-emerald-950/40 border-emerald-500/60 text-emerald-300 hover:bg-emerald-950/70"
                 : "bg-stone-850 hover:bg-stone-800 border-stone-700 text-stone-300"
             }`}
-            title="Bluetooth 58mm Thermal Printer (Officom OC-58H / POS-58)"
+            title="Bluetooth 58mm Thermal Printer (JP58H-BT71 / Officom OC-58H / POS-58)"
           >
             <span>🖨️</span>
             {btPrinterStatus.isConnected ? (

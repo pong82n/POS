@@ -73,7 +73,7 @@ export default function BluetoothPrinterModal({ isOpen, onClose }) {
                 58mm Bluetooth Thermal Printer
               </h2>
               <p className="text-[11px] text-stone-400">
-                Officom OC-58H • POS-58 • GOOJPRT • ESC/POS
+                Officom OC-58H • JP58H-BT71 • POS-58 • GOOJPRT • ESC/POS
               </p>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function BluetoothPrinterModal({ isOpen, onClose }) {
                 <div className="text-[11px] text-stone-400">
                   {printerStatus.isConnected
                     ? "Ready to print receipts & stickers"
-                    : "Pair with Officom OC-58H or POS-58"}
+                    : "Pair with JP58H-BT71, Officom OC-58H or POS-58"}
                 </div>
               </div>
             </div>
@@ -175,13 +175,13 @@ export default function BluetoothPrinterModal({ isOpen, onClose }) {
           {/* Quick Setup Instructions */}
           <div className="p-3.5 rounded-xl bg-stone-950/90 border border-stone-800 space-y-1.5 text-[11px] text-stone-300">
             <div className="font-bold text-amber-400 uppercase tracking-wider text-[10px]">
-              How to pair Officom OC-58H or POS-58:
+              How to pair JP58H-BT71, Officom OC-58H or POS-58:
             </div>
             <ol className="list-decimal pl-4 space-y-1 text-stone-400 leading-relaxed">
               <li>Turn on the printer with a 58mm paper roll inserted.</li>
               <li>Turn on Bluetooth on your Android phone, tablet, or PC.</li>
               <li>Pair printer in Bluetooth settings (PIN is usually <code className="text-amber-300 font-mono">0000</code> or <code className="text-amber-300 font-mono">1234</code>).</li>
-              <li>Tap <strong>Connect</strong> above and select <strong>OC-58H</strong> or <strong>POS-58</strong>.</li>
+              <li>Tap <strong>Connect</strong> above and select <strong>JP58H-BT71</strong>, <strong>OC-58H</strong>, or <strong>POS-58</strong>.</li>
             </ol>
           </div>
         </div>

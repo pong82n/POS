@@ -200,15 +200,25 @@
       }, 25000);
     })();
 
-    // Web Bluetooth ESC/POS engine for Officom OC-58H, POS-58 & 58mm thermal printers
+    // Web Bluetooth ESC/POS engine for JP58H-BT71, Officom OC-58H, POS-58 & 58mm thermal printers
     const BT_PRINTER_SERVICES = [
-      "000018f0-0000-1000-8000-00805f9b34fb",
-      "0000ffe0-0000-1000-8000-00805f9b34fb",
-      "49535343-fe7d-4ae5-8fa9-9fafd205e455",
-      "6e400001-b5a3-f393-e0a9-e50e24dcca9e",
-      "e7810a71-73ae-499d-8c15-faa9aef0c3f2",
+      "000018f0-0000-1000-8000-00805f9b34fb", // Standard ESC/POS
+      "0000ffe0-0000-1000-8000-00805f9b34fb", // HM-10 / CC2540 / Serial UART
+      "0000ff00-0000-1000-8000-00805f9b34fb", // JP58H-BT71 / Jiebao Custom UART
+      "0000ae00-0000-1000-8000-00805f9b34fb", // JP58 / Telink BLE UART
+      "0000ae30-0000-1000-8000-00805f9b34fb", // JP-58H Extended BLE
+      "0000fee7-0000-1000-8000-00805f9b34fb", // Telink / JP58H Profile
+      "0000fef5-0000-1000-8000-00805f9b34fb", // Dialog / Telink BLE UART
+      "49535343-fe7d-4ae5-8fa9-9fafd205e455", // ISSC Transparent UART
+      "6e400001-b5a3-f393-e0a9-e50e24dcca9e", // Nordic UART
+      "e7810a71-73ae-499d-8c15-faa9aef0c3f2", // Generic Thermal Printer Service
       0x18f0,
-      0xffe0
+      0xffe0,
+      0xff00,
+      0xae00,
+      0xae30,
+      0xfee7,
+      0xfef5
     ];
 
     class BluetoothThermalPrinter {
@@ -496,7 +506,7 @@
         addLine("Thank you for your visit!");
         addLine("WIFI: RoastAndRitual_Guest");
         addLine("PASS: espresso2026");
-        addLine("--- Officom OC-58H / POS-58 ---");
+        addLine("--- JP58H-BT71 / OC-58H / POS-58 ---");
 
         addBytes(0x1b, 0x64, 0x05); // Feed 5 lines
         addBytes(0x1d, 0x56, 0x01); // Cut
@@ -602,7 +612,7 @@
         addLine("================================");
         addLine(shopConfig?.name || "ROAST & RITUAL");
         addLine("58mm Thermal Printer Connected");
-        addLine("Model: " + (this.printerName || "Officom OC-58H / POS-58"));
+        addLine("Model: " + (this.printerName || "JP58H-BT71 / OC-58H / POS-58"));
         addLine("Date: " + new Date().toLocaleString());
         addLine("--------------------------------");
         addLine("✓ 32 Columns ESC/POS OK");
@@ -2307,7 +2317,7 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
       } else {
         const receiptData = window.bluetoothPrinter.buildReceipt58mm(order, SHOP_CONFIG);
         await window.bluetoothPrinter.sendRaw(receiptData);
-        setBtMsg(`✓ 58mm receipt printed to ${printerStatus.printerName || "Officom OC-58H"}!`);
+        setBtMsg(`✓ 58mm receipt printed to ${printerStatus.printerName || "JP58H-BT71 / OC-58H"}!`);
       }
       setTimeout(() => setBtMsg(""), 4500);
     } catch (err) {
@@ -2350,7 +2360,7 @@ function ReceiptModal({ order, onClose, onNewOrder }) {
                     ? "bg-amber-500 text-stone-950 shadow"
                     : "text-stone-400 hover:text-white"
                 }`}
-                title="58mm Paper Roll (Officom OC-58H / POS-58)"
+                title="58mm Paper Roll (JP58H-BT71 / Officom OC-58H / POS-58)"
               >
                 🧾 58mm Thermal
               </button>
@@ -2733,7 +2743,7 @@ function BluetoothPrinterModal({ isOpen, onClose }) {
                 58mm Bluetooth Thermal Printer
               </h2>
               <p className="text-[11px] text-stone-400">
-                Officom OC-58H • POS-58 • GOOJPRT • ESC/POS
+                Officom OC-58H • JP58H-BT71 • POS-58 • GOOJPRT • ESC/POS
               </p>
             </div>
           </div>
@@ -2767,7 +2777,7 @@ function BluetoothPrinterModal({ isOpen, onClose }) {
                 <div className="text-[11px] text-stone-400">
                   {printerStatus.isConnected
                     ? "Ready to print receipts & stickers"
-                    : "Pair with Officom OC-58H or POS-58"}
+                    : "Pair with JP58H-BT71, Officom OC-58H or POS-58"}
                 </div>
               </div>
             </div>
@@ -2835,13 +2845,13 @@ function BluetoothPrinterModal({ isOpen, onClose }) {
           {/* Quick Setup Instructions */}
           <div className="p-3.5 rounded-xl bg-stone-950/90 border border-stone-800 space-y-1.5 text-[11px] text-stone-300">
             <div className="font-bold text-amber-400 uppercase tracking-wider text-[10px]">
-              How to pair Officom OC-58H or POS-58:
+              How to pair JP58H-BT71, Officom OC-58H or POS-58:
             </div>
             <ol className="list-decimal pl-4 space-y-1 text-stone-400 leading-relaxed">
               <li>Turn on the printer with a 58mm paper roll inserted.</li>
               <li>Turn on Bluetooth on your Android phone, tablet, or PC.</li>
               <li>Pair printer in Bluetooth settings (PIN is usually <code className="text-amber-300 font-mono">0000</code> or <code className="text-amber-300 font-mono">1234</code>).</li>
-              <li>Tap <strong>Connect</strong> above and select <strong>OC-58H</strong> or <strong>POS-58</strong>.</li>
+              <li>Tap <strong>Connect</strong> above and select <strong>JP58H-BT71</strong>, <strong>OC-58H</strong>, or <strong>POS-58</strong>.</li>
             </ol>
           </div>
         </div>
@@ -3733,7 +3743,7 @@ function MobileAppQRModal({
                     Live
                   </span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-stone-900 text-amber-300 border border-stone-700">
-                    v9
+                    v10
                   </span>
                 </div>
               </div>
@@ -5815,7 +5825,7 @@ function App() {
                 ? "bg-emerald-950/40 border-emerald-500/60 text-emerald-300 hover:bg-emerald-950/70"
                 : "bg-stone-850 hover:bg-stone-800 border-stone-700 text-stone-300"
             }`}
-            title="Bluetooth 58mm Thermal Printer (Officom OC-58H / POS-58)"
+            title="Bluetooth 58mm Thermal Printer (JP58H-BT71 / Officom OC-58H / POS-58)"
           >
             <span>🖨️</span>
             {btPrinterStatus.isConnected ? (
